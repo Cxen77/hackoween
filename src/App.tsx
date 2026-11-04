@@ -4,9 +4,9 @@ import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import type { GeoJSONSource, StyleSpecification } from 'maplibre-gl';
 import {
   Activity, Anchor, ArrowDownToLine, ArrowUpRight, Check, ChevronDown, ChevronRight,
-  CircleHelp, CloudRain, Compass, Database, Droplets, Expand, Layers, MapPin,
-  Minus, Mountain, PanelLeftClose, PanelLeftOpen, Pause, Play, Plus, Radio, RefreshCw, Search, Shield, ShieldAlert,
-  Sun, Sunrise, Trees, Waves, X
+  CircleHelp, CloudRain, Compass, Database, Droplets, Expand, Layers, LayoutDashboard, MapPin,
+  Minus, Mountain, PanelLeftClose, PanelLeftOpen, Pause, Play, Plus, Radio, RefreshCw, Search, Settings, Shield, ShieldAlert,
+  Sun, Sunrise, Trees, UserCog, Waves, X
 } from 'lucide-react';
 import { Sidebar, SidebarBody } from '@/components/ui/sidebar';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -703,56 +703,99 @@ export default function App() {
         <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} animate={true}>
           <SidebarBody className="floodcast-sidebar-body">
             {sidebarOpen ? (
-              <div className="sidebar-header-row">
-                <div className="sidebar-brand-mini">
-                  <div className="section-eyebrow">River telemetry</div>
-                  <h1>Studio</h1>
-                </div>
-                <button
-                  type="button"
-                  className="sidebar-collapse-toggle"
-                  onClick={() => setSidebarOpen(false)}
-                  title="Collapse sidebar"
-                  aria-label="Collapse sidebar"
-                >
-                  <PanelLeftClose size={18} />
-                </button>
-              </div>
-            ) : (
-              <div className="sidebar-collapsed-header">
-                <button
-                  type="button"
-                  className="sidebar-collapse-toggle collapsed-toggle"
-                  onClick={() => setSidebarOpen(true)}
-                  title="Expand sidebar"
-                  aria-label="Expand sidebar"
-                >
-                  <PanelLeftOpen size={18} />
-                </button>
-              </div>
-            )}
-
-            {sidebarOpen ? (
               <div className="sidebar-expanded-content">
-                <p className="sidebar-desc">Live USGS telemetry, 7-day GloFAS forecasts, and 3D terrain flood scenarios.</p>
+                {/* Brand Header */}
+                <div className="acet-brand-row">
+                  <div
+                    className="acet-brand-logo"
+                    onClick={() => {
+                      setModelOpen(false);
+                      setSources(false);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    title="FloodCast / Acet Labs"
+                  >
+                    <div className="acet-logo-squircle" />
+                    <span className="acet-brand-text">Acet Labs</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="sidebar-collapse-toggle"
+                    onClick={() => setSidebarOpen(false)}
+                    title="Collapse sidebar"
+                    aria-label="Collapse sidebar"
+                  >
+                    <PanelLeftClose size={18} />
+                  </button>
+                </div>
 
-                <label className="search-box">
-                  <Search size={16} />
+                {/* Primary Aceternity Navigation */}
+                <nav className="acet-nav-group" aria-label="Main Navigation">
+                  <button
+                    type="button"
+                    className={`acet-nav-item ${!modelOpen && !sources ? 'active' : ''}`}
+                    onClick={() => {
+                      setModelOpen(false);
+                      setSources(false);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  >
+                    <LayoutDashboard size={20} className="acet-nav-icon" />
+                    <span className="acet-nav-text">Dashboard</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`acet-nav-item ${modelOpen ? 'active' : ''}`}
+                    onClick={() => {
+                      setModelOpen(true);
+                      setSources(false);
+                    }}
+                  >
+                    <UserCog size={20} className="acet-nav-icon" />
+                    <span className="acet-nav-text">Profile</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`acet-nav-item ${sources ? 'active' : ''}`}
+                    onClick={() => {
+                      setSources(true);
+                      setModelOpen(false);
+                    }}
+                  >
+                    <Settings size={20} className="acet-nav-icon" />
+                    <span className="acet-nav-text">Settings</span>
+                  </button>
+                </nav>
+
+                <div className="acet-divider" />
+
+                {/* Monitored Basins Section */}
+                <div className="acet-section-heading">
+                  <span>{query ? 'Matching basins' : 'Monitored Basins'}</span>
+                  <span className="acet-count-pill">{filtered.length}</span>
+                </div>
+
+                <label className="acet-search-box">
+                  <Search size={16} className="acet-search-icon" />
                   <input
                     value={query}
                     onChange={e => setQuery(e.target.value)}
-                    placeholder="Search stations or press /"
+                    placeholder="Search basins or press /"
                     aria-label="Search rivers or places"
                   />
                   {query ? (
-                    <button aria-label="Clear search" onClick={() => setQuery('')}><X size={14} /></button>
+                    <button aria-label="Clear search" onClick={() => setQuery('')}>
+                      <X size={14} />
+                    </button>
                   ) : (
-                    <span className="search-kbd">/</span>
+                    <span className="acet-search-kbd">/</span>
                   )}
                 </label>
                 {searchError && <p className="inline-error">{searchError}</p>}
 
-                <div className="filter-tabs" role="tablist" aria-label="Station region filter">
+                <div className="acet-filter-tabs" role="tablist" aria-label="Station region filter">
                   <button
                     className={filterRegion === 'all' ? 'active' : ''}
                     onClick={() => setFilterRegion('all')}
@@ -773,42 +816,37 @@ export default function App() {
                   </button>
                 </div>
 
-                <div className="river-list-heading">
-                  <span>{query ? 'Matching stations' : 'Monitored rivers'}</span>
-                  <span className="count-pill">{filtered.length}</span>
-                </div>
-
-                <div className="river-list">
+                <div className="acet-river-list">
                   {filtered.map(s => {
                     const RiverIcon = riverIconMap[s.id] || Waves;
                     return (
                       <button
-                        className={`river-item ${station.id === s.id ? 'selected' : ''}`}
+                        className={`acet-river-item ${station.id === s.id ? 'selected' : ''}`}
                         key={s.id}
                         onClick={() => pick(s)}
                       >
-                        <span className="river-icon">
-                          <RiverIcon size={16} />
+                        <span className="acet-river-icon">
+                          <RiverIcon size={18} />
                         </span>
-                        <span className="river-info">
-                          <strong>{s.river}</strong>
-                          <small>
+                        <span className="acet-river-info">
+                          <span className="acet-river-title">{s.river}</span>
+                          <span className="acet-river-sub">
                             {s.name}
-                            <span className="country-tag">{s.region.includes('India') ? 'IN' : 'US'}</span>
-                            {s.usgs && <span className="live-dot" title="USGS Real-time Telemetry" />}
-                          </small>
+                            <span className="acet-country-tag">{s.region.includes('India') ? 'IN' : 'US'}</span>
+                            {s.usgs && <span className="acet-live-dot" title="USGS Real-time Telemetry" />}
+                          </span>
                         </span>
-                        <ChevronRight size={14} className="chevron" />
+                        <ChevronRight size={14} className="acet-chevron" />
                       </button>
                     );
                   })}
 
                   {places.map(s => (
-                    <button className="river-item" key={s.id} onClick={() => pick(s)}>
-                      <span className="river-icon"><MapPin size={16} /></span>
-                      <span className="river-info">
-                        <strong>{s.river}</strong>
-                        <small>Geocoded location</small>
+                    <button className="acet-river-item" key={s.id} onClick={() => pick(s)}>
+                      <span className="acet-river-icon"><MapPin size={18} /></span>
+                      <span className="acet-river-info">
+                        <span className="acet-river-title">{s.river}</span>
+                        <span className="acet-river-sub">Geocoded location</span>
                       </span>
                     </button>
                   ))}
@@ -821,31 +859,93 @@ export default function App() {
                   )}
                 </div>
 
-                <div className="sidebar-bottom">
-                  <div className="open-data-badge">
-                    <Database size={16} />
-                    <div>
-                      <strong>Zero Synthetic Telemetry</strong>
-                      <small>Authentic USGS & GloFAS API observations</small>
-                    </div>
-                  </div>
-                  <button className="sources-link-btn" onClick={() => setSources(true)}>
-                    Data provenance & citations <ArrowUpRight size={13} />
+                {/* Footer User Profile matching Manu Arora in reference image */}
+                <div className="acet-sidebar-footer">
+                  <button
+                    type="button"
+                    className="acet-user-profile"
+                    onClick={() => setSources(true)}
+                    title="Manu Arora (Hydrology Lead / Acet Labs) — Click for Methodology"
+                  >
+                    <img
+                      src="/manu_avatar.png"
+                      alt="Manu Arora"
+                      className="acet-user-avatar"
+                    />
+                    <span className="acet-user-name">Manu Arora</span>
                   </button>
                 </div>
               </div>
             ) : (
               <div className="sidebar-collapsed-content">
+                <div
+                  className="acet-logo-squircle collapsed-squircle"
+                  onClick={() => setSidebarOpen(true)}
+                  title="Expand Acet Labs Sidebar"
+                />
+
+                <button
+                  type="button"
+                  className="sidebar-collapse-toggle collapsed-toggle"
+                  onClick={() => setSidebarOpen(true)}
+                  title="Expand sidebar"
+                  aria-label="Expand sidebar"
+                >
+                  <PanelLeftOpen size={18} />
+                </button>
+
+                <div className="collapsed-divider" />
+
+                {/* Aceternity Nav Icons */}
+                <div className="collapsed-nav-group">
+                  <button
+                    type="button"
+                    className={`collapsed-icon-btn ${!modelOpen && !sources ? 'active' : ''}`}
+                    title="Dashboard"
+                    onClick={() => {
+                      setModelOpen(false);
+                      setSources(false);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  >
+                    <LayoutDashboard size={18} />
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`collapsed-icon-btn ${modelOpen ? 'active' : ''}`}
+                    title="Profile & Hydrology Model"
+                    onClick={() => {
+                      setModelOpen(true);
+                      setSources(false);
+                    }}
+                  >
+                    <UserCog size={18} />
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`collapsed-icon-btn ${sources ? 'active' : ''}`}
+                    title="Settings & Data Provenance"
+                    onClick={() => {
+                      setSources(true);
+                      setModelOpen(false);
+                    }}
+                  >
+                    <Settings size={18} />
+                  </button>
+                </div>
+
+                <div className="collapsed-divider" />
+
                 <button
                   type="button"
                   className="collapsed-icon-btn"
-                  title="Search stations"
+                  title="Search basins"
                   onClick={() => setSidebarOpen(true)}
                 >
                   <Search size={18} />
                 </button>
-
-                <div className="collapsed-divider" />
 
                 <div className="collapsed-river-list">
                   {filtered.map(s => {
@@ -864,14 +964,19 @@ export default function App() {
                   })}
                 </div>
 
+                {/* Collapsed Avatar at bottom */}
                 <div className="collapsed-bottom">
                   <button
                     type="button"
-                    className="collapsed-icon-btn"
-                    title="Data provenance & citations"
+                    className="collapsed-avatar-btn"
+                    title="Manu Arora (Operator Profile & Methodology)"
                     onClick={() => setSources(true)}
                   >
-                    <Database size={18} />
+                    <img
+                      src="/manu_avatar.png"
+                      alt="Manu Arora"
+                      className="acet-user-avatar collapsed-avatar"
+                    />
                   </button>
                 </div>
               </div>
