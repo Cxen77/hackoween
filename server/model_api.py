@@ -191,6 +191,8 @@ def live_forecast(sid: str) -> dict:
            'recent': [{'date': d.strftime('%Y-%m-%d'), 'cfs': float(v)} for d, v in q.iloc[-30:].items()], 'horizons': [], 'warnings': warnings,
            'sources': ['USGS NWIS daily values', 'Open-Meteo forecast API (weather)', 'FLOODCAST BASINSHIFT-style model trained on 55 USGS gauges'],
            'rating': None if rating is None else {k: rating[k] for k in ('n', 'r2', 'q_min', 'q_max', 'current_stage_ft', 'current_q')}}
+    out['rain_forecast'] = [{'date': r.date, 'mm': None if pd.isna(r.precipitation_mm) else float(r.precipitation_mm)}
+                            for r in frame[frame.date > last.strftime('%Y-%m-%d')].itertuples()]
     with LOCK:
         for h in HORIZONS:
             o = forecast(STATE['bundle'], frame, '2000-01-01', h, thr_override=thr)
@@ -281,6 +283,8 @@ def live_forecast_new(lat: float, lon: float, name: str) -> dict:
            'threshold_q90_cfs': float(thr.T90.iloc[0]), 'threshold_q99_cfs': float(thr.T99.iloc[0]), 'snapped_to': [slat, slon],
            'recent': [{'date': d.strftime('%Y-%m-%d'), 'cfs': float(v)} for d, v in obs.iloc[-30:].items()], 'horizons': [], 'warnings': warnings, 'rating': None,
            'sources': ['GloFAS modelled river discharge via Open-Meteo flood API', 'Open-Meteo forecast API (weather)', 'FLOODCAST BASINSHIFT-style model trained on 55 US USGS gauges']}
+    out['rain_forecast'] = [{'date': r.date, 'mm': None if pd.isna(r.precipitation_mm) else float(r.precipitation_mm)}
+                            for r in frame[frame.date > last.strftime('%Y-%m-%d')].itertuples()]
     with LOCK:
         for h in HORIZONS:
             o = forecast(STATE['bundle'], frame, '2000-01-01', h, thr_override=thr)
@@ -361,6 +365,8 @@ def live_forecast_india(key: str) -> dict:
            'rating': None, 'sources': ['NWIC National Water Data Portal: CWC manual daily discharge (m3/sec, converted to cfs)', 'Open-Meteo forecast API (weather)',
                                        'FLOODCAST BASINSHIFT-style model trained on 55 US USGS gauges'],
            'hindcast': {'window_days': 30, 'horizons': {}, 'series': {}}}
+    out['rain_forecast'] = [{'date': r.date, 'mm': None if pd.isna(r.precipitation_mm) else float(r.precipitation_mm)}
+                            for r in frame[frame.date > last.strftime('%Y-%m-%d')].itertuples()]
     with LOCK:
         for h in HORIZONS:
             o = forecast(STATE['bundle'], frame, '2000-01-01', h, thr_override=thr)

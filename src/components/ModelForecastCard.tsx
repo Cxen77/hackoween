@@ -8,35 +8,57 @@ type Json = any;
 const fmt = (v: number | null | undefined, d = 0) => (v === null || v === undefined || !Number.isFinite(v) ? '—' : v.toLocaleString('en-US', { maximumFractionDigits: d, minimumFractionDigits: d }));
 const pct = (p: number) => (p < 0.005 ? '<1%' : `${Math.round(p * 100)}%`);
 
-/** Mini chart: last 30 observed days, then the 3 forecast points with their 90% band. */
-function Spark({ d }: { d: Json }) {
-  const W = 360, H = 96, L = 4, R = 4, T = 6, B = 14;
-  const obs: { x: number; v: number }[] = d.recent.map((r: Json, i: number) => ({ x: i, v: r.cfs }));
+/** Last 14 observed days, then the forecast. The chart follows the selected forecast day: that day's point, band and
+ *  date are highlighted and the rain after it is faded. */
+function Spark({ d, active }: { d: Json; active: number }) {
+  const W = 360, H = 132, L = 4, R = 4, T = 14, CH = 78, RB = 100;   // chart area ends at CH; rain bars sit between CH+6 and RB
+  const obs: { x: number; v: number }[] = d.recent.slice(-14).map((r: Json, i: number) => ({ x: i, v: r.cfs }));
   const n = obs.length;
   const base = new Date(d.origin_date + 'T12:00:00').getTime();
-  const fut = d.horizons.map((h: Json) => ({ x: n - 1 + h.horizon_days, v: h.point_cfs, lo: h.lo_cfs ?? h.point_cfs, hi: h.hi_cfs ?? h.point_cfs }));
+  const fut = d.horizons.map((h: Json) => ({ x: n - 1 + h.horizon_days, d: h.horizon_days, v: h.point_cfs, lo: h.lo_cfs ?? h.point_cfs, hi: h.hi_cfs ?? h.point_cfs }));
   const maxX = n - 1 + 7;
-  const all = [...obs.map(o => o.v), ...fut.flatMap((f: Json) => [f.lo, f.hi]), d.threshold_q90_cfs * 0 + 1];
-  const maxV = Math.max(...all) * 1.08, minV = Math.min(...all.filter(v => v > 0)) * 0.9;
+  const vals = [...obs.map(o => o.v), ...fut.flatMap((f: Json) => [f.lo, f.hi])];
+  const span = Math.max(...vals) - Math.min(...vals);
+  const pad = Math.max(span * 0.12, Math.max(...vals) * 0.01);
+  const maxV = Math.max(...vals) + pad, minV = Math.max(0, Math.min(...vals) - pad);
   const x = (i: number) => L + (i / maxX) * (W - L - R);
-  const y = (v: number) => T + (1 - (v - minV) / (maxV - minV || 1)) * (H - T - B);
-  const line = obs.map((o, i) => `${i ? 'L' : 'M'}${x(o.x).toFixed(1)},${y(o.v).toFixed(1)}`).join('');
+  const y = (v: number) => T + (1 - (v - minV) / (maxV - minV || 1)) * (CH - T);
   const last = obs[obs.length - 1];
-  const fpath = `M${x(last.x).toFixed(1)},${y(last.v).toFixed(1)}` + fut.map((f: Json) => `L${x(f.x).toFixed(1)},${y(f.v).toFixed(1)}`).join('');
-  const band = `M${x(last.x).toFixed(1)},${y(last.v).toFixed(1)}` + fut.map((f: Json) => `L${x(f.x).toFixed(1)},${y(f.hi).toFixed(1)}`).join('')
-    + [...fut].reverse().map((f: Json) => `L${x(f.x).toFixed(1)},${y(f.lo).toFixed(1)}`).join('') + 'Z';
+  const ai = Math.max(0, fut.findIndex((f: Json) => f.d === active));
+  const upTo = fut.slice(0, ai + 1);
+  const act = fut[ai];
+  const pt = (o: { x: number; v: number }, first: boolean) => `${first ? 'M' : 'L'}${x(o.x).toFixed(1)},${y(o.v).toFixed(1)}`;
+  const line = obs.map((o, i) => pt(o, i === 0)).join('');
+  const fullF = `M${x(last.x).toFixed(1)},${y(last.v).toFixed(1)}` + fut.map((f: Json) => `L${x(f.x).toFixed(1)},${y(f.v).toFixed(1)}`).join('');
+  const activeF = `M${x(last.x).toFixed(1)},${y(last.v).toFixed(1)}` + upTo.map((f: Json) => `L${x(f.x).toFixed(1)},${y(f.v).toFixed(1)}`).join('');
+  const band = `M${x(last.x).toFixed(1)},${y(last.v).toFixed(1)}` + upTo.map((f: Json) => `L${x(f.x).toFixed(1)},${y(f.hi).toFixed(1)}`).join('')
+    + [...upTo].reverse().map((f: Json) => `L${x(f.x).toFixed(1)},${y(f.lo).toFixed(1)}`).join('') + 'Z';
   const q90 = d.threshold_q90_cfs;
+  const rain: { x: number; mm: number; day: number }[] = (d.rain_forecast ?? []).map((r: Json, i: number) => ({ x: n + i, mm: r.mm ?? 0, day: i + 1 }));
+  const rmax = Math.max(10, ...rain.map(r => r.mm));
+  const bw = ((W - L - R) / maxX) * 0.62;
+  const target = new Date(base + act.d * 86400000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const labelX = Math.min(W - 52, Math.max(L + 52, x(act.x)));
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="mf-spark" role="img" aria-label="Recent discharge and model forecast">
+    <svg viewBox={`0 0 ${W} ${H}`} className="mf-spark" role="img" aria-label={`Recent discharge and the model forecast for day +${act.d}`}>
       {q90 > minV && q90 < maxV && <line x1={L} x2={W - R} y1={y(q90)} y2={y(q90)} className="mf-thr" />}
-      <line x1={x(n - 1)} x2={x(n - 1)} y1={T} y2={H - B} className="mf-now" />
+      <line x1={x(n - 1)} x2={x(n - 1)} y1={T} y2={RB} className="mf-now" />
+      <line x1={x(act.x)} x2={x(act.x)} y1={T} y2={RB} className="mf-target" />
       <path d={band} className="mf-band" />
       <path d={line} className="mf-obs" fill="none" />
-      <path d={fpath} className="mf-fc" fill="none" />
-      {fut.map((f: Json, i: number) => <circle key={i} cx={x(f.x)} cy={y(f.v)} r="3" className="mf-dot" />)}
-      <text x={L} y={H - 2} className="mf-axis">{new Date(base - (n - 1) * 86400000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</text>
-      <text x={x(n - 1)} y={H - 2} textAnchor="middle" className="mf-axis">latest data</text>
-      <text x={W - R} y={H - 2} textAnchor="end" className="mf-axis">+7 days</text>
+      <path d={fullF} className="mf-fc mf-faded" fill="none" />
+      <path d={activeF} className="mf-fc" fill="none" />
+      {fut.map((f: Json, i: number) => i !== ai && <circle key={i} cx={x(f.x)} cy={y(f.v)} r="2.5" className="mf-dot mf-faded" />)}
+      <circle cx={x(act.x)} cy={y(act.v)} r="6" className="mf-dot-ring" />
+      <circle cx={x(act.x)} cy={y(act.v)} r="3.6" className="mf-dot" />
+      <text x={labelX} y={T - 3} textAnchor="middle" className="mf-label">{`+${act.d}d · ${Math.round(act.v).toLocaleString('en-US')} cfs`}</text>
+      {rain.map((r, i) => r.mm > 0 && <rect key={i} x={x(r.x) - bw / 2} y={RB - (r.mm / rmax) * (RB - CH - 6)} width={bw} height={(r.mm / rmax) * (RB - CH - 6)}
+        className="mf-rainbar" style={{ opacity: r.day <= act.d ? 0.9 : 0.25 }}><title>{`${d.rain_forecast[i].date}: ${r.mm.toFixed(1)} mm`}</title></rect>)}
+      <line x1={L} x2={W - R} y1={RB} y2={RB} className="mf-rainbase" />
+      <text x={L} y={H - 4} className="mf-axis">{new Date(base - (n - 1) * 86400000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</text>
+      <text x={x(n - 1)} y={H - 4} textAnchor="middle" className="mf-axis">latest data</text>
+      <text x={Math.min(W - 24, Math.max(L + 24, x(act.x)))} y={H - 4} textAnchor="middle" className="mf-axis mf-axis-strong">{target}</text>
+      <text x={L + 2} y={RB - (RB - CH - 6) - 1} className="mf-axis mf-raintext">rain forecast</text>
     </svg>
   );
 }
@@ -118,7 +140,11 @@ export default function ModelForecastCard({ usgs, nwic, river, onSimulate, onDat
       {d && (<>
         {d.new_river && <p className="mf-newriver"><b>New river</b>: not in the model's training data. Live observed flow from India's NWIC portal.</p>}
         <p className="mf-muted">Using real data up to <b>{d.origin_date}</b>: latest flow <b>{fmt(d.latest_observed_cfs)} cfs</b>. High-flow level (Q90) for this gauge is {fmt(d.threshold_q90_cfs)} cfs.</p>
-        <Spark d={d} />
+        <Spark d={d} active={activeHorizon} />
+        {Array.isArray(d.rain_forecast) && d.rain_forecast.length > 0 && (() => {
+          const mm = d.rain_forecast.map((r: Json) => r.mm ?? 0); const tot = mm.reduce((a: number, b: number) => a + b, 0);
+          return <p className="mf-rainnote">Rain forecast, next 7 days: <b>{tot.toFixed(0)} mm</b>{tot < 3 ? ' (dry week, so a steady flow is expected)' : ` (up to ${Math.max(...mm).toFixed(0)} mm in one day)`}.</p>;
+        })()}
         {/* Days Pills Menu (clicking a pill simulates that horizon directly) */}
         <div className="mf-days-pills-row">
           <span className="mf-days-label">Forecast:</span>
