@@ -1,0 +1,254 @@
+[
+ {
+  "id": "06610000",
+  "n": 5844,
+  "name": "Missouri River at Omaha, NE",
+  "area": "322800",
+  "max": 212000.0
+ },
+ {
+  "id": "06893000",
+  "n": 5844,
+  "name": "Missouri River at Kansas City, MO",
+  "area": "484100",
+  "max": 306000.0
+ },
+ {
+  "id": "03377500",
+  "n": 5844,
+  "name": "WABASH RIVER AT MT. CARMEL, IL",
+  "area": "28635",
+  "max": 268000.0
+ },
+ {
+  "id": "05474500",
+  "n": 5843,
+  "name": "Mississippi River at Keokuk, IA",
+  "area": "119000",
+  "max": 534000.0
+ },
+ {
+  "id": "05420500",
+  "n": 5844,
+  "name": "Mississippi River at Clinton, IA",
+  "area": "85600",
+  "max": 235000.0
+ },
+ {
+  "id": "13269000",
+  "n": 5844,
+  "name": "SNAKE RIVER AT WEISER ID",
+  "area": "69200",
+  "max": 69000.0
+ },
+ {
+  "id": "01358000",
+  "n": 5844,
+  "name": "HUDSON RIVER AT GREEN ISLAND NY",
+  "area": "8090.0",
+  "max": 158000.0
+ },
+ {
+  "id": "01184000",
+  "n": 5844,
+  "name": "CONNECTICUT RIVER AT THOMPSONVILLE, CT",
+  "area": "9660.0",
+  "max": 122000.0
+ },
+ {
+  "id": "02131000",
+  "n": 5843,
+  "name": "PEE DEE RIVER AT PEEDEE, SC",
+  "area": "8830.00",
+  "max": 130000.0
+ },
+ {
+  "id": "02226000",
+  "n": 5843,
+  "name": "ALTAMAHA RIVER AT DOCTORTOWN, GA",
+  "area": "13600.00",
+  "max": 96400.0
+ },
+ {
+  "id": "02358000",
+  "n": 5844,
+  "name": "APALACHICOLA RIVER AT CHATTAHOOCHEE FLA",
+  "area": "17200.00",
+  "max": 173000.0
+ },
+ {
+  "id": "02489500",
+  "n": 5844,
+  "name": "Pearl River near Bogalusa, LA",
+  "area": "6573.00",
+  "max": 130000.0
+ },
+ {
+  "id": "08066500",
+  "n": 5844,
+  "name": "Trinity Rv at Romayor, TX",
+  "area": "17186",
+  "max": 146000.0
+ },
+ {
+  "id": "08117500",
+  "n": 5844,
+  "name": "San Bernard Rv nr Boling, TX",
+  "area": "727",
+  "max": 49600.0
+ },
+ {
+  "id": "08279500",
+  "n": 5844,
+  "name": "RIO GRANDE AT EMBUDO, NM",
+  "area": "10400",
+  "max": 5380.0
+ },
+ {
+  "id": "08330000",
+  "n": 5844,
+  "name": "RIO GRANDE AT ALBUQUERQUE, NM",
+  "area": "17440",
+  "max": 5470.0
+ },
+ {
+  "id": "09163500",
+  "n": 5844,
+  "name": "COLORADO RIVER NEAR COLORADO-UTAH STATE LINE",
+  "area": "17849.0",
+  "max": 46800.0
+ },
+ {
+  "id": "11303500",
+  "n": 5844,
+  "name": "SAN JOAQUIN R NR VERNALIS CA",
+  "area": "13539",
+  "max": 40200.0
+ },
+ {
+  "id": "12200500",
+  "n": 5844,
+  "name": "SKAGIT RIVER NEAR MOUNT VERNON, WA",
+  "area": "3093",
+  "max": 119000.0
+ },
+ {
+  "id": "06191500",
+  "n": 5844,
+  "name": "Yellowstone River at Corwin Springs MT",
+  "area": "2615",
+  "max": 47200.0
+ },
+ {
+  "id": "05331000",
+  "n": 5844,
+  "name": "MISSISSIPPI RIVER AT ST. PAUL, MN",
+  "area": "36800",
+  "max": 115000.0
+ },
+ {
+  "id": "04119000",
+  "n": 5844,
+  "name": "GRAND RIVER AT GRAND RAPIDS, MI",
+  "area": "4900",
+  "max": 34900.0
+ },
+ {
+  "id": "03049500",
+  "n": 5844,
+  "name": "Allegheny River at Natrona, PA",
+  "area": "11410",
+  "max": 135000.0
+ },
+ {
+  "id": "03085500",
+  "n": 5844,
+  "name": "Chartiers Creek at Carnegie, PA",
+  "area": "257",
+  "max": 9360.0
+ },
+ {
+  "id": "03234500",
+  "n": 5844,
+  "name": "Scioto River at Higby OH",
+  "area": "5131",
+  "max": 48400.0
+ },
+ {
+  "id": "01400500",
+  "n": 5840,
+  "name": "Raritan River at Manville NJ",
+  "area": "490",
+  "max": 38300.0
+ },
+ {
+  "id": "06805500",
+  "n": 5844,
+  "name": "Platte River at Louisville, Nebr.",
+  "area": "85370.0",
+  "max": 219000.0
+ },
+ {
+  "id": "06892350",
+  "n": 5844,
+  "name": "KANSAS R AT DESOTO, KS",
+  "area": "59756",
+  "max": 99500.0
+ },
+ {
+  "id": "07144300",
+  "n": 5844,
+  "name": "ARKANSAS R AT WICHITA, KS",
+  "area": "40490",
+  "max": 20600.0
+ },
+ {
+  "id": "07332500",
+  "n": 5844,
+  "name": "Blue River near Blue, OK",
+  "area": "477",
+  "max": 21400.0
+ },
+ {
+  "id": "07019000",
+  "n": 5844,
+  "name": "Meramec River near Eureka, MO",
+  "area": "3788",
+  "max": 159000.0
+ },
+ {
+  "id": "05599490",
+  "n": 5827,
+  "name": "BIG MUDDY RIVER AT RTE 127 AT MURPHYSBORO, IL",
+  "area": "2159",
+  "max": 38200.0
+ },
+ {
+  "id": "03294500",
+  "n": 5839,
+  "name": "OHIO RIVER AT LOUISVILLE, KY",
+  "area": "91170.0",
+  "max": 720000.0
+ },
+ {
+  "id": "03216600",
+  "n": 7603,
+  "name": "OHIO RIVER AT GREENUP DAM NEAR GREENUP, KY",
+  "area": "62000.0",
+  "max": 492000.0
+ },
+ {
+  "id": "03170000",
+  "n": 5844,
+  "name": "LITTLE RIVER AT GRAYSONTOWN, VA",
+  "area": "300",
+  "max": 9350.0
+ },
+ {
+  "id": "02296750",
+  "n": 5844,
+  "name": "PEACE RIVER AT SR 70 AT ARCADIA, FL",
+  "area": "1367",
+  "max": 49900.0
+ }
+]

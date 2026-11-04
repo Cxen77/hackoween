@@ -29,6 +29,12 @@ Script: scripts/basinshift_horizon.py. Summary: data/experiments/basinshift_hori
 - Chosen approach for BASINSHIFT-style forecasts: blend_50. Not applicable to FLOODCAST 2025 (no discharge inputs). FLOODCAST V2 champion unchanged.
 - Caveat: gains over persistence are modest (about 1-7%); no exceedance-probability or calibration model yet.
 
+## Station expansion prepared (2026-11-04) - blocked by Open-Meteo daily quota
+
+Open-Meteo returned 'Daily API request limit exceeded' today, so new weather could not be downloaded. Quota was NOT bypassed.
+Prepared and vetted: reports/expansion_candidates.json = 36 additional USGS stations with full 2010-2025 daily discharge and known drainage area (Missouri, Ohio, Upper Mississippi, Platte, Snake, Wabash, Allegheny, Columbia-region, Gulf and Atlantic rivers). scripts/expand_stations.py copies the cache from data/large and downloads only new stations into data/large_plus (resumable; rerun after quota reset), then fetches StreamStats/GAGES-II attributes.
+Next (after quota reset): python -m scripts.expand_stations ; then retrain with the command in that script's docstring ; compare against V2 on the ORIGINAL 53 stations (validation first, then reused 2025 benchmark) and promote only if overall AND extreme RMSE improve. Expect gains to be uncertain; document either way.
+
 ## Station-climatology experiment (2026-11-04) - REJECTED, V2 unchanged
 
 Scripts: scripts/climatology_experiment.py, scripts/climatology_final.py. Results under data/experiments/climatology_v1, climatology_v2, climatology_final (local).
