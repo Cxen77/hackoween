@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AlertTriangle, Bot, Download, Play, RefreshCw } from 'lucide-react';
 import { toBasinshiftRecord } from '../modelMetrics.mjs';
 import './model-forecast.css';
@@ -70,6 +70,9 @@ function Hindcast({ h }: { h: Json }) {
 export default function ModelForecastCard({ usgs, nwic, river, onSimulate }: { usgs?: string; nwic?: string; river: string; onSimulate: (riseMetres: number, label: string) => void }) {
   const [state, setState] = useState<{ data: Json; error: string | null; offline: boolean; loading: boolean }>({ data: null, error: null, offline: false, loading: false });
   const [tick, setTick] = useState(0);
+  const [activeHorizon, setActiveHorizon] = useState<number>(1);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Record<number, HTMLDivElement | null>>({});
   useEffect(() => {
     const query = usgs ? `station=${encodeURIComponent(usgs)}` : nwic ? `india=${encodeURIComponent(nwic)}` : null;
     if (!query) { setState({ data: null, error: null, offline: false, loading: false }); return; }
@@ -114,9 +117,51 @@ export default function ModelForecastCard({ usgs, nwic, river, onSimulate }: { u
         {d.new_river && <p className="mf-newriver"><b>New river</b>: not in the model's training data. Live observed flow from India's NWIC portal.</p>}
         <p className="mf-muted">Using real data up to <b>{d.origin_date}</b>: latest flow <b>{fmt(d.latest_observed_cfs)} cfs</b>. High-flow level (Q90) for this gauge is {fmt(d.threshold_q90_cfs)} cfs.</p>
         <Spark d={d} />
-        <div className="mf-rows">
+        {/* Horizon Scroll Menu Navigation */}
+        <div className="mf-scroll-menu-nav">
+          <span className="mf-scroll-nav-label">Horizon:</span>
+          <div className="mf-scroll-tabs" role="tablist" aria-label="Forecast horizons">
+            {d.horizons.map((h: Json) => (
+              <button
+                key={h.horizon_days}
+                role="tab"
+                aria-selected={activeHorizon === h.horizon_days}
+                className={`mf-tab-btn ${activeHorizon === h.horizon_days ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveHorizon(h.horizon_days);
+                  cardRefs.current[h.horizon_days]?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest',
+                    inline: 'center',
+                  });
+                }}
+              >
+                +{h.horizon_days}d
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Horizontally scrolling card track (scroll menu) */}
+        <div
+          className="mf-rows mf-scroll-track"
+          ref={trackRef}
+          onScroll={() => {
+            if (!trackRef.current) return;
+            const scrollLeft = trackRef.current.scrollLeft;
+            const width = trackRef.current.offsetWidth || 1;
+            const index = Math.round(scrollLeft / width);
+            if (d.horizons[index] && d.horizons[index].horizon_days !== activeHorizon) {
+              setActiveHorizon(d.horizons[index].horizon_days);
+            }
+          }}
+        >
           {d.horizons.map((h: Json) => (
-            <div key={h.horizon_days} className="mf-row">
+            <div
+              key={h.horizon_days}
+              ref={(el) => { cardRefs.current[h.horizon_days] = el; }}
+              className={`mf-row mf-scroll-item ${activeHorizon === h.horizon_days ? 'active-horizon' : ''}`}
+            >
               <div className="mf-row-main">
                 <span className="mf-day">+{h.horizon_days}d</span>
                 <span><b>{fmt(h.point_cfs)}</b> cfs <small>({h.lo_cfs === null ? 'no band' : `${fmt(h.lo_cfs)}–${fmt(h.hi_cfs)}`})</small></span>
@@ -131,17 +176,21 @@ export default function ModelForecastCard({ usgs, nwic, river, onSimulate }: { u
               </div>
             </div>))}
         </div>
-        <p className="mf-foot">
-          {d.rating
-            ? <>Flow → water level uses this gauge's own last 30 days ({fmt(d.rating.n)} readings, fit R² {d.rating.r2.toFixed(3)}, observed {fmt(d.rating.q_min)}–{fmt(d.rating.q_max)} cfs). {d.horizons.some((h: Json) => h.extrapolated) && '* = outside the observed range, so extrapolated.'}</>
-            : 'No stage rating available for this gauge; showing discharge only.'}
-        </p>
-        {d.warnings?.map((w: string) => <p key={w} className="mf-warn"><AlertTriangle size={12} /> {w}</p>)}
-        {d.hindcast && Object.keys(d.hindcast.horizons).length > 0 && <Hindcast h={d.hindcast} />}
-        <div className="mf-actions">
-          <button className="mf-btn" onClick={exportJson}><Download size={13} /> Export in BASINSHIFT format</button>
+
+        {/* Scrollable details for ratings, warnings, and hindcast */}
+        <div className="mf-details-scroll">
+          <p className="mf-foot">
+            {d.rating
+              ? <>Flow → water level uses this gauge's own last 30 days ({fmt(d.rating.n)} readings, fit R² {d.rating.r2.toFixed(3)}, observed {fmt(d.rating.q_min)}–{fmt(d.rating.q_max)} cfs). {d.horizons.some((h: Json) => h.extrapolated) && '* = outside the observed range, so extrapolated.'}</>
+              : 'No stage rating available for this gauge; showing discharge only.'}
+          </p>
+          {d.warnings?.map((w: string) => <p key={w} className="mf-warn"><AlertTriangle size={12} /> {w}</p>)}
+          {d.hindcast && Object.keys(d.hindcast.horizons).length > 0 && <Hindcast h={d.hindcast} />}
+          <div className="mf-actions">
+            <button className="mf-btn" onClick={exportJson}><Download size={13} /> Export in BASINSHIFT format</button>
+          </div>
+          <p className="mf-foot">Research model, not a flood warning. Soil moisture comes from a forecast model and is approximate.</p>
         </div>
-        <p className="mf-foot">Research model, not a flood warning. Soil moisture comes from a forecast model and is approximate.</p>
       </>)}
     </section>
   );
