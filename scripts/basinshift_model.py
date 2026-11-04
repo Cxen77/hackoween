@@ -167,12 +167,14 @@ def point_metrics(y, p, stations):
             'basins': int(len(bt))}
 
 
-def crps_from_quantiles(y, quant):
+def crps_from_quantiles(y, quant, quants=None):
+    if quants is None:
+        quants = [0.05, 0.95] if quant.shape[1] == 2 else QUANTILES[:quant.shape[1]]
     loss = 0.0
-    for j, q in enumerate(QUANTILES):
+    for j, q in enumerate(quants):
         diff = y - quant[:, j]
         loss += np.mean(np.maximum(q * diff, (q - 1) * diff))
-    return float(2 * loss / len(QUANTILES))
+    return float(2 * loss / len(quants))
 
 
 def bootstrap_ratio(y, p_model, p_base, stations, n=300, seed=0):
