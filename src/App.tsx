@@ -110,6 +110,8 @@ export default function App() {
     } catch {}
     return 3;
   });
+  // The simulation follows the live water level by default; moving the slider yourself turns that off for this river.
+  const followLive = useRef<boolean>(!(() => { try { return new URLSearchParams(window.location.search).has('rise'); } catch { return false; } })());
   const [corridorSpan, setCorridorSpan] = useState<number>(28000);
   const [grid, setGrid] = useState<Grid | null>(null);
   const [gridError, setGridError] = useState('');
@@ -192,6 +194,7 @@ export default function App() {
     setDay(0);
     setPlaying(false);
     const prof = riverProfiles[s.id] || defaultRiverProfile;
+    followLive.current = true;
     setRise(prof.defaultRise);
     setCorridorSpan(prof.defaultReach);
   };
@@ -659,6 +662,12 @@ export default function App() {
     return null;
   }, [gauge.data, forecast.data, modelLive, profile.minRise, profile.maxRise]);
   const liveStageMetres = liveLevel?.m ?? null;
+  useEffect(() => {
+    if (liveStageMetres == null || !followLive.current || playing) return;
+    if (gauge.loading || forecast.loading) return; // wait for the fresh readings so the slider does not flicker
+    setRise(liveStageMetres);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveStageMetres, gauge.loading, forecast.loading, station.id]);
 
   const filtered = stations.filter(s => {
     const matchesQuery = `${s.name} ${s.river} ${s.region}`.toLowerCase().includes(query.toLowerCase());
@@ -1115,6 +1124,7 @@ export default function App() {
                 river={station.river}
                 onData={setModelLive}
                 onSimulate={(metres) => {
+                  followLive.current = false;
                   setRise(Math.min(profile.maxRise, Math.max(profile.minRise, Number(metres.toFixed(2)))));
                   setPlaying(false);
                   if (!showSimulation) setShowSimulation(true);
@@ -1124,7 +1134,7 @@ export default function App() {
               <div className="slider-group">
                 <div className="slider-label">
                   <span>Water rise above channel</span>
-                  <strong className="rise-numeric">+{rise.toFixed(profile.step < 0.1 ? 2 : 1)} <span>m</span></strong>
+                  <strong className="rise-numeric">+{rise.toFixed(profile.step < 0.1 ? 2 : 1)} <span>m</span>{liveStageMetres != null && Math.abs(rise - liveStageMetres) < 0.05 && <span className="live-tag" title={liveLevel?.source}>● LIVE</span>}</strong>
                 </div>
                 <div className="slider-track-wrap">
                   <input
@@ -1138,7 +1148,7 @@ export default function App() {
                     style={{
                       background: `linear-gradient(to right, #18181b 0%, #18181b ${sliderProgress}%, #e2e8f0 ${sliderProgress}%, #e2e8f0 100%)`
                     }}
-                    onChange={e => { setRise(Number(e.target.value)); setPlaying(false); }}
+                    onChange={e => { followLive.current = false; setRise(Number(e.target.value)); setPlaying(false); }}
                     aria-label="Water rise above channel"
                   />
                   <div className="slider-ticks-container">
@@ -1147,7 +1157,7 @@ export default function App() {
                         key={t.val}
                         className={`slider-tick ${t.isMajor ? 'major-tick' : 'minor-tick'}`}
                         style={{ left: `calc(11px + (100% - 22px) * ${t.percent / 100})` }}
-                        onClick={() => { setRise(t.val); setPlaying(false); }}
+                        onClick={() => { followLive.current = false; setRise(t.val); setPlaying(false); }}
                         title={`Set to +${t.val}m`}
                       >
                         <span className="tick-line" />
@@ -1282,6 +1292,7 @@ export default function App() {
                   type="button"
                   className="sync-live-btn"
                   onClick={() => {
+                    followLive.current = true;
                     setRise(liveStageMetres);
                     if (!showSimulation) setShowSimulation(true);
                     setPlaying(false);
