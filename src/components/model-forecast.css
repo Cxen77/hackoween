@@ -254,3 +254,5 @@
 .mf-dot-ring { fill: rgba(2, 132, 199, 0.18); stroke: #0284c7; stroke-width: 1; }
 .mf-label { font-size: 10.5px; font-weight: 700; fill: #0369a1; }
 .mf-axis-strong { fill: #0369a1; font-weight: 700; }
+
+.hydro-note { margin: 6px 4px 0; padding: 6px 10px; border-radius: 8px; background: var(--amber-light); border: 1px solid #fde68a; color: #92400e; font-size: 11.5px; line-height: 1.45; }

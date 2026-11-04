@@ -1379,6 +1379,7 @@ export default function App() {
               setAuto={setAuto}
               setRefresh={setRefresh}
               setSources={setSources}
+              modelLive={modelLive}
             />
           </div>
 

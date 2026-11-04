@@ -15,6 +15,8 @@ interface HydrographOutlookProps {
   setAuto: (a: boolean) => void;
   setRefresh: React.Dispatch<React.SetStateAction<number>>;
   setSources: (s: boolean) => void;
+  /** Live data from the FloodCast model server (observed flow + model forecast), or null when unavailable. */
+  modelLive?: any;
 }
 
 const dateLabel = (v: string) => new Date(v + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -50,6 +52,7 @@ export default function HydrographOutlookCard({
   setAuto,
   setRefresh,
   setSources,
+  modelLive,
 }: HydrographOutlookProps) {
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -104,25 +107,28 @@ export default function HydrographOutlookCard({
     );
   }
 
-  // 3 Distinct Calibrated Hydrological Series
-  // 1. GloFAS Forecast (European Centre streamflow ensemble)
+  // Three series, all real:
+  //  1. GloFAS: the global river model's forecast at the map point (Open-Meteo flood API).
+  //  2. FloodCast model: our trained model's forecast from the gauge's own recent observed flow and the weather forecast,
+  //     available on the days it predicts (+1, +3, +7 days after the latest reading), with its 90% interval.
+  //  3. Latest observed flow held flat (the persistence baseline). Nothing is interpolated or invented.
+  const times = forecast.data?.daily.time ?? [];
+  const toUnit = unit === 'cfs' ? 1 : 1 / 35.3146667; // model and observed values arrive in cfs
   const glofasSeries = rawValues.map(v => (v == null ? 0 : v * scale));
-  
-  // 2. ML Model Prediction (FloodCast gradient-boosted streamflow estimate with causal lag modeling)
-  const mlSeries = rawValues.map((v, i) => {
-    if (v == null) return 0;
-    const wave = 0.045 * Math.sin(i * 1.2 + 0.5);
-    return Math.max(0, v * (1.02 + wave) * scale);
+  const mlVal: (number | null)[] = times.map(() => null);
+  const mlLo: (number | null)[] = times.map(() => null);
+  const mlHi: (number | null)[] = times.map(() => null);
+  (modelLive?.horizons ?? []).forEach((h: any) => {
+    const i = times.indexOf(h.target_date);
+    if (i >= 0) {
+      mlVal[i] = h.point_cfs * toUnit;
+      mlLo[i] = h.lo_cfs == null ? null : h.lo_cfs * toUnit;
+      mlHi[i] = h.hi_cfs == null ? null : h.hi_cfs * toUnit;
+    }
   });
-
-  // 3. 10-Year Climatological Mean (Baseline seasonal normal flow)
-  const baselineSeries = rawValues.map((v, i) => {
-    if (v == null) return 0;
-    const seasonal = 0.78 + 0.06 * Math.cos(i * 0.9);
-    return Math.max(0, v * seasonal * scale);
-  });
-
-  const allVals = [...glofasSeries, ...mlSeries, ...baselineSeries];
+  const hasModel = mlVal.some(v => v !== null);
+  const observedNow: number | null = modelLive?.latest_observed_cfs != null ? modelLive.latest_observed_cfs * toUnit : null;
+  const allVals = [...glofasSeries, ...mlVal, ...mlHi, ...(observedNow !== null ? [observedNow] : [])].filter((v): v is number => v !== null && Number.isFinite(v));
   const peakVal = Math.max(...allVals) * 1.15 || 1;
 
   // Chart Geometry (viewBox: 800 x 280)
@@ -140,12 +146,16 @@ export default function HydrographOutlookCard({
   const getY = (val: number) => padTop + plotH - (val / peakVal) * plotH;
 
   const ptsGlofas: [number, number][] = glofasSeries.map((v, i) => [getX(i), getY(v)]);
-  const ptsML: [number, number][] = mlSeries.map((v, i) => [getX(i), getY(v)]);
-  const ptsBaseline: [number, number][] = baselineSeries.map((v, i) => [getX(i), getY(v)]);
-
+  const mlIdx = mlVal.map((v, i) => (v === null ? -1 : i)).filter(i => i >= 0);
+  const ptsML: [number, number][] = mlIdx.map(i => [getX(i), getY(mlVal[i] as number)]);
+  const line = (pts: [number, number][]) => pts.map((p, k) => `${k ? 'L' : 'M'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+  const bandIdx = mlIdx.filter(i => mlLo[i] !== null && mlHi[i] !== null);
+  const pathBand = bandIdx.length > 1
+    ? `${line(bandIdx.map(i => [getX(i), getY(mlHi[i] as number)] as [number, number]))} ${[...bandIdx].reverse().map(i => `L${getX(i).toFixed(1)},${getY(mlLo[i] as number).toFixed(1)}`).join(' ')} Z`
+    : '';
   const pathGlofas = getCurvedPath(ptsGlofas);
-  const pathML = getCurvedPath(ptsML);
-  const pathBaseline = getCurvedPath(ptsBaseline);
+  const pathML = ptsML.length > 1 ? line(ptsML) : '';
+  const pathBaseline = observedNow !== null ? `M${getX(0).toFixed(1)},${getY(observedNow).toFixed(1)} L${getX(count - 1).toFixed(1)},${getY(observedNow).toFixed(1)}` : '';
 
   // Active or hovered day
   const activeIdx = hoverIndex !== null ? hoverIndex : day;
@@ -202,11 +212,11 @@ export default function HydrographOutlookCard({
       <div className="forecast-summary">
         <div className="summary-left">
           <strong className="forecast-metric-val">
-            {number(glofasSeries[day])}
+            {number(mlVal[day] !== null ? (mlVal[day] as number) : glofasSeries[day])}
             <small> {unit}</small>
           </strong>
           <span className="forecast-date">
-            {activeDateStr ? fullDateLabel(activeDateStr) : 'Today'}
+            {activeDateStr ? fullDateLabel(activeDateStr) : 'Today'} · {mlVal[day] !== null ? 'FloodCast model' : 'GloFAS'}
           </span>
         </div>
         <div className="weather-summary">
@@ -250,27 +260,19 @@ export default function HydrographOutlookCard({
           })}
 
           {/* 3 Spline Curves matching the Reference Image */}
-          {/* 1. 10-Year Climatological Mean (Dark Slate) */}
-          <path
-            d={pathBaseline}
-            fill="none"
-            stroke="#475569"
-            strokeWidth="2.75"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="curve-baseline"
-          />
+          {/* 1. Latest observed flow held flat (persistence baseline, dark slate) */}
+          {pathBaseline && (
+            <path d={pathBaseline} fill="none" stroke="#475569" strokeWidth="2" strokeDasharray="7 6" strokeLinecap="round" className="curve-baseline" />
+          )}
 
-          {/* 2. ML Model Prediction (Vibrant Orange / Amber) */}
-          <path
-            d={pathML}
-            fill="none"
-            stroke="#f97316"
-            strokeWidth="3.25"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="curve-ml"
-          />
+          {/* 2. FloodCast model: 90% interval and forecast, drawn only where the model predicts */}
+          {pathBand && <path d={pathBand} fill="rgba(249, 115, 22, 0.16)" stroke="none" />}
+          {pathML && (
+            <path d={pathML} fill="none" stroke="#f97316" strokeWidth="3.25" strokeLinecap="round" strokeLinejoin="round" className="curve-ml" />
+          )}
+          {ptsML.map((p, k) => (
+            <circle key={k} cx={p[0]} cy={p[1]} r="4.5" fill="#f97316" stroke="#ffffff" strokeWidth="1.5" />
+          ))}
 
           {/* 3. GloFAS Forecast (River Cyan / Primary Blue) */}
           <path
@@ -295,24 +297,10 @@ export default function HydrographOutlookCard({
           />
 
           {/* Circular Marker Rings at Active Point on Each Curve */}
-          {/* Baseline Marker */}
-          <circle
-            cx={activeX}
-            cy={ptsBaseline[activeIdx][1]}
-            r="5.5"
-            fill="#ffffff"
-            stroke="#475569"
-            strokeWidth="3"
-          />
-          {/* ML Model Marker */}
-          <circle
-            cx={activeX}
-            cy={ptsML[activeIdx][1]}
-            r="5.5"
-            fill="#ffffff"
-            stroke="#f97316"
-            strokeWidth="3"
-          />
+          {/* FloodCast marker at the active day, only if the model predicts that day */}
+          {mlVal[activeIdx] !== null && (
+            <circle cx={activeX} cy={getY(mlVal[activeIdx] as number)} r="7" fill="none" stroke="#f97316" strokeWidth="2.5" />
+          )}
           {/* GloFAS Marker */}
           <circle
             cx={activeX}
@@ -372,19 +360,42 @@ export default function HydrographOutlookCard({
               <span className="tooltip-name">GloFAS Forecast:</span>
               <strong className="tooltip-val">{number(glofasSeries[activeIdx])} {unit}</strong>
             </div>
-            <div className="tooltip-row">
-              <span className="tooltip-ring ring-orange" />
-              <span className="tooltip-name">ML Prediction:</span>
-              <strong className="tooltip-val">{number(mlSeries[activeIdx])} {unit}</strong>
-            </div>
-            <div className="tooltip-row">
-              <span className="tooltip-ring ring-slate" />
-              <span className="tooltip-name">10-Yr Baseline:</span>
-              <strong className="tooltip-val">{number(baselineSeries[activeIdx])} {unit}</strong>
-            </div>
+            {hasModel && (
+              <div className="tooltip-row">
+                <span className="tooltip-ring ring-orange" />
+                <span className="tooltip-name">FloodCast model:</span>
+                <strong className="tooltip-val">
+                  {mlVal[activeIdx] === null ? 'not predicted for this day' : `${number(mlVal[activeIdx] as number)} ${unit}`}
+                </strong>
+              </div>
+            )}
+            {hasModel && mlVal[activeIdx] !== null && mlLo[activeIdx] !== null && (
+              <div className="tooltip-row">
+                <span className="tooltip-name">90% range:</span>
+                <strong className="tooltip-val">{number(mlLo[activeIdx] as number)}–{number(mlHi[activeIdx] as number)} {unit}</strong>
+              </div>
+            )}
+            {observedNow !== null && (
+              <div className="tooltip-row">
+                <span className="tooltip-ring ring-slate" />
+                <span className="tooltip-name">Latest observed:</span>
+                <strong className="tooltip-val">{number(observedNow)} {unit}</strong>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {!hasModel && (
+        <p className="hydro-note">
+          {modelLive ? 'The FloodCast model predicts +1, +3 and +7 days after its latest reading; none of those days falls inside this chart.' : 'No FloodCast model data for this river yet (the model server may not be running, or the river has no live flow feed), so only GloFAS is shown.'}
+        </p>
+      )}
+      {observedNow !== null && glofasSeries.length > 0 && (glofasSeries[0] < observedNow / 3 || glofasSeries[0] > observedNow * 3) && (
+        <p className="hydro-note">
+          GloFAS differs a lot from this gauge's observed flow here (its grid cell may not sit on the main channel). The FloodCast model uses the gauge's own readings.
+        </p>
+      )}
 
       {/* Centered Bottom Legend Matching the Reference Image */}
       <div className="hydrograph-legend-row">
@@ -392,21 +403,25 @@ export default function HydrographOutlookCard({
           <span className="legend-ring ring-blue" />
           <span className="legend-label">GloFAS Forecast</span>
         </div>
-        <div className="legend-item" onClick={() => setDay(activeIdx)}>
-          <span className="legend-ring ring-orange" />
-          <span className="legend-label">ML Prediction</span>
-        </div>
-        <div className="legend-item" onClick={() => setDay(activeIdx)}>
-          <span className="legend-ring ring-slate" />
-          <span className="legend-label">10-Yr Baseline</span>
-        </div>
+        {hasModel && (
+          <div className="legend-item" onClick={() => setDay(activeIdx)}>
+            <span className="legend-ring ring-orange" />
+            <span className="legend-label">FloodCast Model</span>
+          </div>
+        )}
+        {observedNow !== null && (
+          <div className="legend-item" onClick={() => setDay(activeIdx)}>
+            <span className="legend-ring ring-slate" />
+            <span className="legend-label">Latest Observed Flow</span>
+          </div>
+        )}
       </div>
 
       {/* Footer Attribution & Controls */}
       <div className="forecast-footer">
         <span className="footer-source">
           <span className="chart-key" />
-          Multi-Model Hydrograph · Copernicus GloFAS & FloodCast ML Telemetry
+          Copernicus GloFAS · FloodCast model on observed USGS / NWIC flow
         </span>
         <button
           type="button"
