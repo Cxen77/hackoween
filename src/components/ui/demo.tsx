@@ -7,6 +7,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
+export { default as DemoGlacier } from "@/components/ui/ridgeline-demo";
+
 export function SidebarDemo() {
   const links = [
     {
