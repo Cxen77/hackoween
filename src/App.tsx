@@ -19,6 +19,7 @@ import HydrographOutlookCard from './components/HydrographOutlookCard';
 import ModelPage from './components/ModelPage';
 import RidgelineDitherFooter from '@/components/ui/ridgeline-dither-footer';
 import RidgeMark from '@/components/ui/RidgeMark';
+import { LongPressButton } from '@/components/ui/long-press';
 import { evaluateMonitor, validBoundary, validMonitor } from './geofence.mjs';
 import type { AreaMonitor, MonitorResult } from './monitorTypes';
 import type { FeatureCollection, Polygon, LineString } from 'geojson';
@@ -1170,17 +1171,51 @@ export default function App() {
                 </div>
               </div>
 
-              <button
-                className="primary-button sim-btn"
+              <LongPressButton
                 disabled={gridLoading || !!gridError}
+                active={playing}
+                className="w-full"
+                onLongPress={() => {
+                  if (gridLoading || !!gridError) return;
+                  if (!showSimulation) {
+                    setShowSimulation(true);
+                    setPlaying(true);
+                  } else {
+                    setPlaying(prev => !prev);
+                  }
+                }}
                 onClick={() => {
-                  if (!showSimulation) setShowSimulation(true);
-                  else setPlaying(!playing);
+                  if (gridLoading || !!gridError) return;
+                  if (!showSimulation) {
+                    setShowSimulation(true);
+                    setPlaying(true);
+                  } else {
+                    setPlaying(prev => !prev);
+                  }
                 }}
               >
-                {gridLoading ? <RefreshCw className="spin" size={15} /> : playing ? <Pause size={15} /> : <Play size={15} />}
-                <span>{gridLoading ? 'Loading elevation…' : playing ? 'Pause scenario' : showSimulation ? 'Animate water rise' : 'Enable flood scenario'}</span>
-              </button>
+                {gridLoading ? (
+                  <>
+                    <RefreshCw className="spin" size={14} />
+                    <span>Loading elevation…</span>
+                  </>
+                ) : playing ? (
+                  <>
+                    <Pause size={14} />
+                    <span>Pause scenario</span>
+                  </>
+                ) : showSimulation ? (
+                  <>
+                    <Play size={14} />
+                    <span>Animate water rise</span>
+                  </>
+                ) : (
+                  <>
+                    <Play size={14} />
+                    <span>Enable flood scenario</span>
+                  </>
+                )}
+              </LongPressButton>
 
               {gridError ? (
                 <p className="inline-error">
