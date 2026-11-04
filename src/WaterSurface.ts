@@ -96,8 +96,12 @@ export class WaterSurface implements CustomLayerInterface {
     gl.uniformMatrix4fv(gl.getUniformLocation(this.program,'u_matrix'),false,new Float32Array(matrix));
     gl.uniform1f(gl.getUniformLocation(this.program,'u_exaggeration'),this.exaggeration);
     gl.uniform1f(gl.getUniformLocation(this.program,'u_time'),this.reducedMotion.matches?0:performance.now()/1000);
-    gl.disable(gl.CULL_FACE);gl.disable(gl.STENCIL_TEST);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);
-    gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);
+    gl.disable(gl.CULL_FACE);gl.disable(gl.STENCIL_TEST);
+    // Flat raster layers use sublayer depth ranges; a plan-view overlay must
+    // not compare against those as if they were elevated terrain.
+    if(this.exaggeration===0)gl.disable(gl.DEPTH_TEST);else gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+    gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(true);
     gl.drawArrays(gl.TRIANGLES,0,this.count);
     gl.depthMask(saved.depthMask);gl.depthFunc(saved.depthFunc);
     for(const [cap,enabled] of [[gl.CULL_FACE,saved.cull],[gl.STENCIL_TEST,saved.stencil],[gl.DEPTH_TEST,saved.depth],[gl.BLEND,saved.blend]] as const)

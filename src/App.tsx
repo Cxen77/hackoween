@@ -322,7 +322,7 @@ export default function App() {
             5.0, '#1d4ed8',
             8.0, '#1e1b4b'
           ],
-          'fill-opacity': 0,
+          'fill-opacity': terrainMode.current ? 0 : .65,
           'fill-antialias': true
         }
       });
@@ -350,9 +350,6 @@ export default function App() {
           'line-blur': 0.5
         }
       });
-      waterSurface.current = new WaterSurface();
-      waterSurface.current.exaggeration = terrainMode.current ? 1.5 : 0;
-      m.addLayer(waterSurface.current);
       m.addSource('monitored-areas', { type: 'geojson', data: empty });
       m.addLayer({
         id: 'monitor-fill',
@@ -367,6 +364,11 @@ export default function App() {
         source: 'monitored-areas',
         paint: { 'line-color': '#fbbf24', 'line-width': 2.5, 'line-dasharray': [3, 2] }
       });
+      // Keep elevated water after all terrain-draped layers, which otherwise
+      // repaint the opaque ground over a transparent custom surface.
+      waterSurface.current = new WaterSurface();
+      waterSurface.current.exaggeration = terrainMode.current ? 1.5 : 0;
+      m.addLayer(waterSurface.current);
       setReady(true);
       setRefresh(n => n + 1);
     });
@@ -545,7 +547,8 @@ export default function App() {
     const waterRise = animatedRise;
     const result = floodFeatures(grid, waterRise);
     (m.getSource('flood') as GeoJSONSource).setData(result.geojson);
-    waterSurface.current?.setSurface(grid, result.surface);
+    waterSurface.current?.setSurface(is3d ? grid : null, result.surface);
+    m.setPaintProperty('flood-fill', 'fill-opacity', is3d ? 0 : .65);
     setScenarioCells(result.geojson);
     setScenarioHeight(waterRise);
     setFloodStats({
@@ -556,7 +559,7 @@ export default function App() {
       gradient: result.gradient,
       boundaryReached: result.boundaryReached
     });
-  }, [grid, rise, playing, animatedRise, showSimulation, ready, refresh]);
+  }, [grid, rise, playing, animatedRise, showSimulation, ready, refresh, is3d]);
 
   useEffect(() => {
     try {
@@ -1100,16 +1103,16 @@ export default function App() {
               {showSimulation && (
                 <div className="depth-legend">
                   <div className="legend-header">
-                    <span>Simulated Depth</span>
-                    <small>{(corridorSpan / 1000).toFixed(0)} km reach · 1.5× relief</small>
+                    <span>{is3d ? 'Simulated depth' : 'Flood extent'}</span>
+                    <small>{(corridorSpan / 1000).toFixed(0)} km window{is3d ? ' · 1.5× relief' : ''}</small>
                   </div>
-                  <div className="legend-bar" />
-                  <div className="legend-ticks">
+                  {is3d && <div className="legend-bar" />}
+                  {is3d && <div className="legend-ticks">
                     <span>0m</span>
                     <span>2m</span>
                     <span>5m</span>
                     <span>10m+</span>
-                  </div>
+                  </div>}
                 </div>
               )}
             </section>

@@ -3,10 +3,10 @@
   "timezone": "Asia/Calcutta",
   "scope": "River-connected stage scenario and 3D rendering; no hydraulic-accuracy claim",
   "automated": {
-    "javascript_tests_passed": 30,
-    "new_river_simulation_tests": 8,
+    "javascript_tests_passed": 31,
+    "new_river_simulation_tests": 9,
     "typescript_vite_build": "passed",
-    "checks": ["terrain barriers", "sloping channel", "monotonic extent and depth", "interpolated shoreline", "mapped channel selection", "missing terrain and invalid input", "bridge outlier", "dry island"]
+    "checks": ["terrain barriers", "sloping channel", "monotonic extent and depth", "interpolated shoreline", "mapped channel selection", "missing terrain and invalid input", "bridge outlier", "dry island", "actual TypeScript plan-view GeoJSON adapter"]
   },
   "browser": {
     "location": "Colorado River, Austin, USGS 08158000",
@@ -18,7 +18,7 @@
     "target_during_pause_m": 3.0,
     "pause_rechecked": "remained at +0.8 m after independent checks",
     "reset": "0 square kilometres additional area and 0 metres land depth",
-    "rendering": "elevated water visible over terrain; depth shading; state cleanup; WebGL draw reported error 0 during development",
+    "rendering": "elevated water visible over terrain after all draped layers, with depth writes; plan view uses visible GeoJSON footprint; WebGL draw reported error 0 during development",
     "edge_truncation_notice": "visible"
   },
   "limitations": ["Reference river surface inferred from DEM, not calibrated to gauge datum", "No bathymetry, defenses, drains, reservoir operations or shallow-water routing", "Illustrative playback duration is not flood arrival time", "Mapped channel and DEM resolution affect extent and depth"]
