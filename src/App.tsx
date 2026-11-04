@@ -148,6 +148,37 @@ export default function App() {
     [station.id]
   );
 
+  const sliderTicks = useMemo(() => {
+    const min = profile.minRise;
+    const max = profile.maxRise;
+    const range = max - min;
+    let majorStep = 2;
+    let minorStep = 1;
+    if (range <= 6) {
+      majorStep = 1;
+      minorStep = 0.5;
+    } else if (range <= 14) {
+      majorStep = 2;
+      minorStep = 1;
+    } else if (range <= 24) {
+      majorStep = 4;
+      minorStep = 2;
+    } else {
+      majorStep = 5;
+      minorStep = 2.5;
+    }
+
+    const ticks: { val: number; isMajor: boolean; percent: number }[] = [];
+    for (let v = 0; v <= max + 0.001; v += minorStep) {
+      const isMajor = Math.abs(v % majorStep) < 0.001 || Math.abs(v - max) < 0.001;
+      const percent = Math.min(100, Math.max(0, ((v - min) / (max - min)) * 100));
+      ticks.push({ val: Math.round(v * 10) / 10, isMajor, percent });
+    }
+    return ticks;
+  }, [profile.minRise, profile.maxRise]);
+
+  const sliderProgress = Math.min(100, Math.max(0, ((rise - profile.minRise) / (profile.maxRise - profile.minRise)) * 100));
+
   const pick = (s: Station) => {
     setStation(s);
     setQuery('');
@@ -1099,18 +1130,35 @@ export default function App() {
                   <span>Water rise above channel</span>
                   <strong className="rise-numeric">+{rise.toFixed(profile.step < 0.1 ? 2 : 1)} <span>m</span></strong>
                 </div>
-                <input
-                  id="water-rise"
-                  type="range"
-                  min={profile.minRise}
-                  max={profile.maxRise}
-                  step={profile.step}
-                  value={rise}
-                  onChange={e => { setRise(Number(e.target.value)); setPlaying(false); }}
-                />
-                <div className="range-labels">
-                  <span>+{profile.minRise.toFixed(profile.step < 0.1 ? 2 : 1)} m (Low flow)</span>
-                  <span>+{profile.maxRise.toFixed(1)} m (Extreme)</span>
+                <div className="slider-track-wrap">
+                  <input
+                    id="water-rise"
+                    type="range"
+                    className="reference-slider"
+                    min={profile.minRise}
+                    max={profile.maxRise}
+                    step={profile.step}
+                    value={rise}
+                    style={{
+                      background: `linear-gradient(to right, #18181b 0%, #18181b ${sliderProgress}%, #e2e8f0 ${sliderProgress}%, #e2e8f0 100%)`
+                    }}
+                    onChange={e => { setRise(Number(e.target.value)); setPlaying(false); }}
+                    aria-label="Water rise above channel"
+                  />
+                  <div className="slider-ticks-container">
+                    {sliderTicks.map(t => (
+                      <div
+                        key={t.val}
+                        className={`slider-tick ${t.isMajor ? 'major-tick' : 'minor-tick'}`}
+                        style={{ left: `calc(11px + (100% - 22px) * ${t.percent / 100})` }}
+                        onClick={() => { setRise(t.val); setPlaying(false); }}
+                        title={`Set to +${t.val}m`}
+                      >
+                        <span className="tick-line" />
+                        {t.isMajor && <span className="tick-label">{t.val}</span>}
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <div className="river-context-note">
                   {profile.contextNote}
