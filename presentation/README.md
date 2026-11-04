@@ -6,4 +6,4 @@ V2 contains the validated regional-weather ensemble and labels 2025 as a previou
 
 The original `FLOODCAST.pdf`/`.pptx` files are the earlier V1 baseline (RMSE52,695.26, R²0.890945). They remain available for comparison and should not be presented as current scores.
 
-PDF slides are image-backed renders; the PPTX retains editable text and the native metric table. Team: Straw_Hats (see README); speaker notes in the deck still say members pending.
+PDF slides are image-backed renders; the PPTX retains editable text and the native metric table. Team: Straw_Hats (see README); the team and members are on slide 1 of the v2 deck.
