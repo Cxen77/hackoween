@@ -3119,33 +3119,35 @@ svg {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-/* Basins List */
+/* Basins List with generous height */
 .acet-river-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   overflow-y: auto;
-  max-height: calc(100vh - 430px);
+  max-height: calc(100vh - 210px);
   padding-right: 2px;
 }
 
+/* River item with the exact clean Aceternity typography & aesthetics */
 .acet-river-item {
   display: flex;
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 8px 10px;
+  padding: 9px 10px;
   border-radius: 6px;
   background: transparent;
   border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: left;
+  user-select: none;
 }
 
 .acet-river-item:hover {
   background: #f4f4f5;
-  transform: translateX(2px);
+  transform: translateX(3px);
 }
 
 .acet-river-item.selected {
@@ -3153,24 +3155,19 @@ svg {
   border-color: #e4e4e7;
 }
 
+/* Pure outline icon without heavy box */
 .acet-river-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  background: #f4f4f5;
-  color: #52525b;
-  display: grid;
-  place-items: center;
+  color: #3f3f46;
   flex-shrink: 0;
-  transition: all 0.15s ease;
+  transition: color 0.15s ease, transform 0.15s ease;
 }
 
 .acet-river-item:hover .acet-river-icon {
   color: #09090b;
+  transform: translateX(1px);
 }
 
 .acet-river-item.selected .acet-river-icon {
-  background: #e0f2fe;
   color: #0284c7;
 }
 
@@ -3179,15 +3176,22 @@ svg {
   min-width: 0;
 }
 
+/* Clean 14px 500 font matching nav buttons */
 .acet-river-title {
   display: block;
-  font-family: var(--font-acet);
-  font-size: 13.5px;
+  font-family: var(--font-sans);
+  font-size: 14px;
   font-weight: 500;
-  color: #27272a;
+  color: #18181b;
+  letter-spacing: -0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: color 0.15s ease;
+}
+
+.acet-river-item:hover .acet-river-title {
+  color: #09090b;
 }
 
 .acet-river-item.selected .acet-river-title {
@@ -3199,9 +3203,11 @@ svg {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
   color: #71717a;
-  margin-top: 1px;
+  margin-top: 1.5px;
 }
 
 .acet-country-tag {
@@ -3649,4 +3655,32 @@ svg {
   .pill-navbar-wrapper {
     padding: 8px 12px;
   }
+}
+
+
+/* Sidebar Brand Row */
+.sidebar-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 2px 14px;
+  border-bottom: 1px solid #f4f4f5;
+  margin-bottom: 12px;
+}
+
+.sidebar-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sidebar-brand-title {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 700;
+  color: #09090b;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }

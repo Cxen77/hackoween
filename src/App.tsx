@@ -4,9 +4,9 @@ import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import type { GeoJSONSource, StyleSpecification } from 'maplibre-gl';
 import {
   Activity, Anchor, ArrowDownToLine, ArrowUpRight, Check, ChevronDown, ChevronRight,
-  CircleHelp, CloudRain, Compass, Database, Droplets, Expand, Layers, LayoutDashboard, MapPin,
-  Minus, Mountain, PanelLeftClose, PanelLeftOpen, Pause, Play, Plus, Radio, RefreshCw, Search, Settings, Shield, ShieldAlert,
-  Sun, Sunrise, Trees, UserCog, Waves, X
+  CircleHelp, CloudRain, Compass, Database, Droplets, Expand, Layers, MapPin,
+  Minus, Mountain, PanelLeftClose, PanelLeftOpen, Pause, Play, Plus, Radio, RefreshCw, Search, Shield, ShieldAlert,
+  Sun, Sunrise, Trees, Waves, X
 } from 'lucide-react';
 import { Sidebar, SidebarBody } from '@/components/ui/sidebar';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -767,19 +767,19 @@ export default function App() {
           <SidebarBody className="floodcast-sidebar-body">
             {sidebarOpen ? (
               <div className="sidebar-expanded-content">
-                {/* Brand Header */}
-                <div className="acet-brand-row">
+                {/* Brand Header: Our FloodCast logo & name */}
+                <div className="sidebar-brand-row">
                   <div
-                    className="acet-brand-logo"
+                    className="sidebar-brand-logo"
                     onClick={() => {
                       setModelOpen(false);
                       setSources(false);
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    title="FloodCast"
+                    title="FloodCast Hydrological Intelligence"
                   >
-                    <RidgeMark width={26} height={18} />
-                    <span className="acet-brand-text">FloodCast</span>
+                    <RidgeMark width={28} height={20} />
+                    <span className="sidebar-brand-title">FloodCast</span>
                   </div>
                   <button
                     type="button"
@@ -791,48 +791,6 @@ export default function App() {
                     <PanelLeftClose size={18} />
                   </button>
                 </div>
-
-                {/* Primary Aceternity Navigation */}
-                <nav className="acet-nav-group" aria-label="Main Navigation">
-                  <button
-                    type="button"
-                    className={`acet-nav-item ${!modelOpen && !sources ? 'active' : ''}`}
-                    onClick={() => {
-                      setModelOpen(false);
-                      setSources(false);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                  >
-                    <LayoutDashboard size={20} className="acet-nav-icon" />
-                    <span className="acet-nav-text">Dashboard</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`acet-nav-item ${modelOpen ? 'active' : ''}`}
-                    onClick={() => {
-                      setModelOpen(true);
-                      setSources(false);
-                    }}
-                  >
-                    <UserCog size={20} className="acet-nav-icon" />
-                    <span className="acet-nav-text">Profile</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`acet-nav-item ${sources ? 'active' : ''}`}
-                    onClick={() => {
-                      setSources(true);
-                      setModelOpen(false);
-                    }}
-                  >
-                    <Settings size={20} className="acet-nav-icon" />
-                    <span className="acet-nav-text">Settings</span>
-                  </button>
-                </nav>
-
-                <div className="acet-divider" />
 
                 {/* Monitored Basins Section */}
                 <div className="acet-section-heading">
@@ -888,25 +846,23 @@ export default function App() {
                         key={s.id}
                         onClick={() => pick(s)}
                       >
-                        <span className="acet-river-icon">
-                          <RiverIcon size={18} />
-                        </span>
+                        <RiverIcon size={20} className="acet-river-icon" />
                         <span className="acet-river-info">
                           <span className="acet-river-title">{s.river}</span>
                           <span className="acet-river-sub">
-                            {s.name}
+                            <span>{s.name}</span>
                             <span className="acet-country-tag">{s.region.includes('India') ? 'IN' : 'US'}</span>
-                            {s.usgs && <span className="acet-live-dot" title="USGS Real-time Telemetry" />}
+                            {s.usgs && <span className="acet-live-dot" title="USGS Water Gauge" />}
                           </span>
                         </span>
-                        <ChevronRight size={14} className="acet-chevron" />
+                        <ChevronRight size={15} className="acet-chevron" />
                       </button>
                     );
                   })}
 
                   {places.map(s => (
                     <button className="acet-river-item" key={s.id} onClick={() => pick(s)}>
-                      <span className="acet-river-icon"><MapPin size={18} /></span>
+                      <MapPin size={20} className="acet-river-icon" />
                       <span className="acet-river-info">
                         <span className="acet-river-title">{s.river}</span>
                         <span className="acet-river-sub">Geocoded location</span>
@@ -921,23 +877,6 @@ export default function App() {
                     </div>
                   )}
                 </div>
-
-                {/* Footer User Profile matching Manu Arora in reference image */}
-                <div className="acet-sidebar-footer">
-                  <button
-                    type="button"
-                    className="acet-user-profile"
-                    onClick={() => setSources(true)}
-                    title="Manu Arora (Hydrology Lead / Acet Labs) — Click for Methodology"
-                  >
-                    <img
-                      src="/manu_avatar.png"
-                      alt="Manu Arora"
-                      className="acet-user-avatar"
-                    />
-                    <span className="acet-user-name">Manu Arora</span>
-                  </button>
-                </div>
               </div>
             ) : (
               <div className="sidebar-collapsed-content">
@@ -946,7 +885,7 @@ export default function App() {
                   onClick={() => setSidebarOpen(true)}
                   title="Expand FloodCast Sidebar"
                 >
-                  <RidgeMark width={24} height={17} />
+                  <RidgeMark width={26} height={18} />
                 </div>
 
                 <button
@@ -958,48 +897,6 @@ export default function App() {
                 >
                   <PanelLeftOpen size={18} />
                 </button>
-
-                <div className="collapsed-divider" />
-
-                {/* Aceternity Nav Icons */}
-                <div className="collapsed-nav-group">
-                  <button
-                    type="button"
-                    className={`collapsed-icon-btn ${!modelOpen && !sources ? 'active' : ''}`}
-                    title="Dashboard"
-                    onClick={() => {
-                      setModelOpen(false);
-                      setSources(false);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                  >
-                    <LayoutDashboard size={18} />
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`collapsed-icon-btn ${modelOpen ? 'active' : ''}`}
-                    title="Profile & Hydrology Model"
-                    onClick={() => {
-                      setModelOpen(true);
-                      setSources(false);
-                    }}
-                  >
-                    <UserCog size={18} />
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`collapsed-icon-btn ${sources ? 'active' : ''}`}
-                    title="Settings & Data Provenance"
-                    onClick={() => {
-                      setSources(true);
-                      setModelOpen(false);
-                    }}
-                  >
-                    <Settings size={18} />
-                  </button>
-                </div>
 
                 <div className="collapsed-divider" />
 
@@ -1022,27 +919,11 @@ export default function App() {
                         title={`${s.river} (${s.name}) — ${s.usgs ? 'USGS Live' : 'GloFAS'}`}
                         onClick={() => pick(s)}
                       >
-                        <RiverIcon size={18} />
+                        <RiverIcon size={19} />
                         {s.usgs && <span className="collapsed-live-dot" />}
                       </button>
                     );
                   })}
-                </div>
-
-                {/* Collapsed Avatar at bottom */}
-                <div className="collapsed-bottom">
-                  <button
-                    type="button"
-                    className="collapsed-avatar-btn"
-                    title="Manu Arora (Operator Profile & Methodology)"
-                    onClick={() => setSources(true)}
-                  >
-                    <img
-                      src="/manu_avatar.png"
-                      alt="Manu Arora"
-                      className="acet-user-avatar collapsed-avatar"
-                    />
-                  </button>
                 </div>
               </div>
             )}
