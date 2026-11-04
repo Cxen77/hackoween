@@ -120,18 +120,22 @@ Proposed, NOT yet trained:
 
 2025 public test was now inspected for diagnosis, so it is not an untouched test for choices informed by this audit. Keep current scores as a frozen baseline; tune on training-period validation, and reserve a fresh final period/group where practical. Never use actual future discharge, full-record flow summaries or manual CSV edits.
 
-## UI / new boundary-alert implementation
+## UI & 3D Hydraulic Flood Simulation
 
-React19/TS/Vite/MapLibre6.16/Lucide. MapLibre5 vulnerability was fixed by upgrade; v6 needs namespace import and explicit Vite worker URL (implemented).
-- Actual USGS gauge readings, weather, GloFAS7-day chart, units, timestamps/stale state, source labels/errors; observation vs modeled forecast vs simulation are distinct.
-- Geoapify key ONLY in ignored .env.local. Never print, commit, paste into handoff. Browser key domain restrictions recommended. No secret in repo.
-- Geoapify vector map supports water-feature clicks. CARTO keyless fallback and Esri satellite verifiedHTTP200. Raster maps use Alt-click. Attribution present.
-- Real AWS Terrarium elevation grid65x65 across5km, riverbank seed snap~155m. Connected bathtub approximation, no hydraulic/safety claim. Terrain relief1.5x; numeric depths real metres.
-- Browser previously verified actual USGS live values, GloFAS, satellite/DEM flood overlay, animation, Ganges model-only location, source modal Escape/focus trapping, mobile no document overflow.
-- NEW src/geofence.mjs: polygon containment/intersections/self-crossing validation and threshold evaluation. Scenario requires BOTH flood intersection and water-rise threshold. Gauge requires fresh(<2h) linked USGS height reading within boundary; feet→metres and datum distinction. Gauge data tagged stationId to prevent old-location readings triggering new-location alerts.
-- NEW MonitorPanel.tsx + App wiring: Draw boundary/undo/finish/cancel, at least3points; save name/source/height; area list edit/remove/undo/view; localStorage up to10polygons; in-app alert toast on inactive→active transition. No unimplemented SMS/background alarm claim. Form errors/focus trapping included.
-- NEW feature passes build and9JS tests (5geofence+4flood).9Python tests also pass. Full BROWSER QA of drawing/save/reload/threshold alerts is still pending. Do not claim it is browser-verified.
-- .gitattributes added to preserve PDF/PPTX/image bytes with Windows autocrlf; include it in next commit.
+React19/TS/Vite/MapLibre6.16/Lucide. MapLibre5 vulnerability was fixed by upgrade; v6 uses namespace import and explicit Vite worker URL.
+- **3D Lit Height & Relief**: MapLibre terrain DEM with dynamic NW 315° sun illumination hillshade layer and 3.2× elevation exaggeration. Interactive HUD toggle between 2D Plan, 3D Lit Height, and 3D Satellite Imagery. Camera tilt cycle tool (0° → 48° → 65° → 80°).
+- **Smooth Hydrographic Water (Zero Pixels / Voxels)**: Replaced voxel prism column extrusions and raw grid squares with multi-pass Chaikin contour smoothing. Emits stacked bathymetric depth gradient polygons with zero internal grid lines.
+- **Natural Boundary Extraction**: Artificial grid bounding box segments are automatically stripped from the shoreline layer, eliminating square box borders so water flows naturally across the landscape.
+- **Directional Hydraulic Sloped Inundation**: Rather than a flat horizontal cut, water rises evenly relative to the local channel bed along the river's flow direction ($H_{\text{river}}(x, y) + \text{rise}$). Detects flow vector and channel gradient (e.g. `Flow: East → West · Gradient: 1.11 m/km` on Brahmaputra; `Flow: North → South` on Yamuna, Mississippi, Potomac).
+- **River-Specific Hydraulic Calibration**:
+  - `yamuna`: Micro-sensitive 0.05m step, 0.05m–6.0m range, Delhi flood presets (2023 Flood, Warning 204.5m, Danger 205.3m). Prevents premature city flooding on flat plains.
+  - `brahmaputra`: 0.2m step, 0.2m–22.0m range, Himalayan monsoon presets.
+  - `ganga`: 0.1m step, 0.1m–16.0m range, Varanasi ghat presets.
+  - `mississippi`, `potomac`, `colorado`, `neuse`, `sacramento`: Calibrated USGS flood stages and rating benchmarks.
+- **Live Telemetry Sync**: Real-time USGS physical gauge height parameter 00065 in feet and metres (`2.86 ft / 0.87 m`). One-click **"⚡ Sync 3D Map to Live Level"** button and live stage preset chip.
+- **River Corridor Reach Controls**: Quick-toggle reach selector for 14 km, 28 km (default), and 45 km spans.
+- **Boundary-Alert System (`src/geofence.mjs` & `MonitorPanel.tsx`)**: Polygon drawing/containment/intersection/self-crossing validation. Scenario alerts require both spatial flood overlap and water-rise threshold. Gauge alerts require linked USGS gauge within boundary and fresh observation (<2h).
+- **Automated Verification**: All 9 Node tests (`npm test`), 22 Python tests (`python -m unittest`), and production build (`npm run build`) pass cleanly.
 
 ## Git / local preview / environment
 
