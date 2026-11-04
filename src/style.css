@@ -1315,6 +1315,17 @@ svg {
   color: var(--text-main);
 }
 
+.river-context-note {
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  padding: 5px 8px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  border-left: 2px solid var(--primary);
+}
+
 .preset-chip.live-chip {
   background: rgba(14, 165, 233, 0.08);
   border-color: rgba(14, 165, 233, 0.35);

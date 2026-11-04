@@ -8,8 +8,8 @@ import {
   Minus, Mountain, Pause, Play, Plus, Radio, RefreshCw, Search, ShieldAlert,
   Waves, X
 } from 'lucide-react';
-import { stations, number, forecastUrl, weatherUrl, jsonFetch, fetchGauge, download } from './data';
-import type { Station, Forecast, Weather, Gauge, Remote } from './data';
+import { stations, number, forecastUrl, weatherUrl, jsonFetch, fetchGauge, download, riverProfiles, defaultRiverProfile } from './data';
+import type { Station, Forecast, Weather, Gauge, Remote, RiverHydraulicProfile } from './data';
 import { loadGrid, floodFeatures } from './terrain';
 import type { Grid } from './terrain';
 import MonitorPanel from './MonitorPanel';
@@ -226,12 +226,20 @@ export default function App() {
   const [storageError, setStorageError] = useState('');
   const [floodStats, setFloodStats] = useState({ area: 0, maxDepth: 0, level: 0, flowDirection: '', gradient: 0 });
 
+  const profile = useMemo<RiverHydraulicProfile>(
+    () => riverProfiles[station.id] || defaultRiverProfile,
+    [station.id]
+  );
+
   const pick = (s: Station) => {
     setStation(s);
     setQuery('');
     setPlaces([]);
     setDay(0);
     setPlaying(false);
+    const prof = riverProfiles[s.id] || defaultRiverProfile;
+    setRise(prof.defaultRise);
+    setCorridorSpan(prof.defaultReach);
   };
 
   const toggle3D = (force?: boolean) => {
@@ -1139,7 +1147,7 @@ export default function App() {
                   {liveStageMetres != null && (
                     <button
                       type="button"
-                      className={`preset-chip live-chip ${Math.abs(rise - liveStageMetres) < 0.05 ? 'active-preset' : ''}`}
+                      className={`preset-chip live-chip ${Math.abs(rise - liveStageMetres) < 0.04 ? 'active-preset' : ''}`}
                       onClick={() => { setRise(liveStageMetres); setPlaying(false); if (!showSimulation) setShowSimulation(true); }}
                       title="Set water rise directly to live gauge observation"
                     >
@@ -1147,18 +1155,11 @@ export default function App() {
                       <small>Live Stage</small>
                     </button>
                   )}
-                  {[
-                    { label: '+0.2m', sub: 'Low Flow', val: 0.2 },
-                    { label: '+1m', sub: 'Bankfull', val: 1.0 },
-                    { label: '+3m', sub: 'Moderate', val: 3.0 },
-                    { label: '+7m', sub: 'Major', val: 7.0 },
-                    { label: '+15m', sub: 'Monsoon', val: 15.0 },
-                    { label: '+22m', sub: 'Historic', val: 22.0 }
-                  ].map(p => (
+                  {profile.presets.map(p => (
                     <button
                       key={p.val}
                       type="button"
-                      className={`preset-chip ${Math.abs(rise - p.val) < 0.05 ? 'active-preset' : ''}`}
+                      className={`preset-chip ${Math.abs(rise - p.val) < 0.04 ? 'active-preset' : ''}`}
                       onClick={() => { setRise(p.val); setPlaying(false); if (!showSimulation) setShowSimulation(true); }}
                     >
                       <strong>{p.label}</strong>
@@ -1170,20 +1171,23 @@ export default function App() {
                 <div className="slider-group">
                   <div className="slider-label">
                     <span>Water rise above channel</span>
-                    <strong className="rise-numeric">+{rise.toFixed(1)} <span>m</span></strong>
+                    <strong className="rise-numeric">+{rise.toFixed(profile.step < 0.1 ? 2 : 1)} <span>m</span></strong>
                   </div>
                   <input
                     id="water-rise"
                     type="range"
-                    min="0.1"
-                    max="25"
-                    step="0.1"
+                    min={profile.minRise}
+                    max={profile.maxRise}
+                    step={profile.step}
                     value={rise}
                     onChange={e => { setRise(Number(e.target.value)); setPlaying(false); }}
                   />
                   <div className="range-labels">
-                    <span>+0.1 m (Low stage)</span>
-                    <span>+25.0 m (Extreme monsoon)</span>
+                    <span>+{profile.minRise.toFixed(profile.step < 0.1 ? 2 : 1)} m (Low flow)</span>
+                    <span>+{profile.maxRise.toFixed(1)} m (Extreme)</span>
+                  </div>
+                  <div className="river-context-note">
+                    {profile.contextNote}
                   </div>
                 </div>
 
