@@ -804,12 +804,15 @@ svg {
 .explorer-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 330px;
+  align-items: stretch;
   gap: 20px;
 }
 
 /* 3D Map Card */
 .map-card {
-  height: 520px;
+  height: 100%;
+  min-height: 560px;
+  align-self: stretch;
   position: relative;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -1211,7 +1214,7 @@ svg {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: 16px 18px;
   box-shadow: var(--shadow-sm);
 }
 
@@ -2630,7 +2633,8 @@ input[type=range] {
     grid-template-columns: minmax(0, 1fr) 290px;
   }
   .map-card {
-    height: 480px;
+    height: 100%;
+    min-height: 520px;
   }
 }
 
@@ -2647,7 +2651,8 @@ input[type=range] {
     grid-template-columns: 1fr 1fr;
   }
   .map-card {
-    height: 420px;
+    height: 480px;
+    min-height: 420px;
   }
   .model-numbers {
     grid-template-columns: 1fr 1fr;

@@ -220,6 +220,15 @@ export default function App() {
       return;
     }
 
+    const ro = new ResizeObserver(() => {
+      if (m && !m._removed) {
+        m.resize();
+      }
+    });
+    if (mapNode.current) {
+      ro.observe(mapNode.current);
+    }
+
     let fallback = false;
     m.on('error', e => {
       if (!m.isStyleLoaded() && !fallback && e.error?.message?.includes('geoapify')) {
@@ -346,6 +355,7 @@ export default function App() {
     });
 
     return () => {
+      ro.disconnect();
       m.remove();
       map.current = null;
     };
