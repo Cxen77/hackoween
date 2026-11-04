@@ -276,6 +276,176 @@ svg {
 .workspace {
   display: flex;
   min-height: calc(100vh - 68px);
+  position: relative;
+  align-items: stretch;
+}
+
+/* Collapsible Sidebar Styles */
+.floodcast-sidebar-body {
+  height: 100%;
+  position: sticky;
+  top: 68px;
+  max-height: calc(100vh - 68px);
+  display: flex;
+  flex-direction: column;
+  padding: 18px 14px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+}
+
+.sidebar-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 4px 14px;
+  border-bottom: 1px solid var(--border-light, #f1f5f9);
+  margin-bottom: 14px;
+}
+
+.sidebar-brand-mini h1 {
+  font-size: 18px;
+  font-weight: 750;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.sidebar-collapsed-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: rgba(2, 132, 199, 0.08);
+  color: var(--primary);
+}
+
+.sidebar-collapse-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.sidebar-collapse-toggle:hover {
+  color: var(--text-main);
+  background: var(--bg-hover, #e2e8f0);
+  border-color: var(--border-focus);
+}
+
+.sidebar-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.sidebar-expanded-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Collapsed Icon Rail */
+.sidebar-collapsed-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  flex: 1;
+}
+
+.collapsed-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.collapsed-icon-btn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: rgba(2, 132, 199, 0.08);
+}
+
+.collapsed-divider {
+  width: 28px;
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+.collapsed-river-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.collapsed-station-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  color: var(--text-body);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.collapsed-station-pill:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: rgba(2, 132, 199, 0.06);
+}
+
+.collapsed-station-pill.active {
+  color: var(--primary);
+  background: rgba(2, 132, 199, 0.12);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+.collapsed-live-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--emerald);
+  box-shadow: 0 0 0 1.5px var(--bg-surface);
+}
+
+.collapsed-bottom {
+  margin-top: auto;
+  padding-top: 12px;
 }
 
 /* Sidebar */
@@ -1860,14 +2030,14 @@ input[type=range] {
   text-decoration: underline;
 }
 
-/* Footer */
+/* Full-Width Site Footer — Eliminates left blank space */
 .floodcast-footer-wrapper {
-  margin-top: 48px;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
+  width: 100%;
+  position: relative;
+  z-index: 10;
+  border-top: 1px solid var(--border);
   background: var(--bg-surface);
+  margin-top: 0;
 }
 
 .workspace-footer {

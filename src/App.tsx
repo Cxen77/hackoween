@@ -5,9 +5,11 @@ import type { GeoJSONSource, StyleSpecification } from 'maplibre-gl';
 import {
   Activity, ArrowDownToLine, ArrowUpRight, Check, ChevronDown, ChevronRight,
   CircleHelp, CloudRain, Compass, Database, Droplets, Expand, Layers, MapPin,
-  Minus, Mountain, Pause, Play, Plus, Radio, RefreshCw, Search, ShieldAlert,
+  Minus, Mountain, PanelLeftClose, PanelLeftOpen, Pause, Play, Plus, Radio, RefreshCw, Search, ShieldAlert,
   Waves, X
 } from 'lucide-react';
+import { Sidebar, SidebarBody } from '@/components/ui/sidebar';
+import { motion, AnimatePresence } from 'framer-motion';
 import { stations, number, forecastUrl, weatherUrl, jsonFetch, fetchGauge, download, riverProfiles, defaultRiverProfile } from './data';
 import type { Station, Forecast, Weather, Gauge, Remote, RiverHydraulicProfile } from './data';
 import { loadGrid, floodFeatures } from './terrain';
@@ -161,6 +163,7 @@ export default function App() {
   const [filterRegion, setFilterRegion] = useState<'all' | 'us' | 'in'>('all');
   const [places, setPlaces] = useState<Station[]>([]);
   const [searchError, setSearchError] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const [forecast, setForecast] = useState<Remote<Forecast>>(initial);
   const [weather, setWeather] = useState<Remote<Weather>>(initial);
@@ -743,108 +746,170 @@ export default function App() {
       </header>
 
       <div className="workspace">
-        <aside className="sidebar">
-          <div className="sidebar-header">
-            <div className="section-eyebrow">River telemetry</div>
-            <h1>Real-time gauge & flood scenario studio</h1>
-            <p>Live USGS flow metrics, 7-day GloFAS forecasts, and 3D terrain flood scenarios.</p>
-          </div>
-
-          <label className="search-box">
-            <Search size={16} />
-            <input
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              placeholder="Search stations or press /"
-              aria-label="Search rivers or places"
-            />
-            {query ? (
-              <button aria-label="Clear search" onClick={() => setQuery('')}><X size={14} /></button>
-            ) : (
-              <span className="search-kbd">/</span>
-            )}
-          </label>
-          {searchError && <p className="inline-error">{searchError}</p>}
-
-          <div className="filter-tabs" role="tablist" aria-label="Station region filter">
-            <button
-              className={filterRegion === 'all' ? 'active' : ''}
-              onClick={() => setFilterRegion('all')}
-            >
-              All ({stations.length})
-            </button>
-            <button
-              className={filterRegion === 'us' ? 'active' : ''}
-              onClick={() => setFilterRegion('us')}
-            >
-              USGS Gauges
-            </button>
-            <button
-              className={filterRegion === 'in' ? 'active' : ''}
-              onClick={() => setFilterRegion('in')}
-            >
-              India
-            </button>
-          </div>
-
-          <div className="river-list-heading">
-            <span>{query ? 'Matching stations' : 'Monitored rivers'}</span>
-            <span className="count-pill">{filtered.length}</span>
-          </div>
-
-          <div className="river-list">
-            {filtered.map(s => (
+        <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} animate={true}>
+          <SidebarBody className="floodcast-sidebar-body">
+            <div className="sidebar-header-row">
+              {sidebarOpen ? (
+                <div className="sidebar-brand-mini">
+                  <div className="section-eyebrow">River telemetry</div>
+                  <h1>Studio</h1>
+                </div>
+              ) : (
+                <div className="sidebar-collapsed-brand" title="FloodCast Studio">
+                  <Waves size={20} className="text-primary" />
+                </div>
+              )}
               <button
-                className={`river-item ${station.id === s.id ? 'selected' : ''}`}
-                key={s.id}
-                onClick={() => pick(s)}
+                type="button"
+                className="sidebar-collapse-toggle"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+                aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
               >
-                <span className="river-icon">
-                  <Waves size={16} />
-                </span>
-                <span className="river-info">
-                  <strong>{s.river}</strong>
-                  <small>
-                    {s.name}
-                    <span className="country-tag">{s.region.includes('India') ? 'IN' : 'US'}</span>
-                    {s.usgs && <span className="live-dot" title="USGS Real-time Telemetry" />}
-                  </small>
-                </span>
-                <ChevronRight size={14} className="chevron" />
+                {sidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
               </button>
-            ))}
+            </div>
 
-            {places.map(s => (
-              <button className="river-item" key={s.id} onClick={() => pick(s)}>
-                <span className="river-icon"><MapPin size={16} /></span>
-                <span className="river-info">
-                  <strong>{s.river}</strong>
-                  <small>Geocoded location</small>
-                </span>
-              </button>
-            ))}
+            {sidebarOpen ? (
+              <div className="sidebar-expanded-content">
+                <p className="sidebar-desc">Live USGS telemetry, 7-day GloFAS forecasts, and 3D terrain flood scenarios.</p>
 
-            {!filtered.length && !places.length && (
-              <div className="empty-stations">
-                <p>No stations match "{query}".</p>
-                <small>Select from the tabs or clear filter.</small>
+                <label className="search-box">
+                  <Search size={16} />
+                  <input
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                    placeholder="Search stations or press /"
+                    aria-label="Search rivers or places"
+                  />
+                  {query ? (
+                    <button aria-label="Clear search" onClick={() => setQuery('')}><X size={14} /></button>
+                  ) : (
+                    <span className="search-kbd">/</span>
+                  )}
+                </label>
+                {searchError && <p className="inline-error">{searchError}</p>}
+
+                <div className="filter-tabs" role="tablist" aria-label="Station region filter">
+                  <button
+                    className={filterRegion === 'all' ? 'active' : ''}
+                    onClick={() => setFilterRegion('all')}
+                  >
+                    All ({stations.length})
+                  </button>
+                  <button
+                    className={filterRegion === 'us' ? 'active' : ''}
+                    onClick={() => setFilterRegion('us')}
+                  >
+                    USGS Gauges
+                  </button>
+                  <button
+                    className={filterRegion === 'in' ? 'active' : ''}
+                    onClick={() => setFilterRegion('in')}
+                  >
+                    India
+                  </button>
+                </div>
+
+                <div className="river-list-heading">
+                  <span>{query ? 'Matching stations' : 'Monitored rivers'}</span>
+                  <span className="count-pill">{filtered.length}</span>
+                </div>
+
+                <div className="river-list">
+                  {filtered.map(s => (
+                    <button
+                      className={`river-item ${station.id === s.id ? 'selected' : ''}`}
+                      key={s.id}
+                      onClick={() => pick(s)}
+                    >
+                      <span className="river-icon">
+                        <Waves size={16} />
+                      </span>
+                      <span className="river-info">
+                        <strong>{s.river}</strong>
+                        <small>
+                          {s.name}
+                          <span className="country-tag">{s.region.includes('India') ? 'IN' : 'US'}</span>
+                          {s.usgs && <span className="live-dot" title="USGS Real-time Telemetry" />}
+                        </small>
+                      </span>
+                      <ChevronRight size={14} className="chevron" />
+                    </button>
+                  ))}
+
+                  {places.map(s => (
+                    <button className="river-item" key={s.id} onClick={() => pick(s)}>
+                      <span className="river-icon"><MapPin size={16} /></span>
+                      <span className="river-info">
+                        <strong>{s.river}</strong>
+                        <small>Geocoded location</small>
+                      </span>
+                    </button>
+                  ))}
+
+                  {!filtered.length && !places.length && (
+                    <div className="empty-stations">
+                      <p>No stations match "{query}".</p>
+                      <small>Select from the tabs or clear filter.</small>
+                    </div>
+                  )}
+                </div>
+
+                <div className="sidebar-bottom">
+                  <div className="open-data-badge">
+                    <Database size={16} />
+                    <div>
+                      <strong>Zero Synthetic Telemetry</strong>
+                      <small>Authentic USGS & GloFAS API observations</small>
+                    </div>
+                  </div>
+                  <button className="sources-link-btn" onClick={() => setSources(true)}>
+                    Data provenance & citations <ArrowUpRight size={13} />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="sidebar-collapsed-content">
+                <button
+                  type="button"
+                  className="collapsed-icon-btn"
+                  title="Search stations"
+                  onClick={() => setSidebarOpen(true)}
+                >
+                  <Search size={18} />
+                </button>
+
+                <div className="collapsed-divider" />
+
+                <div className="collapsed-river-list">
+                  {filtered.map(s => (
+                    <button
+                      key={s.id}
+                      className={`collapsed-station-pill ${station.id === s.id ? 'active' : ''}`}
+                      title={`${s.river} (${s.name}) — ${s.usgs ? 'USGS Live' : 'GloFAS'}`}
+                      onClick={() => pick(s)}
+                    >
+                      <Waves size={18} />
+                      {s.usgs && <span className="collapsed-live-dot" />}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="collapsed-bottom">
+                  <button
+                    type="button"
+                    className="collapsed-icon-btn"
+                    title="Data provenance & citations"
+                    onClick={() => setSources(true)}
+                  >
+                    <Database size={18} />
+                  </button>
+                </div>
               </div>
             )}
-          </div>
-
-          <div className="sidebar-bottom">
-            <div className="open-data-badge">
-              <Database size={16} />
-              <div>
-                <strong>Zero Synthetic Telemetry</strong>
-                <small>Authentic USGS & GloFAS API observations</small>
-              </div>
-            </div>
-            <button className="sources-link-btn" onClick={() => setSources(true)}>
-              Data provenance & citations <ArrowUpRight size={13} />
-            </button>
-          </div>
-        </aside>
+          </SidebarBody>
+        </Sidebar>
 
         <main className="main-view">
           <div className="page-heading">
@@ -1296,57 +1361,57 @@ export default function App() {
             />
             {storageError && <p className="inline-error">{storageError}</p>}
           </div>
-
-          <div className="floodcast-footer-wrapper">
-            <RidgelineDitherFooter
-              preset="glacier"
-              name="FloodCast"
-              tagline="Hydrological intelligence platform connecting real-time USGS telemetry, ECMWF GloFAS forecasts, and high-resolution 3D hydraulic terrain inundation modeling."
-              brandHref="#"
-              columns={[
-                {
-                  title: "Telemetry & Forecasts",
-                  links: [
-                    { label: "USGS Water Gauges", href: "https://waterdata.usgs.gov", badge: "Live" },
-                    { label: "ECMWF Copernicus GloFAS", href: "https://global-floods.jrc.ec.europa.eu" },
-                    { label: "Open-Meteo Flood API", href: "https://open-meteo.com/en/docs/flood-api" },
-                    { label: "CWC India Hydrology", href: "https://cwc.gov.in" },
-                  ],
-                },
-                {
-                  title: "Monitored Basins",
-                  links: [
-                    { label: "Potomac River (DC)", badge: "Live USGS" },
-                    { label: "Mississippi River (St. Louis)", badge: "Calibrated" },
-                    { label: "Brahmaputra River (Guwahati)", badge: "Monsoon" },
-                    { label: "Yamuna River (New Delhi)", badge: "Protected" },
-                  ],
-                },
-                {
-                  title: "Methodology",
-                  links: [
-                    { label: "Data methodology & citations", onClick: (e) => { e.preventDefault(); setSources(true); } },
-                    { label: "3D Lit Hydraulic Inundation", badge: "Engine" },
-                    { label: "Chaikin Shoreline Smoothing" },
-                    { label: "USGS 3DEP & Terrarium DEM" },
-                  ],
-                },
-              ]}
-              socials={[
-                { icon: "github", href: "https://github.com/Cxen77/hackoween", label: "GitHub Repository" },
-              ]}
-              copyright={`© ${new Date().getFullYear()} FloodCast Intelligence. Authentic physical gauges & terrain models.`}
-              credit={{ label: "USGS & Copernicus GloFAS", href: "https://waterdata.usgs.gov" }}
-              ridges={6}
-              seed={37}
-              pixel={2}
-              height="580px"
-              sceneMinHeight="260px"
-              interactive={true}
-              altimeter={true}
-            />
-          </div>
         </main>
+      </div>
+
+      <div className="floodcast-footer-wrapper">
+        <RidgelineDitherFooter
+          preset="glacier"
+          name="FloodCast"
+          tagline="Hydrological intelligence platform connecting real-time USGS telemetry, ECMWF GloFAS forecasts, and high-resolution 3D hydraulic terrain inundation modeling."
+          brandHref="#"
+          columns={[
+            {
+              title: "Telemetry & Forecasts",
+              links: [
+                { label: "USGS Water Gauges", href: "https://waterdata.usgs.gov", badge: "Live" },
+                { label: "ECMWF Copernicus GloFAS", href: "https://global-floods.jrc.ec.europa.eu" },
+                { label: "Open-Meteo Flood API", href: "https://open-meteo.com/en/docs/flood-api" },
+                { label: "CWC India Hydrology", href: "https://cwc.gov.in" },
+              ],
+            },
+            {
+              title: "Monitored Basins",
+              links: [
+                { label: "Potomac River (DC)", badge: "Live USGS" },
+                { label: "Mississippi River (St. Louis)", badge: "Calibrated" },
+                { label: "Brahmaputra River (Guwahati)", badge: "Monsoon" },
+                { label: "Yamuna River (New Delhi)", badge: "Protected" },
+              ],
+            },
+            {
+              title: "Methodology",
+              links: [
+                { label: "Data methodology & citations", onClick: (e) => { e.preventDefault(); setSources(true); } },
+                { label: "3D Lit Hydraulic Inundation", badge: "Engine" },
+                { label: "Chaikin Shoreline Smoothing" },
+                { label: "USGS 3DEP & Terrarium DEM" },
+              ],
+            },
+          ]}
+          socials={[
+            { icon: "github", href: "https://github.com/Cxen77/hackoween", label: "GitHub Repository" },
+          ]}
+          copyright={`© ${new Date().getFullYear()} FloodCast Intelligence. Authentic physical gauges & terrain models.`}
+          credit={{ label: "USGS & Copernicus GloFAS", href: "https://waterdata.usgs.gov" }}
+          ridges={6}
+          seed={37}
+          pixel={2}
+          height="580px"
+          sceneMinHeight="260px"
+          interactive={true}
+          altimeter={true}
+        />
       </div>
 
       {alertToast && (
