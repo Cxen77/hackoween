@@ -175,8 +175,11 @@ def live_forecast(sid: str) -> dict:
     warnings = []
     if len(days) - max(HORIZONS) < 30:
         warnings.append(f'Only {len(days) - max(HORIZONS)} days of input history are available; accuracy may be reduced.')
-    if missing_wx.any():
-        warnings.append(f'{int(missing_wx.sum())} day(s) lack weather data; the model treats them as missing.')
+    # Only warn about gaps that can matter: the last 30 days before the forecast origin and the forecast days. A gap in the
+    # oldest part of the window (e.g. the first day's soil moisture, which the weather API publishes a day late) is harmless.
+    relevant = missing_wx.to_numpy() & (pd.to_datetime(frame.date) > last - pd.Timedelta(days=30)).to_numpy()
+    if relevant.any():
+        warnings.append(f'{int(relevant.sum())} recent or forecast day(s) lack weather data; the model treats them as missing.')
     thr = pd.DataFrame({'T90': STATE['thr'].loc[sid, 'T90'], 'T99': STATE['thr'].loc[sid, 'T99']}, index=range(len(frame)))
     rating = None
     try:
