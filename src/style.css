@@ -1663,7 +1663,7 @@ input[type=range] {
   color: var(--text-faint);
 }
 
-/* Forecast Card */
+/* Forecast Card & Hydrograph Reference Card */
 .forecast-card {
   grid-column: 1 / -1;
   background: var(--bg-surface);
@@ -1673,10 +1673,285 @@ input[type=range] {
   box-shadow: var(--shadow-sm);
 }
 
+.hydrograph-reference-card {
+  border-radius: var(--radius-xl);
+  padding: 24px 28px 18px;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  position: relative;
+}
+
 .forecast-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.forecast-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.card-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.card-menu-btn:hover {
+  background: var(--bg-subtle);
+  color: var(--text-main);
+  border-color: var(--border-strong);
+}
+
+.card-dropdown-menu {
+  position: absolute;
+  top: 38px;
+  right: 0;
+  min-width: 195px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  animation: fadeIn 0.12s ease-out;
+}
+
+.card-dropdown-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-body);
+  border-radius: var(--radius-xs);
+  text-align: left;
+  transition: background 0.12s ease;
+}
+
+.card-dropdown-menu button:hover {
+  background: var(--bg-subtle);
+  color: var(--text-main);
+}
+
+.hydrograph-chart-container {
+  position: relative;
+  width: 100%;
+  margin: 14px 0 6px;
+  user-select: none;
+}
+
+.hydrograph-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.chart-axis-tick-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: #94a3b8;
+  font-weight: 500;
+}
+
+.chart-date-label {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 550;
+  fill: #64748b;
+  transition: all 0.15s ease;
+}
+
+.chart-date-label.active-date {
+  font-weight: 750;
+  fill: #0f172a;
+}
+
+.chart-x-tick:hover .chart-date-label {
+  fill: #0284c7;
+}
+
+/* Floating Tooltip Card matching the reference image */
+.hydrograph-floating-tooltip {
+  position: absolute;
+  top: 18px;
+  pointer-events: none;
+  z-index: 35;
+  min-width: 215px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.12), 0 4px 8px -2px rgba(15, 23, 42, 0.05);
+  transition: left 0.08s ease-out;
+}
+
+.hydrograph-floating-tooltip.tooltip-left {
+  transform: translateX(-100%) translateX(-14px);
+}
+
+.hydrograph-floating-tooltip.tooltip-right {
+  transform: translateX(14px);
+}
+
+.tooltip-header {
+  font-size: 13px;
+  font-weight: 750;
+  color: #0f172a;
+  margin-bottom: 9px;
+  letter-spacing: -0.01em;
+}
+
+.tooltip-series-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.tooltip-ring {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 3.5px solid;
+  background: #ffffff;
+  display: inline-block;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.tooltip-ring.ring-blue {
+  border-color: #0284c7;
+}
+
+.tooltip-ring.ring-orange {
+  border-color: #f97316;
+}
+
+.tooltip-ring.ring-slate {
+  border-color: #475569;
+}
+
+.tooltip-name {
+  color: #64748b;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.tooltip-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* Centered Bottom Legend matching reference image */
+.hydrograph-legend-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  margin: 16px 0 10px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+}
+
+.legend-item:hover {
+  background: var(--bg-subtle);
+}
+
+.legend-ring {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 4px solid;
+  background: #ffffff;
+  display: inline-block;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.legend-ring.ring-blue {
+  border-color: #0284c7;
+}
+
+.legend-ring.ring-orange {
+  border-color: #f97316;
+}
+
+.legend-ring.ring-slate {
+  border-color: #475569;
+}
+
+.legend-label {
+  font-size: 13px;
+  font-weight: 550;
+  color: #475569;
+}
+
+.curve-glofas {
+  transition: stroke-width 0.15s ease;
+}
+
+.curve-ml {
+  transition: stroke-width 0.15s ease;
+}
+
+.curve-baseline {
+  transition: stroke-width 0.15s ease;
+}
+
+@media (max-width: 640px) {
+  .hydrograph-reference-card {
+    padding: 16px 14px 12px;
+  }
+  .hydrograph-legend-row {
+    gap: 16px;
+  }
+  .legend-label {
+    font-size: 11px;
+  }
+  .hydrograph-floating-tooltip {
+    min-width: 170px;
+    padding: 8px 12px;
+    font-size: 11px;
+  }
 }
 
 .forecast-heading h3 {

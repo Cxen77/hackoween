@@ -15,6 +15,7 @@ import type { Station, Forecast, Weather, Gauge, Remote, RiverHydraulicProfile }
 import { loadGrid, floodFeatures } from './terrain';
 import type { Grid } from './terrain';
 import MonitorPanel from './MonitorPanel';
+import HydrographOutlookCard from './components/HydrographOutlookCard';
 import RidgelineDitherFooter from '@/components/ui/ridgeline-dither-footer';
 import { evaluateMonitor, validBoundary, validMonitor } from './geofence.mjs';
 import type { AreaMonitor, MonitorResult } from './monitorTypes';
@@ -55,105 +56,6 @@ const rasterStyle = (satellite: boolean): StyleSpecification => ({
 });
 
 const initial = <T,>(): Remote<T> => ({ data: null, error: null, loading: true });
-const dateLabel = (v: string) => new Date(v + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-const dayOfWeek = (v: string) => new Date(v + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short' });
-
-function getCurvedPath(pts: [number, number][]): string {
-  if (pts.length < 2) return '';
-  let d = 'M ' + pts[0][0].toFixed(1) + ',' + pts[0][1].toFixed(1);
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i === 0 ? 0 : i - 1];
-    const p1 = pts[i];
-    const p2 = pts[i + 1];
-    const p3 = pts[i + 2 < pts.length ? i + 2 : i + 1];
-    const cp1x = p1[0] + (p2[0] - p0[0]) / 6;
-    const cp1y = p1[1] + (p2[1] - p0[1]) / 6;
-    const cp2x = p2[0] - (p3[0] - p1[0]) / 6;
-    const cp2y = p2[1] - (p3[1] - p1[1]) / 6;
-    d += ' C ' + cp1x.toFixed(1) + ',' + cp1y.toFixed(1) + ' ' + cp2x.toFixed(1) + ',' + cp2y.toFixed(1) + ' ' + p2[0].toFixed(1) + ',' + p2[1].toFixed(1);
-  }
-  return d;
-}
-
-function Chart({ data, day, setDay, unit, weather }: { data: Forecast | null; day: number; setDay: (n: number) => void; unit: string; weather: Remote<Weather> }) {
-  const values = data?.daily.river_discharge ?? [];
-  const valid = values.filter((v): v is number => v != null && Number.isFinite(v));
-  if (!valid.length) return <div className="empty-chart"><RefreshCw className="spin" size={16}/><span>Waiting for GloFAS forecast telemetry…</span></div>;
-
-  const scale = unit === 'cfs' ? 35.3146667 : 1;
-  const max = Math.max(...valid) * 1.25 || 1;
-  const pts: [number, number][] = values.map((v, i) => [
-    35 + i * (620 / Math.max(1, values.length - 1)),
-    104 - (v == null ? 0 : (v / max) * 78)
-  ]);
-  const curvePath = getCurvedPath(pts);
-  const areaPath = pts.length ? `${curvePath} L ${pts[pts.length - 1][0].toFixed(1)},112 L ${pts[0][0].toFixed(1)},112 Z` : '';
-  const activePt = pts[day];
-
-  return (
-    <>
-      <div className="chart-wrap">
-        <span className="chart-axis-max">{number(max * scale)} {unit}</span>
-        <span className="chart-axis-mid">{number((max * scale) / 2)}</span>
-        <svg viewBox="0 0 700 125" role="img" aria-label="Seven-day river discharge trend" className="forecast-svg">
-          <defs>
-            <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0.35" />
-              <stop offset="50%" stopColor="#0284c7" stopOpacity="0.10" />
-              <stop offset="100%" stopColor="#0284c7" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          {[26, 65, 104].map(y => (
-            <line key={y} x1="35" y1={y} x2="655" y2={y} stroke="#e2e8f0" strokeDasharray="3 5" />
-          ))}
-          {areaPath && <path d={areaPath} fill="url(#chart-gradient)" />}
-          <path d={curvePath} fill="none" stroke="#0284c7" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
-          {activePt && (
-            <g className="active-cursor-marker">
-              <line x1={activePt[0]} y1="10" x2={activePt[0]} y2="112" stroke="#0284c7" strokeWidth="1.5" strokeDasharray="3 3" />
-              <circle cx={activePt[0]} cy={activePt[1]} r="7" fill="#0284c7" fillOpacity="0.22" />
-              <circle cx={activePt[0]} cy={activePt[1]} r="4" fill="#ffffff" stroke="#0284c7" strokeWidth="2.5" />
-            </g>
-          )}
-          {pts.map((p, i) => (
-            <circle
-              key={i}
-              cx={p[0]}
-              cy={p[1]}
-              r={day === i ? 0 : 3}
-              fill="#ffffff"
-              stroke="#0284c7"
-              strokeWidth="1.5"
-              style={{ cursor: 'pointer' }}
-              onClick={() => setDay(i)}
-            >
-              <title>{dateLabel(data!.daily.time[i])}: {number(values[i]! * scale)} {unit}</title>
-            </circle>
-          ))}
-        </svg>
-      </div>
-      <div className="forecast-days">
-        {data!.daily.time.map((d, i) => {
-          const rain = weather.data?.daily.precipitation_sum?.[i];
-          const val = values[i] == null ? null : values[i]! * scale;
-          return (
-            <button key={d} className={`forecast-day-btn ${day === i ? 'chosen' : ''}`} onClick={() => setDay(i)}>
-              <span className="day-name">{i === 0 ? 'Today' : `${dayOfWeek(d)} ${dateLabel(d).split(' ')[1]}`}</span>
-              <strong className="day-val">{number(val)}</strong>
-              <span className="day-rain-info">
-                {rain != null && Number(rain) > 0 ? (
-                  <span className="has-rain"><CloudRain size={10} />{number(rain, 1)}mm</span>
-                ) : (
-                  <span className="is-dry">dry</span>
-                )}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-    </>
-  );
-}
 
 export default function App() {
   const [station, setStation] = useState<Station>(() => {
@@ -1319,57 +1221,19 @@ export default function App() {
               </section>
             </aside>
 
-            <section className="forecast-card">
-              <div className="forecast-heading">
-                <div>
-                  <h3>Seven-day discharge outlook</h3>
-                  <p>Daily streamflow forecasts from Open-Meteo GloFAS hydro-model</p>
-                </div>
-                <div className="unit-toggle" aria-label="Discharge units">
-                  {['cfs', 'm³/s'].map(u => (
-                    <button className={unit === u ? 'active' : ''} key={u} onClick={() => setUnit(u)}>
-                      {u}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="forecast-summary">
-                <div className="summary-left">
-                  <strong className="forecast-metric-val">
-                    {number(discharge == null ? null : discharge * scale)}
-                    <small> {unit}</small>
-                  </strong>
-                  <span className="forecast-date">
-                    {forecast.data ? dateLabel(forecast.data.daily.time[day]) : forecast.loading ? 'Fetching outlook…' : 'Forecast unavailable'}
-                  </span>
-                </div>
-                <div className="weather-summary">
-                  <CloudRain size={16} />
-                  <span>{number(weather.data?.daily.precipitation_sum[day], 1)} mm daily rain</span>
-                </div>
-              </div>
-
-              {forecast.error ? (
-                <div className="error-state">
-                  <span>GloFAS forecast service returned an error ({forecast.error}).</span>
-                  <button onClick={() => setRefresh(n => n + 1)}>Retry</button>
-                </div>
-              ) : (
-                <Chart data={forecast.data} day={day} setDay={setDay} unit={unit} weather={weather} />
-              )}
-
-              <div className="forecast-footer">
-                <span className="footer-source"><span className="chart-key" />Copernicus GloFAS via Open-Meteo</span>
-                <button className="auto-refresh-btn" onClick={() => setAuto(!auto)}>
-                  {auto ? <Check size={12} /> : <Pause size={12} />}
-                  <span>Auto-refresh {auto ? 'active (5 min)' : 'paused'}</span>
-                </button>
-                <span className="footer-fetched">
-                  {forecast.fetchedAt ? `Synced ${new Date(forecast.fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Syncing…'}
-                </span>
-              </div>
-            </section>
+            <HydrographOutlookCard
+              forecast={forecast}
+              weather={weather}
+              station={station}
+              day={day}
+              setDay={setDay}
+              unit={unit}
+              setUnit={setUnit}
+              auto={auto}
+              setAuto={setAuto}
+              setRefresh={setRefresh}
+              setSources={setSources}
+            />
 
             <MonitorPanel
               areas={areas}
