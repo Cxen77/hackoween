@@ -117,24 +117,18 @@ export default function ModelForecastCard({ usgs, nwic, river, onSimulate }: { u
         {d.new_river && <p className="mf-newriver"><b>New river</b>: not in the model's training data. Live observed flow from India's NWIC portal.</p>}
         <p className="mf-muted">Using real data up to <b>{d.origin_date}</b>: latest flow <b>{fmt(d.latest_observed_cfs)} cfs</b>. High-flow level (Q90) for this gauge is {fmt(d.threshold_q90_cfs)} cfs.</p>
         <Spark d={d} />
-        {/* Horizon Scroll Menu Navigation */}
-        <div className="mf-scroll-menu-nav">
-          <span className="mf-scroll-nav-label">Horizon:</span>
-          <div className="mf-scroll-tabs" role="tablist" aria-label="Forecast horizons">
+        {/* Days Pills Menu (takes minimal space) */}
+        <div className="mf-days-pills-row">
+          <span className="mf-days-label">Forecast Day:</span>
+          <div className="mf-days-pills" role="tablist" aria-label="Forecast horizons">
             {d.horizons.map((h: Json) => (
               <button
                 key={h.horizon_days}
+                type="button"
                 role="tab"
                 aria-selected={activeHorizon === h.horizon_days}
-                className={`mf-tab-btn ${activeHorizon === h.horizon_days ? 'active' : ''}`}
-                onClick={() => {
-                  setActiveHorizon(h.horizon_days);
-                  cardRefs.current[h.horizon_days]?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest',
-                    inline: 'center',
-                  });
-                }}
+                className={`mf-day-pill ${activeHorizon === h.horizon_days ? 'active' : ''}`}
+                onClick={() => setActiveHorizon(h.horizon_days)}
               >
                 +{h.horizon_days}d
               </button>
@@ -142,40 +136,27 @@ export default function ModelForecastCard({ usgs, nwic, river, onSimulate }: { u
           </div>
         </div>
 
-        {/* Horizontally scrolling card track (scroll menu) */}
-        <div
-          className="mf-rows mf-scroll-track"
-          ref={trackRef}
-          onScroll={() => {
-            if (!trackRef.current) return;
-            const scrollLeft = trackRef.current.scrollLeft;
-            const width = trackRef.current.offsetWidth || 1;
-            const index = Math.round(scrollLeft / width);
-            if (d.horizons[index] && d.horizons[index].horizon_days !== activeHorizon) {
-              setActiveHorizon(d.horizons[index].horizon_days);
-            }
-          }}
-        >
-          {d.horizons.map((h: Json) => (
-            <div
-              key={h.horizon_days}
-              ref={(el) => { cardRefs.current[h.horizon_days] = el; }}
-              className={`mf-row mf-scroll-item ${activeHorizon === h.horizon_days ? 'active-horizon' : ''}`}
-            >
+        {/* Single Compact Active Day Card */}
+        {(() => {
+          const activeH = d.horizons.find((h: Json) => h.horizon_days === activeHorizon) || d.horizons[0];
+          if (!activeH) return null;
+          return (
+            <div className="mf-row mf-single-card">
               <div className="mf-row-main">
-                <span className="mf-day">+{h.horizon_days}d</span>
-                <span><b>{fmt(h.point_cfs)}</b> cfs <small>({h.lo_cfs === null ? 'no band' : `${fmt(h.lo_cfs)}–${fmt(h.hi_cfs)}`})</small></span>
+                <span className="mf-day">+{activeH.horizon_days}d</span>
+                <span><b>{fmt(activeH.point_cfs)}</b> cfs <small>({activeH.lo_cfs === null ? 'no band' : `${fmt(activeH.lo_cfs)}–${fmt(activeH.hi_cfs)}`})</small></span>
               </div>
               <div className="mf-row-sub">
-                <span title="Probability flow exceeds this gauge's 90th-percentile level">High flow {pct(h.p_high_flow)}</span>
-                <span title="Probability flow exceeds this gauge's 99th-percentile level">Extreme {pct(h.p_extreme_flow)}</span>
-                {h.rise_point_m !== undefined && (
-                  <button className="mf-sim" onClick={() => onSimulate(h.rise_point_m, `Model +${h.horizon_days}d`)} title={`Set the 3D water rise to +${h.rise_point_m} m (${fmt(h.stage_point_ft, 1)} ft gauge height)`}>
-                    <Play size={11} /> Simulate {h.rise_point_m.toFixed(1)} m{h.extrapolated ? '*' : ''}
+                <span title="Probability flow exceeds this gauge's 90th-percentile level">High flow {pct(activeH.p_high_flow)}</span>
+                <span title="Probability flow exceeds this gauge's 99th-percentile level">Extreme {pct(activeH.p_extreme_flow)}</span>
+                {activeH.rise_point_m !== undefined && (
+                  <button type="button" className="mf-sim" onClick={() => onSimulate(activeH.rise_point_m, `Model +${activeH.horizon_days}d`)} title={`Set the 3D water rise to +${activeH.rise_point_m} m (${fmt(activeH.stage_point_ft, 1)} ft gauge height)`}>
+                    <Play size={11} /> Simulate {activeH.rise_point_m.toFixed(1)} m{activeH.extrapolated ? '*' : ''}
                   </button>)}
               </div>
-            </div>))}
-        </div>
+            </div>
+          );
+        })()}
 
         {/* Scrollable details for ratings, warnings, and hindcast */}
         <div className="mf-details-scroll">
