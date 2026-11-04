@@ -44,10 +44,10 @@ async function terrainTile(x: number, y: number, z: number): Promise<ImageData> 
 
 /**
  * Load high-resolution DEM grid covering a wide river corridor.
- * Default 28 km span (with 129x129 resolution) ensures wide geographic river reach coverage
+ * Dynamic span and 129x129 resolution ensure wide geographic river reach coverage
  * with fine, sub-100m grid cells that smooth naturally without blockiness.
  */
-export async function loadGrid(lat: number, lon: number, span = 28000, size = 129): Promise<Grid> {
+export async function loadGrid(lat: number, lon: number, span = 20000, size = 129): Promise<Grid> {
   const dy = span / 111320 / size;
   const dx = dy / Math.cos((lat * Math.PI) / 180);
   const west = lon - (dx * size) / 2;
@@ -226,124 +226,6 @@ function extractNaturalShorelines(ring: [number, number][], size: number): [numb
   return shorelines;
 }
 
-/**
- * Hydraulic reach-calibrated inundation.
- * Sets the water rise EVENLY along the river channel according to local riverbed elevation
- * and directional hydraulic gradient (upstream to downstream).
- */
-function computeHydraulicEvenInundation(
-  grid: Grid,
-  rise: number
-): { depths: Float32Array; maxDepth: number; level: number; flowDirection: string; gradient: number } {
-  const { heights, size, seed, span } = grid;
-  const n = size * size;
-  const depths = new Float32Array(n);
-
-  if (rise <= 0.02) {
-    return {
-      depths,
-      maxDepth: 0,
-      level: heights[seed],
-      flowDirection: 'Stationary / Low flow',
-      gradient: 0
-    };
-  }
-
-  // 1. Trace connected river channel along local valley profile
-  const channelVisited = new Uint8Array(n);
-  const queue = [seed];
-  channelVisited[seed] = 1;
-  const channelCells = [seed];
-
-  // River gradient threshold per cell step (~150m cell spacing)
-  const maxStepSlope = 2.8;
-
-  let head = 0;
-  while (head < queue.length) {
-    const curr = queue[head++];
-    const cr = Math.floor(curr / size);
-    const cc = curr % size;
-    const ch = heights[curr];
-
-    const nbrs: number[] = [];
-    if (cr > 0) nbrs.push(curr - size);
-    if (cr < size - 1) nbrs.push(curr + size);
-    if (cc > 0) nbrs.push(curr - 1);
-    if (cc < size - 1) nbrs.push(curr + 1);
-
-    for (const nb of nbrs) {
-      if (!channelVisited[nb] && Math.abs(heights[nb] - ch) <= maxStepSlope) {
-        channelVisited[nb] = 1;
-        queue.push(nb);
-        channelCells.push(nb);
-      }
-    }
-  }
-
-  // 2. Identify Upstream (highest bed) vs Downstream (lowest bed) to determine flow vector
-  let highest = channelCells[0], lowest = channelCells[0];
-  for (const c of channelCells) {
-    if (heights[c] > heights[highest]) highest = c;
-    if (heights[c] < heights[lowest]) lowest = c;
-  }
-
-  const upR = Math.floor(highest / size), upC = highest % size;
-  const downR = Math.floor(lowest / size), downC = lowest % size;
-  const dRow = downR - upR;
-  const dCol = downC - upC;
-
-  let flowDirection = 'Upstream → Downstream';
-  if (Math.abs(dCol) >= Math.abs(dRow)) {
-    flowDirection = dCol > 0 ? 'West → East' : 'East → West';
-  } else {
-    flowDirection = dRow > 0 ? 'South → North' : 'North → South';
-  }
-
-  const totalDrop = Math.max(0, heights[highest] - heights[lowest]);
-  const gradient = span > 0 ? totalDrop / (span / 1000) : 0;
-
-  // 3. Set EVEN water rise along the sloped channel:
-  // Local water surface at channel cell c is heights[c] + rise
-  const floodQueue: number[] = [];
-  const waterSurface = new Float32Array(n);
-  let maxDepth = 0;
-
-  for (const c of channelCells) {
-    const ws = heights[c] + rise;
-    waterSurface[c] = ws;
-    depths[c] = rise;
-    if (rise > maxDepth) maxDepth = rise;
-    floodQueue.push(c);
-  }
-
-  // 4. Spread water outward into adjacent low-lying floodplains
-  head = 0;
-  while (head < floodQueue.length) {
-    const curr = floodQueue[head++];
-    const cr = Math.floor(curr / size);
-    const cc = curr % size;
-    const ws = waterSurface[curr];
-
-    const nbrs: number[] = [];
-    if (cr > 0) nbrs.push(curr - size);
-    if (cr < size - 1) nbrs.push(curr + size);
-    if (cc > 0) nbrs.push(curr - 1);
-    if (cc < size - 1) nbrs.push(curr + 1);
-
-    for (const nb of nbrs) {
-      if (!waterSurface[nb] && heights[nb] < ws) {
-        waterSurface[nb] = ws;
-        const d = ws - heights[nb];
-        depths[nb] = d;
-        if (d > maxDepth) maxDepth = d;
-        floodQueue.push(nb);
-      }
-    }
-  }
-
-  return { depths, maxDepth, level: heights[seed] + rise, flowDirection, gradient };
-}
-
 export function floodFeatures(
   grid: Grid,
   rise: number
@@ -355,15 +237,42 @@ export function floodFeatures(
   flowDirection: string;
   gradient: number;
 } {
-  const { depths, maxDepth, level, flowDirection, gradient } = computeHydraulicEvenInundation(grid, rise);
+  // Use connected flood starting strictly at the river channel seed
+  const { depths, level } = connectedFlood(grid.heights, grid.size, grid.seed, rise);
   const features: (FeatureCollection<Polygon>['features'][0] | FeatureCollection<LineString>['features'][0])[] = [];
+  let maxDepth = 0;
   let wetCount = 0;
   const size = grid.size;
 
+  const wetIndices: number[] = [];
   for (let i = 0; i < depths.length; i++) {
     if (depths[i] > 0.05) {
       wetCount++;
+      wetIndices.push(i);
+      if (depths[i] > maxDepth) maxDepth = depths[i];
     }
+  }
+
+  // Determine hydraulic flow direction and reach drop from the active inundated channel
+  let flowDirection = 'Upstream → Downstream';
+  let gradient = 0;
+  if (wetIndices.length >= 4) {
+    let highest = wetIndices[0], lowest = wetIndices[0];
+    for (const idx of wetIndices) {
+      if (grid.heights[idx] > grid.heights[highest]) highest = idx;
+      if (grid.heights[idx] < grid.heights[lowest]) lowest = idx;
+    }
+    const upR = Math.floor(highest / size), upC = highest % size;
+    const downR = Math.floor(lowest / size), downC = lowest % size;
+    const dRow = downR - upR;
+    const dCol = downC - upC;
+    if (Math.abs(dCol) >= Math.abs(dRow) && Math.abs(dCol) > 2) {
+      flowDirection = dCol > 0 ? 'West → East' : 'East → West';
+    } else if (Math.abs(dRow) > 2) {
+      flowDirection = dRow > 0 ? 'South → North' : 'North → South';
+    }
+    const drop = Math.max(0, grid.heights[highest] - grid.heights[lowest]);
+    gradient = grid.span > 0 ? drop / (grid.span / 1000) : 0;
   }
 
   if (wetCount === 0) {
@@ -377,13 +286,13 @@ export function floodFeatures(
     };
   }
 
-  // Progressive depth tiers for smooth, authentic bathymetric depth gradients
+  // Adaptive depth tiers calibrated to current river water depth
   const depthThresholds = [0.05];
-  if (maxDepth >= 1.0) depthThresholds.push(0.8);
-  if (maxDepth >= 2.5) depthThresholds.push(2.0);
-  if (maxDepth >= 5.0) depthThresholds.push(4.5);
-  if (maxDepth >= 10.0) depthThresholds.push(9.0);
-  if (maxDepth >= 18.0) depthThresholds.push(16.0);
+  if (maxDepth >= 0.8) depthThresholds.push(0.5);
+  if (maxDepth >= 2.0) depthThresholds.push(1.5);
+  if (maxDepth >= 4.5) depthThresholds.push(3.5);
+  if (maxDepth >= 9.0) depthThresholds.push(7.0);
+  if (maxDepth >= 16.0) depthThresholds.push(12.0);
 
   const toGeo = (r: number, c: number): [number, number] => [
     grid.west + c * grid.dx,
