@@ -3,9 +3,11 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
+import { spawnSync } from 'node:child_process';
 
 const root=process.cwd();
 const runtime=process.env.CODEX_RUNTIME_DEPENDENCIES || 'C:/Users/Dev/.cache/codex-runtimes/codex-primary-runtime/dependencies';
+process.env.RUNTIME_NODE_MODULES=path.join(runtime,'node/node_modules');
 const require=createRequire(import.meta.url);
 const artifactPath=require.resolve('@oai/artifact-tool',{paths:[path.join(runtime,'node/node_modules')]});
 const {Presentation,PresentationFile}=await import(pathToFileURL(artifactPath).href);
@@ -16,6 +18,7 @@ const holdout=JSON.parse(await fs.readFile('reports/demo_holdout.json','utf8'));
 const provenance=JSON.parse(await fs.readFile('reports/provenance.json','utf8'));
 const catchments=JSON.parse(await fs.readFile('reports/catchment_provenance.json','utf8'));
 const p=Presentation.create({slideSize:{width:1280,height:720}});
+p.theme.defaultFont='Arial';
 const staging=path.join(root,'.presentation-build');const out=path.join(root,'presentation');
 await fs.mkdir(staging,{recursive:true});await fs.mkdir(out,{recursive:true});
 const fmt=(v,d=0)=>new Intl.NumberFormat('en-US',{maximumFractionDigits:d}).format(v);
@@ -78,13 +81,22 @@ note(s,'Challenge rejection rules: exact station_id,date,discharge_cfs columns i
 for(const [i,sl] of p.slides.items.entries()){
  const bytes=await p.export({slide:sl,format:'png',scale:1});await fs.writeFile(path.join(staging,`slide-${i+1}.png`),new Uint8Array(await bytes.arrayBuffer()));
 }
-const pdf=await p.export({format:'pdf'});await fs.writeFile(path.join(out,'FLOODCAST.pdf'),new Uint8Array(await pdf.arrayBuffer()));
 const candidatePath=path.join(staging,'candidate.pptx');await(await PresentationFile.exportPptx(p)).save(candidatePath);
 await finalizePresentation({workspaceDir:root,candidatePath,finalPath:path.join(out,'FLOODCAST.pptx'),
  pythonExecutable:path.join(runtime,'python/python.exe'),
  integrityValidatorPath:path.join(skill,'container_tools/inspect_presentation_package_integrity.py'),
  layoutValidatorPath:path.join(skill,'container_tools/inspect_presentation_layout_geometry.py'),
- layoutArgs:['--expected-slide-size-emu','12192000,6858000','--validate-bullet-geometry','--validate-heading-fit'],
+ layoutArgs:['--expected-slide-size-emu','12192000,6858000','--validate-bullet-geometry','--validate-heading-fit','--require-native-table-slide','4'],
  explicitTotalSlideCount:5,requiredNativeTableOwnerSlides:[4],fontPolicy:{basis:'design',families:['Arial']},
  verifyArtifactToolImport:true,receiptPath:path.join(staging,'validation.json')});
+try{
+ const pdf=await p.export({format:'pdf'});await fs.writeFile(path.join(out,'FLOODCAST.pdf'),new Uint8Array(await pdf.arrayBuffer()));
+}catch(error){
+ // The portable artifact runtime may lack pdf-lib's standard-font aliases. Preserve the
+ // editable PPTX and assemble already rendered slides as an image-backed presentation PDF.
+ const conversion=spawnSync(path.join(runtime,'python/python.exe'),['-c',
+  'from PIL import Image; from pathlib import Path; import sys; src=Path(sys.argv[1]); pages=[Image.open(src/f"slide-{i}.png").convert("RGB") for i in range(1,6)]; pages[0].save(sys.argv[2],save_all=True,append_images=pages[1:],resolution=96)',staging,path.join(out,'FLOODCAST.pdf')],{encoding:'utf8'});
+ if(conversion.status!==0)throw new Error(`PDF fallback failed: ${conversion.stderr}`,{cause:error});
+ console.log('PDF assembled from verified slide renders; PPTX remains editable.');
+}
 console.log('Created five-slide presentation PDF and editable PPTX. Inspect .presentation-build/slide-1.png through slide-5.png before delivery.');

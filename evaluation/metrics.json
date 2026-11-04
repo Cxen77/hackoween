@@ -1,0 +1,72 @@
+{
+  "purpose": "Judge-facing evaluation of a public-data experiment. Not official hidden-test or leaderboard results.",
+  "selected_model": "hist_log",
+  "train_rows": 293057,
+  "test_rows": 19306,
+  "station_count": 55,
+  "period": [
+    "2010-01-01",
+    "2025-12-31"
+  ],
+  "evaluations": [
+    {
+      "evaluation": "Training fit (not validation)",
+      "rows": 293057,
+      "rmse": 66601.14488153358,
+      "extreme_rmse": 151402.24741467097,
+      "mae": 19099.369146990794,
+      "r2": 0.8477647551580967,
+      "extreme_rows": 29498
+    },
+    {
+      "evaluation": "Later-date validation",
+      "rows": 58645,
+      "rmse": 56184.44340170558,
+      "extreme_rmse": 60395.59890686593,
+      "mae": 18705.642497420125,
+      "r2": 0.8315192222226095,
+      "extreme_rows": 5913
+    },
+    {
+      "evaluation": "Unseen stations + later dates",
+      "rows": 12051,
+      "rmse": 79670.91047456674,
+      "extreme_rmse": 136635.2520220088,
+      "mae": 32592.02739476134,
+      "r2": 0.8797023908804855,
+      "extreme_rows": 1219
+    },
+    {
+      "evaluation": "2025 independent public test",
+      "rows": 19306,
+      "rmse": 52695.25874496755,
+      "extreme_rmse": 113268.2216330612,
+      "mae": 16063.873282544597,
+      "r2": 0.8909453989466699,
+      "extreme_rows": 1983
+    },
+    {
+      "evaluation": "2025 station-median baseline",
+      "rows": 19306,
+      "rmse": 85499.667586264,
+      "extreme_rmse": 180500.17100150202,
+      "mae": 25871.746430125353,
+      "r2": 0.712902267029567,
+      "extreme_rows": 1983
+    }
+  ],
+  "holdout_rmse_reduction_vs_station_median_percent": 38.36787880865008,
+  "definitions": {
+    "rmse": "Root mean squared error in cfs; lower is better; penalizes large errors.",
+    "extreme_rmse": "RMSE on actual top 10% discharge within each station, including threshold ties.",
+    "mae": "Mean absolute error in cfs; lower is better.",
+    "r2": "Proportion of variance explained. Not a percentage of correct predictions; can be negative."
+  },
+  "official_scoring_weights": {
+    "rmse": 0.4,
+    "extreme_rmse": 0.3,
+    "mae": 0.2,
+    "r2": 0.1
+  },
+  "official_score_note": "Leaderboard normalization depends on all teams and hidden event labels; no official composite score can be claimed here."
+}

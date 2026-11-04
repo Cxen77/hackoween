@@ -107,6 +107,15 @@ The flood scenario is a **static connected bathtub approximation**, using a 65×
 
 ## Project files
 
+Judge-facing results are stored in [`evaluation/README.md`](evaluation/README.md), with the evaluation matrix, metric definitions, actual-versus-predicted charts, every public test prediction, per-station scores, and a two-page PDF. The five-slide presentation is in `presentation/`. These report the measured public experiment, not official hidden-test scores.
+
+To rebuild the judge report after training:
+
+```powershell
+python -m pip install -r requirements-evaluation.txt
+python scripts/create_evaluation_report.py
+```
+
 - `solution.py`, `requirements.txt`: reproducible regression training and inference to CSV.
 - `scripts/`: download, basin enrichment, final holdout evaluation, and submission validator.
 - `predictions.csv`: code-generated public-data output, until replaced using official event data.
