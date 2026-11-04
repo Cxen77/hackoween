@@ -2,6 +2,33 @@
 
 Updated: 2026-11-04, Asia/Calcutta. Read this file first when continuing. Keep it current; do not create competing context logs.
 
+## NEW CONTEXT (2026-11-04): context/ folder + BASINSHIFT spec
+
+Reference docs now live in `context/` (see context/README.md). It holds BASINSHIFT_Full_Challenge_Documentation.pdf and a text extract. BASINSHIFT differs from FLOODCAST: it allows past-discharge history as input, wants multi-horizon forecasts plus exceedance probabilities and intervals, and scores macro-averaged unseen-catchment performance. Why accuracy is low (diagnosis): 3 Mississippi gauges = 80% of squared error, point weather not basin weather, missing basin attributes, log-target smoothing of peaks. If the target is BASINSHIFT, lagged-discharge features + quantile/probability heads are the first things to add. Which competition applies is not yet confirmed with the user. FLOODCAST_Participant_PS_Updated.pdf also saved to context/ (+ .txt): it names USGS waterservices, Open-Meteo archive and StreamStats APIs, all already implemented in scripts/download_data.py and scripts/download_catchments.py. Waiting for the user's data/ folder before any retraining.
+
+Workspace moved to D:/hackoween'/hackoween-1. data/ (gitignored) is ABSENT here; user is copying it from C:/Users/Dev/Desktop/hackoween. LightGBM/CatBoost not installed in Python 3.12 here (pip install -r requirements-advanced.txt). No retraining done yet this session.
+
+
+## BASINSHIFT 1-day-ahead experiment (2026-11-04, validation only, no test labels)
+
+Script: scripts/basinshift_forecast.py. Results: data/experiments/basinshift_v1/basinshift_metrics.json.
+- Weather/attributes only is about 7x worse than persistence at 1 day (RMSE 57,351 vs 7,628 on later dates).
+- Adding discharge lags to the regression did not beat persistence on either split.
+- Change-from-yesterday (residual) model: beats persistence on later dates of seen stations (RMSE 7,078 vs 7,629; extreme 13,014 vs 14,681; R2 0.99733 vs 0.99689), but is worse on unseen stations (RMSE 11,131 vs 10,659; extreme 17,449 vs 17,037). Mixed result, NOT promoted.
+- 50/50 blend of persistence and residual model (fixed weight, chosen before seeing results): beats persistence on ALL four metrics on BOTH splits. Seen stations RMSE 7,125 vs 7,629; unseen RMSE 10,437 vs 10,659; extreme unseen 16,233 vs 17,037. Single seed, validation only; needs repeat with other seeds before any promotion.
+- Applies to BASINSHIFT-style 1-day forecasts only. FLOODCAST 2025 test forbids discharge inputs, so the FLOODCAST champion (V2) is unchanged.
+
+## BASINSHIFT multi-horizon result (2026-11-04, 3 seeds x 2 splits x horizons 1/3/7, validation only)
+
+Script: scripts/basinshift_horizon.py. Summary: data/experiments/basinshift_horizon/basinshift_horizon_summary.json.
+- Blend (50/50 persistence + residual) beats persistence on RMSE in all 18 seed x split x horizon cells (3/3 seeds per cell).
+- Unseen-station best RMSE: blend at h1 (7,432) and h3 (17,781); residual at h7 (29,903 vs blend 30,189).
+- Unseen-station best extreme RMSE: blend at all horizons (h1 13,671; h3 33,555; h7 57,397).
+- Seen-station best RMSE: residual alone at all horizons.
+- Weather-only is roughly 7x worse than persistence at every horizon; discharge history is the main signal.
+- Chosen approach for BASINSHIFT-style forecasts: blend_50. Not applicable to FLOODCAST 2025 (no discharge inputs). FLOODCAST V2 champion unchanged.
+- Caveat: gains over persistence are modest (about 1-7%); no exceedance-probability or calibration model yet.
+
 ## LATEST CHECKPOINT — MODEL IMPROVEMENT COMPLETE
 
 LATEST WEAKNESS/IMPROVEMENT AUDIT COMPLETE: trained ten new candidates (seven LightGBM/CatBoost, three separate upstream-region weather models) on the existing293057 training rows. Installed LightGBM4.7.0/CatBoost1.2.10, requirements-advanced.txt added. V6 individual/fixed pairs and V7 continuous search failed the strict incumbent validation gate. V8 minimax improved all4 validation RMSE but worsened both benchmark RMSE metrics, rejected. V9 separate upstream-weather/timing + six-component minimax blend improved all4 validation RMSE by at least1.344%, but reused2025 benchmark showed a TRADEOFF: RMSE46812.78 (0.580% worse), peakRMSE111072.49 (0.630% better), MAE13824.66 (1.273% better), R².913934 versus incumbent. NOT PROMOTED because overall RMSE worsened. Current root predictions/model/reports remain the stronger-overall V2 below; byte equality with archived champion verified. No training process remains running.22 Python tests passed;19306 CSV rows validated. All V6–V9 metrics and locked selections archived under reports/experiments, and166 validation rows in evaluation/improvement_trials.csv. V2 snapshot reports/champion_v2 and data/experiments/champion_v2/model.joblib. V9 alternate model/predictions remain LOCAL under data/experiments/v9. No test actuals read by fitting/selection. Concurrent src/ edits and screenshots untouched.
