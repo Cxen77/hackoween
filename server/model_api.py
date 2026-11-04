@@ -65,16 +65,27 @@ def clean(v):
 
 
 def load_state(model_path: Path, train_path: Path, metadata_path: Path) -> None:
+    """Load the model plus the small per-gauge facts it needs. Prefers model_meta.json (sits next to the model, so the
+    dataset is NOT required); falls back to computing the same facts from the training CSV."""
     saved = joblib.load(model_path)
-    ours, quality = clean_frame(read_input(str(train_path), True), target=True)
-    meta = pd.read_csv(metadata_path, dtype={'station_id': str}).set_index('station_id')
-    thr = ours.groupby('station_id').discharge_cfs.quantile([0.9, 0.99]).unstack()
-    thr.columns = ['T90', 'T99']
-    static_cols = ['drainage_area_sqmi', 'mean_elevation_ft', 'slope_pct', 'forest_cover_pct', 'impervious_surface_pct']
-    static = ours.sort_values('date').groupby('station_id')[static_cols].last()
-    STATE.update(bundle=saved['bundle'], thr=thr, static=static, meta=meta, train_rows=len(ours), quality=quality,
-                 stations=sorted(ours.station_id.unique()), model_path=str(model_path))
-    print(f"loaded model {model_path.name}; {len(STATE['stations'])} stations, {len(ours):,} training rows", flush=True)
+    meta_file = model_path.with_name('model_meta.json')
+    if meta_file.exists():
+        m = json.loads(meta_file.read_text(encoding='utf-8'))
+        thr = pd.DataFrame(m['thresholds']).T.astype(float)
+        static = pd.DataFrame(m['static']).T.astype(float)
+        meta = pd.DataFrame(m['stations']).T.astype({'latitude': float, 'longitude': float})
+        train_rows, quality, stations, source = m['train_rows'], m['quality'], sorted(m['thresholds']), meta_file.name
+    else:
+        ours, quality = clean_frame(read_input(str(train_path), True), target=True)
+        meta = pd.read_csv(metadata_path, dtype={'station_id': str}).set_index('station_id')
+        thr = ours.groupby('station_id').discharge_cfs.quantile([0.9, 0.99]).unstack()
+        thr.columns = ['T90', 'T99']
+        static_cols = ['drainage_area_sqmi', 'mean_elevation_ft', 'slope_pct', 'forest_cover_pct', 'impervious_surface_pct']
+        static = ours.sort_values('date').groupby('station_id')[static_cols].last()
+        train_rows, stations, source = len(ours), sorted(ours.station_id.unique()), 'training CSV'
+    STATE.update(bundle=saved['bundle'], thr=thr, static=static, meta=meta, train_rows=train_rows, quality=quality,
+                 stations=stations, model_path=str(model_path))
+    print(f"loaded model {model_path.name} (gauge facts from {source}); {len(stations)} stations, {train_rows:,} training rows", flush=True)
 
 
 # ------------------------------------------------------------------ live inputs

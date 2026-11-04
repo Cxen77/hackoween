@@ -37,7 +37,7 @@ Script: scripts/basinshift_horizon.py. Summary: data/experiments/basinshift_hori
 
 ## SET UP ON A NEW MACHINE (read this first when pulling)
 
-Only what is needed to run and test is in Git. Committed: code, data/large (training/test data), the production model data/experiments/basinshift_model/models_caravan.joblib, public/reports/model/*.json (page data), generated station lists, context/. NOT in Git (re-creatable): data/external (Caravan), data/large_plus (extra-station experiment), models_heldout.joblib, experiment logs/result JSONs under data/experiments/basinshift_*, nwic_*.json scratch files.
+Only what is needed to run and test is required. The site and model server need ONLY: code, the production model data/experiments/basinshift_model/models_caravan.joblib, its small sidecar model_meta.json (per-gauge thresholds, basin attributes, coordinates; regenerate with `python -m scripts.export_model_meta`), public/reports/model/*.json (page data) and the generated station lists. The DATASET (data/large) is NOT needed to run the site or server; it stays in the repo from earlier commits and is only needed to retrain or rerun experiments. NOT in Git (re-creatable): data/external (Caravan), data/large_plus (extra-station experiment), models_heldout.joblib, experiment logs/result JSONs under data/experiments/basinshift_*, nwic_*.json scratch files.
 
 ```powershell
 git clone https://github.com/Cxen77/hackoween.git ; cd hackoween
@@ -49,7 +49,7 @@ python -m server.model_api
 npm run dev
 ```
 Optional, only to re-run experiments: `python -m scripts.basinshift_model --experiment heldout` (retrains the held-out model), `python -m scripts.download_caravan` (US Caravan subset, ~480 MB download into data/external, needs internet) and `python -m scripts.build_plus_dataset` (extra stations). Rebuild page data after new evaluations with `python -m scripts.export_model_page_data` (and `scripts/basinshift_judge_tests.py`, `scripts/india_live_test.py` with the server running).
-Without the model server the site still runs: forecast panels show a "start the server" message and the Judge tests tab uses saved results.
+The server works with no dataset present (verified in a folder containing only code, the model and model_meta.json). Without the model server the site still runs: forecast panels show a "start the server" message and the Judge tests tab uses saved results.
 
 ## WHAT WAS ADDED 2026-11-04 (BASINSHIFT system + site integration)
 
