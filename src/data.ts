@@ -11,7 +11,7 @@ export const stations: Station[] = [
 ];
 export type Forecast = { daily: { time:string[]; river_discharge:(number|null)[]; river_discharge_mean?:(number|null)[]; river_discharge_min?:(number|null)[]; river_discharge_max?:(number|null)[] } };
 export type Weather = { current: { time:string; temperature_2m:number; precipitation:number }; daily:{ time:string[]; precipitation_sum:(number|null)[]; temperature_2m_max:(number|null)[]; temperature_2m_min:(number|null)[] } };
-export type Gauge = { discharge?:number; height?:number; time?:string; approval?:string };
+export type Gauge = { discharge?:number; height?:number; time?:string; approval?:string; stationId?:string };
 export type Remote<T> = { data:T|null; error:string|null; loading:boolean; fetchedAt?:string };
 export async function jsonFetch(url:string, signal?:AbortSignal) {
   const response = await fetch(url, {signal: signal ? AbortSignal.any([signal,AbortSignal.timeout(25000)]) : AbortSignal.timeout(25000)});
@@ -25,7 +25,7 @@ export async function fetchGauge(s:Station, signal:AbortSignal):Promise<Gauge> {
   // Modern API first. The legacy adapter is retained for continuity during migration.
   try {
     const data = await jsonFetch(`https://api.waterdata.usgs.gov/ogcapi/v1/collections/latest-continuous/items?f=json&monitoring_location_id=USGS-${s.usgs}&parameter_code=00060,00065&limit=20`,signal);
-    const gauge:Gauge = {};
+    const gauge:Gauge = {stationId:s.id};
     for(const f of data.features ?? []) {
       const p = f.properties;
       if(p.value === null || !Number.isFinite(Number(p.value)) || Number(p.value)<0) continue;
@@ -35,7 +35,7 @@ export async function fetchGauge(s:Station, signal:AbortSignal):Promise<Gauge> {
     if(gauge.discharge != null) return gauge;
   } catch(e) { if(signal.aborted) throw e; }
   const data = await jsonFetch(`https://waterservices.usgs.gov/nwis/iv/?format=json&sites=${s.usgs}&parameterCd=00060,00065&period=P1D`,signal);
-  const gauge:Gauge = {};
+  const gauge:Gauge = {stationId:s.id};
   for(const series of data.value?.timeSeries ?? []) {
     const values = series.values?.flatMap((v:{value:unknown[]})=>v.value) ?? [];
     const latest = values.filter((v:{value:string})=>Number(v.value)>=0).at(-1);
