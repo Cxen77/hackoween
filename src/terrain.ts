@@ -1,4 +1,5 @@
-import { connectedFlood } from './flood.mjs';
+import { channelMaskFromWays, prepareRiverFlood, riverFloodAtStage, waterSurfaceMesh } from './river-flood.mjs';
+import { mappedRiverWays } from './riverGeometry';
 import type { FeatureCollection, Polygon, LineString } from 'geojson';
 
 export type Grid = {
@@ -11,6 +12,8 @@ export type Grid = {
   seed: number;
   cellArea: number;
   span: number;
+  riverModel: ReturnType<typeof prepareRiverFlood>;
+  channelSource: 'OpenStreetMap river geometry' | 'Point-source fallback';
 };
 
 const tileCache = new Map<string, Promise<ImageData>>();
@@ -44,15 +47,15 @@ async function terrainTile(x: number, y: number, z: number): Promise<ImageData> 
 
 /**
  * Load high-resolution DEM grid covering a wide river corridor.
- * Dynamic span and 129x129 resolution ensure wide geographic river reach coverage
- * with fine, sub-100m grid cells that smooth naturally without blockiness.
+ * Real elevation plus mapped river geometry. Grid resolution is span / size.
  */
-export async function loadGrid(lat: number, lon: number, span = 20000, size = 129): Promise<Grid> {
+export async function loadGrid(lat: number, lon: number, span = 20000, size = 193): Promise<Grid> {
   const dy = span / 111320 / size;
   const dx = dy / Math.cos((lat * Math.PI) / 180);
   const west = lon - (dx * size) / 2;
   const south = lat - (dy * size) / 2;
-  const z = 11;
+  const ways = mappedRiverWays(west, south, west + dx * size, south + dy * size).catch(() => []);
+  const z = 12;
   const n = 2 ** z;
 
   const points = Array.from({ length: size * size }, (_, i) => {
@@ -63,8 +66,8 @@ export async function loadGrid(lat: number, lon: number, span = 20000, size = 12
     return {
       x: Math.floor(tx),
       y: Math.floor(ty),
-      px: Math.min(255, Math.floor((tx % 1) * 256)),
-      py: Math.min(255, Math.floor((ty % 1) * 256))
+      px: Math.min(255, (tx % 1) * 256),
+      py: Math.min(255, (ty % 1) * 256)
     };
   });
 
@@ -80,25 +83,15 @@ export async function loadGrid(lat: number, lon: number, span = 20000, size = 12
 
   const rawHeights = points.map(p => {
     const d = tiles.get(`${p.x},${p.y}`)!.data;
-    const i = (p.py * 256 + p.px) * 4;
-    return d[i] * 256 + d[i + 1] + d[i + 2] / 256 - 32768;
+    const x = Math.floor(p.px), y = Math.floor(p.py), fx = p.px - x, fy = p.py - y;
+    const sample = (xx: number, yy: number) => {
+      const i = (Math.min(255, yy) * 256 + Math.min(255, xx)) * 4;
+      return d[i] * 256 + d[i + 1] + d[i + 2] / 256 - 32768;
+    };
+    return sample(x,y)*(1-fx)*(1-fy)+sample(x+1,y)*fx*(1-fy)+sample(x,y+1)*(1-fx)*fy+sample(x+1,y+1)*fx*fy;
   });
-
-  // Hydro-condition artificial bridge deck spikes so river inundation flows smoothly under bridges
-  const heights = Float32Array.from(rawHeights);
-  for (let r = 1; r < size - 1; r++) {
-    for (let c = 1; c < size - 1; c++) {
-      const idx = r * size + c;
-      const v = rawHeights[idx];
-      const n = rawHeights[idx + size], s = rawHeights[idx - size];
-      const w = rawHeights[idx - 1], e = rawHeights[idx + 1];
-      if (v > n + 2.5 && v > s + 2.5 && Math.abs(n - s) < 6) {
-        heights[idx] = Math.max(n, s);
-      } else if (v > e + 2.5 && v > w + 2.5 && Math.abs(e - w) < 6) {
-        heights[idx] = Math.max(e, w);
-      }
-    }
-  }
+  // Preserve barriers: arbitrary ridge removal can turn real banks into openings.
+  const heights = rawHeights;
 
   // Snap seed to the local riverbed within ~350 m of the selected station marker
   let seed = Math.floor((size * size) / 2);
@@ -112,7 +105,13 @@ export async function loadGrid(lat: number, lon: number, span = 20000, size = 12
     }
   }
 
-  return { heights: Array.from(heights), size, west, south, dx, dy, seed, cellArea: (span / size) ** 2, span };
+  const geometry = channelMaskFromWays(await ways, { size, west, south, dx, dy, cellArea: (span / size) ** 2 });
+  const channel = geometry?.mask ?? new Uint8Array(size * size);
+  if (geometry) seed = geometry.seed;
+  else channel[seed] = 1;
+  const riverModel = prepareRiverFlood(heights, size, channel, seed);
+  return { heights, size, west, south, dx, dy, seed, cellArea: (span / size) ** 2, span, riverModel,
+    channelSource: geometry ? 'OpenStreetMap river geometry' : 'Point-source fallback' };
 }
 
 /**
@@ -236,44 +235,25 @@ export function floodFeatures(
   level: number;
   flowDirection: string;
   gradient: number;
+  boundaryReached: boolean;
+  surface: Float32Array;
 } {
-  // Use connected flood starting strictly at the river channel seed
-  const { depths, level } = connectedFlood(grid.heights, grid.size, grid.seed, rise);
+  const { depths, level, floodedCells, maxDepth, boundaryReached } = riverFloodAtStage(grid.riverModel, rise);
+  const surface = waterSurfaceMesh(grid.riverModel, rise);
   const features: (FeatureCollection<Polygon>['features'][0] | FeatureCollection<LineString>['features'][0])[] = [];
-  let maxDepth = 0;
   let wetCount = 0;
   const size = grid.size;
 
-  const wetIndices: number[] = [];
   for (let i = 0; i < depths.length; i++) {
     if (depths[i] > 0.05) {
       wetCount++;
-      wetIndices.push(i);
-      if (depths[i] > maxDepth) maxDepth = depths[i];
     }
   }
 
-  // Determine hydraulic flow direction and reach drop from the active inundated channel
-  let flowDirection = 'Upstream → Downstream';
-  let gradient = 0;
-  if (wetIndices.length >= 4) {
-    let highest = wetIndices[0], lowest = wetIndices[0];
-    for (const idx of wetIndices) {
-      if (grid.heights[idx] > grid.heights[highest]) highest = idx;
-      if (grid.heights[idx] < grid.heights[lowest]) lowest = idx;
-    }
-    const upR = Math.floor(highest / size), upC = highest % size;
-    const downR = Math.floor(lowest / size), downC = lowest % size;
-    const dRow = downR - upR;
-    const dCol = downC - upC;
-    if (Math.abs(dCol) >= Math.abs(dRow) && Math.abs(dCol) > 2) {
-      flowDirection = dCol > 0 ? 'West → East' : 'East → West';
-    } else if (Math.abs(dRow) > 2) {
-      flowDirection = dRow > 0 ? 'South → North' : 'North → South';
-    }
-    const drop = Math.max(0, grid.heights[highest] - grid.heights[lowest]);
-    gradient = grid.span > 0 ? drop / (grid.span / 1000) : 0;
-  }
+  const {a,b} = grid.riverModel;
+  const gradient = Math.hypot(a,b) / Math.sqrt(grid.cellArea) * 1000;
+  const flowDirection = gradient < .01 ? 'Near-level reach' : Math.abs(a)>Math.abs(b)
+    ? a>0 ? 'East → West' : 'West → East' : b>0 ? 'North → South' : 'South → North';
 
   if (wetCount === 0) {
     return {
@@ -282,17 +262,12 @@ export function floodFeatures(
       maxDepth: 0,
       level,
       flowDirection,
-      gradient
+      gradient, boundaryReached, surface
     };
   }
 
-  // Adaptive depth tiers calibrated to current river water depth
-  const depthThresholds = [0.05];
-  if (maxDepth >= 0.8) depthThresholds.push(0.5);
-  if (maxDepth >= 2.0) depthThresholds.push(1.5);
-  if (maxDepth >= 4.5) depthThresholds.push(3.5);
-  if (maxDepth >= 9.0) depthThresholds.push(7.0);
-  if (maxDepth >= 16.0) depthThresholds.push(12.0);
+  // Exact footprint for geofence intersection. The GPU mesh handles visual depth.
+  const depthThresholds = [0.02];
 
   const toGeo = (r: number, c: number): [number, number] => [
     grid.west + c * grid.dx,
@@ -313,20 +288,27 @@ export function floodFeatures(
       const area = ringSignedArea(raw);
       if (area < 0) {
         outerRings.push(raw);
-      } else if (Math.abs(area) >= 4) {
-        // Filter out 1-2 cell DEM noise holes to eliminate "black square boxes"
+      } else {
         holeRings.push(raw);
       }
     }
 
     // Smooth rings and convert to geographical coordinates
     for (const outer of outerRings) {
-      const smoothed = smoothRing(outer, 3);
+      const smoothed = outer;
       const geoOuter: [number, number][] = smoothed.map(pt => toGeo(pt[0], pt[1]));
 
       const geoHoles: [number, number][][] = [];
       for (const hole of holeRings) {
-        const smoothedHole = smoothRing(hole, 2);
+        // A dry island belongs only to the outer ring containing it.
+        let inside = false;
+        const [y,x] = hole[0];
+        for (let i=0,j=outer.length-1;i<outer.length;j=i++) {
+          const [yi,xi]=outer[i], [yj,xj]=outer[j];
+          if ((yi>y)!==(yj>y) && x<(xj-xi)*(y-yi)/(yj-yi)+xi) inside=!inside;
+        }
+        if (!inside) continue;
+        const smoothedHole = hole;
         geoHoles.push(smoothedHole.map(pt => toGeo(pt[0], pt[1])));
       }
 
@@ -345,7 +327,7 @@ export function floodFeatures(
       });
 
       // Natural shoreline glow (omits artificial bounding box edges)
-      if (threshold === 0.05) {
+      if (threshold === 0.02) {
         const naturalShorelines = extractNaturalShorelines(smoothed, size);
         for (const line of naturalShorelines) {
           if (line.length >= 2) {
@@ -365,10 +347,10 @@ export function floodFeatures(
 
   return {
     geojson: { type: 'FeatureCollection', features: features as any },
-    area: (wetCount * grid.cellArea) / 1e6,
+    area: (floodedCells * grid.cellArea) / 1e6,
     maxDepth,
     level,
     flowDirection,
-    gradient
+    gradient, boundaryReached, surface
   };
 }

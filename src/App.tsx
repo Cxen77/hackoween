@@ -14,6 +14,7 @@ import { stations, number, forecastUrl, weatherUrl, jsonFetch, fetchGauge, downl
 import type { Station, Forecast, Weather, Gauge, Remote, RiverHydraulicProfile } from './data';
 import { loadGrid, floodFeatures } from './terrain';
 import type { Grid } from './terrain';
+import { WaterSurface } from './WaterSurface';
 import MonitorPanel from './MonitorPanel';
 import HydrographOutlookCard from './components/HydrographOutlookCard';
 import ModelPage from './components/ModelPage';
@@ -101,6 +102,8 @@ export default function App() {
     }
   });
   const [is3d, setIs3d] = useState(true);
+  const terrainMode = useRef(is3d);
+  terrainMode.current = is3d;
 
   const [showSimulation, setShowSimulation] = useState(true);
   const [rise, setRise] = useState<number>(() => {
@@ -117,7 +120,9 @@ export default function App() {
   const [gridError, setGridError] = useState('');
   const [gridLoading, setGridLoading] = useState(false);
   const [playing, setPlaying] = useState(false);
-  const [animatedRise, setAnimatedRise] = useState(0);
+  const [animatedRise, setAnimatedRise] = useState(rise);
+  const displayedRise = useRef(rise);
+  const waterSurface = useRef<WaterSurface | null>(null);
 
   const [sources, setSources] = useState(false);
   const [modelOpen, setModelOpen] = useState(false);
@@ -149,7 +154,7 @@ export default function App() {
   const [alertToast, setAlertToast] = useState<{ name: string; message: string; height: number | null; threshold: number; basis: string } | null>(null);
   const previousAlerts = useRef<Record<string, boolean>>({});
   const [storageError, setStorageError] = useState('');
-  const [floodStats, setFloodStats] = useState({ area: 0, maxDepth: 0, level: 0, flowDirection: '', gradient: 0 });
+  const [floodStats, setFloodStats] = useState({ area: 0, maxDepth: 0, level: 0, flowDirection: '', gradient: 0, boundaryReached: false });
 
   const profile = useMemo<RiverHydraulicProfile>(
     () => riverProfiles[station.id] || defaultRiverProfile,
@@ -205,6 +210,7 @@ export default function App() {
     const m = map.current;
     if (!m) return;
     m.setTerrain(next ? { source: 'terrain-dem', exaggeration: 3.2 } : null);
+    if (waterSurface.current) waterSurface.current.exaggeration = next ? 3.2 : 0;
     if (m.getLayer('terrain-hills')) {
       m.setLayoutProperty('terrain-hills', 'visibility', next ? 'visible' : 'none');
     }
@@ -287,7 +293,7 @@ export default function App() {
         maxzoom: 15,
         attribution: 'Elevation: AWS Terrain Tiles'
       });
-      m.setTerrain({ source: 'terrain-dem', exaggeration: 3.2 });
+      m.setTerrain(terrainMode.current ? { source: 'terrain-dem', exaggeration: 3.2 } : null);
       m.addLayer({
         id: 'terrain-hills',
         type: 'hillshade',
@@ -317,7 +323,7 @@ export default function App() {
             5.0, '#1d4ed8',
             8.0, '#1e1b4b'
           ],
-          'fill-opacity': 0.74,
+          'fill-opacity': 0,
           'fill-antialias': true
         }
       });
@@ -329,7 +335,7 @@ export default function App() {
         paint: {
           'line-color': '#0284c7',
           'line-width': 5.5,
-          'line-opacity': 0.45,
+          'line-opacity': 0,
           'line-blur': 3.0
         }
       });
@@ -341,10 +347,13 @@ export default function App() {
         paint: {
           'line-color': '#67e8f9',
           'line-width': 2.4,
-          'line-opacity': 0.95,
+          'line-opacity': 0,
           'line-blur': 0.5
         }
       });
+      waterSurface.current = new WaterSurface();
+      waterSurface.current.exaggeration = terrainMode.current ? 3.2 : 0;
+      m.addLayer(waterSurface.current);
       m.addSource('monitored-areas', { type: 'geojson', data: empty });
       m.addLayer({
         id: 'monitor-fill',
@@ -473,6 +482,9 @@ export default function App() {
   useEffect(() => {
     if (!showSimulation) return;
     let alive = true;
+    setPlaying(false);
+    displayedRise.current = 0;
+    setAnimatedRise(0);
     setGrid(null);
     setGridLoading(true);
     setGridError('');
@@ -483,34 +495,56 @@ export default function App() {
     return () => { alive = false; };
   }, [station, showSimulation, corridorSpan]);
 
+  // Slider changes smoothly approach the target; pausing never changes stage.
   useEffect(() => {
-    if (!playing) return;
-    setAnimatedRise(0);
-    const start = Date.now();
+    if (!grid || playing) return;
+    const from = displayedRise.current;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      displayedRise.current = rise; setAnimatedRise(rise); return;
+    }
+    const start = performance.now();
     const id = setInterval(() => {
-      const progress = Math.min(1, (Date.now() - start) / 5000);
-      setAnimatedRise(rise * progress);
-      if (progress === 1) {
-        setPlaying(false);
-        clearInterval(id);
-      }
-    }, 80);
+      const t = Math.min(1, (performance.now() - start) / 700);
+      const value = from + (rise - from) * (t * t * (3 - 2 * t));
+      displayedRise.current = value; setAnimatedRise(value);
+      if (t === 1) clearInterval(id);
+    }, 70);
     return () => clearInterval(id);
-  }, [playing, rise]);
+  }, [rise, grid]);
+
+  useEffect(() => {
+    if (!playing || !grid) return;
+    const from = Math.abs(displayedRise.current - rise) < .02 ? 0 : displayedRise.current;
+    displayedRise.current = from; setAnimatedRise(from);
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      displayedRise.current = rise; setAnimatedRise(rise); setPlaying(false); return;
+    }
+    const start = performance.now();
+    const duration = 14000 * Math.max(.15, Math.abs(rise - from) / Math.max(rise, .01));
+    const id = setInterval(() => {
+      const t = Math.min(1, (performance.now() - start) / duration);
+      const value = from + (rise - from) * t;
+      displayedRise.current = value; setAnimatedRise(value);
+      if (t === 1) { clearInterval(id); setPlaying(false); }
+    }, 90);
+    return () => clearInterval(id);
+  }, [playing, grid]);
 
   useEffect(() => {
     const m = map.current;
     if (!m || !ready || !m.getSource('flood')) return;
     if (!showSimulation || !grid) {
       (m.getSource('flood') as GeoJSONSource).setData(empty);
+      waterSurface.current?.setSurface(null);
       setScenarioCells(empty);
       setScenarioHeight(0);
-      setFloodStats({ area: 0, maxDepth: 0, level: 0, flowDirection: '', gradient: 0 });
+      setFloodStats({ area: 0, maxDepth: 0, level: 0, flowDirection: '', gradient: 0, boundaryReached: false });
       return;
     }
-    const waterRise = playing ? animatedRise : rise;
+    const waterRise = animatedRise;
     const result = floodFeatures(grid, waterRise);
     (m.getSource('flood') as GeoJSONSource).setData(result.geojson);
+    waterSurface.current?.setSurface(grid, result.surface);
     setScenarioCells(result.geojson);
     setScenarioHeight(waterRise);
     setFloodStats({
@@ -518,7 +552,8 @@ export default function App() {
       maxDepth: result.maxDepth,
       level: result.level,
       flowDirection: result.flowDirection,
-      gradient: result.gradient
+      gradient: result.gradient,
+      boundaryReached: result.boundaryReached
     });
   }, [grid, rise, playing, animatedRise, showSimulation, ready, refresh]);
 
@@ -1116,7 +1151,7 @@ export default function App() {
                   <span />
                 </button>
               </div>
-              <p className="sim-description">Hydraulic reach inundation across {(corridorSpan / 1000).toFixed(0)} km river corridor.</p>
+              <p className="sim-description">Raise the river and watch water spread across connected low ground. {(corridorSpan / 1000).toFixed(0)} km terrain window.</p>
 
               <ModelForecastCard
                 usgs={station.usgs}
@@ -1133,15 +1168,15 @@ export default function App() {
 
               <div className="slider-group">
                 <div className="slider-label">
-                  <span>Water rise above channel</span>
-                  <strong className="rise-numeric">+{rise.toFixed(profile.step < 0.1 ? 2 : 1)} <span>m</span>{liveStageMetres != null && Math.abs(rise - liveStageMetres) < 0.05 && <span className="live-tag" title={liveLevel?.source}>● LIVE</span>}</strong>
+                  <span>Rise above reference river surface</span>
+                  <strong className="rise-numeric">+{animatedRise.toFixed(profile.step < 0.1 ? 2 : 1)} <span>m</span>{liveStageMetres != null && Math.abs(animatedRise - liveStageMetres) < 0.05 && <span className="live-tag" title={liveLevel?.source}>● LIVE</span>}</strong>
                 </div>
                 <div className="slider-track-wrap">
                   <input
                     id="water-rise"
                     type="range"
                     className="reference-slider"
-                    min={profile.minRise}
+                    min={0}
                     max={profile.maxRise}
                     step={profile.step}
                     value={rise}
@@ -1171,8 +1206,13 @@ export default function App() {
                 </div>
               </div>
 
+              <div className="simulation-playback-status">
+                <span>{playing ? 'Rising' : Math.abs(animatedRise - rise) > .02 ? 'Paused / adjusting' : 'At target'} · target +{rise.toFixed(1)} m</span>
+                <button type="button" onClick={() => { setPlaying(false); setRise(0); displayedRise.current = 0; setAnimatedRise(0); }}>Reset to river level</button>
+              </div>
+
               <LongPressButton
-                disabled={gridLoading || !!gridError}
+                disabled={gridLoading || !!gridError || !grid || rise === 0}
                 active={playing}
                 className="w-full"
                 onLongPress={() => {
@@ -1207,7 +1247,7 @@ export default function App() {
                 ) : showSimulation ? (
                   <>
                     <Play size={14} />
-                    <span>Animate water rise</span>
+                    <span>{Math.abs(animatedRise - rise) > .02 ? 'Resume water rise' : 'Replay water rise'}</span>
                   </>
                 ) : (
                   <>
@@ -1226,14 +1266,17 @@ export default function App() {
                 <div className="scenario-stats">
                   <div className="stat-box">
                     <strong>{number(floodStats.area, 2)} <small>km²</small></strong>
-                    <span>Flooded area</span>
+                    <span>Additional inundated land</span>
                   </div>
                   <div className="stat-box">
                     <strong>{number(floodStats.maxDepth, 1)} <small>m</small></strong>
-                    <span>Peak depth</span>
+                    <span>Max depth over land</span>
                   </div>
                 </div>
               ) : null}
+
+              {grid && <p className="simulation-source-note">{grid.channelSource} · {Math.round(Math.sqrt(grid.cellArea))} m cells. {grid.channelSource === 'Point-source fallback' && 'Channel data unavailable; local point-source scenario only.'}</p>}
+              {floodStats.boundaryReached && <p className="inline-error">Water reaches the terrain-window edge. The affected area extends beyond this view.</p>}
 
               <div className="method-note">
                 <Mountain size={13} />
@@ -1362,7 +1405,7 @@ export default function App() {
           preset="glacier"
           maxWidth="100%"
           name="FloodCast"
-          tagline="Hydrological intelligence platform connecting real-time water gauges and high-resolution hydraulic inundation modeling."
+          tagline="River intelligence connecting live gauges, discharge forecasts, and terrain-based flood scenarios."
           brandHref="#"
           columns={[
             {
@@ -1520,7 +1563,7 @@ export default function App() {
                   <Mountain size={20} />
                   <div>
                     <h3>AWS Terrarium DEM & Connected Inundation</h3>
-                    <p>Real-time 65 × 65 elevation cell grid (5 × 5 km window) loaded from AWS Open Data Terrarium tiles. Gauge snaps to lowest local cell (~155m). Connected flood solver models static bathtub water rise.</p>
+                    <p>A 193 × 193 elevation grid from AWS Terrarium tiles, with mapped OpenStreetMap river channels. A fitted reach slope provides the reference water surface. Rising stage overtops connected terrain barriers; the 3D surface sits above the ground. This is a stage scenario, not a hydraulic forecast. Grid spacing depends on the selected window; missing river data uses a labeled point-source fallback.</p>
                   </div>
                 </div>
 

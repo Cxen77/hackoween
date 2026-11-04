@@ -3974,3 +3974,6 @@ svg {
   overflow-x: hidden !important;
   width: 100%;
 }
+.simulation-playback-status { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:8px 0 14px; font-size:12px; color:#526477; }
+.simulation-playback-status button { min-height:36px; padding:6px 10px; border:1px solid #cbd5e1; border-radius:8px; color:#155e75; background:#f0f9ff; cursor:pointer; }
+.simulation-source-note { margin:12px 0 6px; font-size:12px; line-height:1.6; color:#526477; }
