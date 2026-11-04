@@ -1,0 +1,2726 @@
+{
+  "source": "USGS StreamStats Gage Statistics Services, supplemented with actual static USGS GAGES-II basin attributes",
+  "endpoint": "https://streamstats.usgs.gov/gagestatsservices/stations/{station_id}?include=characteristics",
+  "policy": "Explicit static-characteristic allowlist; no streamflow statistics or target-derived quantiles are used. Conflicting units/definitions remain missing.",
+  "coverage_stations": {
+    "drainage_area_sqmi": 48,
+    "mean_elevation_ft": 34,
+    "slope_pct": 34,
+    "forest_cover_pct": 34,
+    "impervious_surface_pct": 34
+  },
+  "streamstats_coverage_stations": {
+    "drainage_area_sqmi": 42,
+    "mean_elevation_ft": 12,
+    "slope_pct": 7,
+    "forest_cover_pct": 10,
+    "impervious_surface_pct": 8
+  },
+  "gagesii_supplement_error": null,
+  "total_stations": 55,
+  "errors": [],
+  "source_values": [
+    {
+      "station_id": "01470500",
+      "field": "drainage_area_sqmi",
+      "value": 355.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 142,
+        "title": "2008, Regression equations for estimating flood flows at selected recurrence intervals for ungaged streams in Pennsylvania:  U.S. Geological Survey Scientific Investigations Report 2008-5102, 57p.",
+        "author": "Roland, M.A., and Stuckey, M.H.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2008/5102/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01470500?include=characteristics"
+    },
+    {
+      "station_id": "01470500",
+      "field": "mean_elevation_ft",
+      "value": 1020.0,
+      "source_variable": "ELEV",
+      "source_unit": "ft",
+      "citation": {
+        "id": 142,
+        "title": "2008, Regression equations for estimating flood flows at selected recurrence intervals for ungaged streams in Pennsylvania:  U.S. Geological Survey Scientific Investigations Report 2008-5102, 57p.",
+        "author": "Roland, M.A., and Stuckey, M.H.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2008/5102/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01470500?include=characteristics"
+    },
+    {
+      "station_id": "01470500",
+      "field": "forest_cover_pct",
+      "value": 71.13,
+      "source_variable": "FOREST",
+      "source_unit": "%",
+      "citation": {
+        "id": 139,
+        "title": "2006, Low-flow, base-flow, and mean-flow regression equations for Pennsylvania streams:  U.S. Geological Survey Scientific Investigations Report 2006-5130, 84 p.",
+        "author": "Stuckey, M.H.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2006/5130/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01470500?include=characteristics"
+    },
+    {
+      "station_id": "01470500",
+      "field": "slope_pct",
+      "value": 14.143084534245773,
+      "source_variable": "BSLOPD",
+      "source_unit": "\u00b0",
+      "citation": {
+        "id": 139,
+        "title": "2006, Low-flow, base-flow, and mean-flow regression equations for Pennsylvania streams:  U.S. Geological Survey Scientific Investigations Report 2006-5130, 84 p.",
+        "author": "Stuckey, M.H.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2006/5130/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01470500?include=characteristics"
+    },
+    {
+      "station_id": "01470500",
+      "field": "slope_pct",
+      "value": 15.820553407453145,
+      "source_variable": "BSLOPD",
+      "source_unit": "\u00b0",
+      "citation": {
+        "id": 169,
+        "title": "2019, Development of regression equations for the estimation of flood flows at ungaged streams in Pennsylvania: U.S. Geological Survey Scientific Investigations Report 2019\u20135094, 36 p.",
+        "author": "Roland, M.A., and Stuckey, M.H.,",
+        "citationURL": "https://doi.org/10.3133/sir20195094"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01470500?include=characteristics"
+    },
+    {
+      "station_id": "01570500",
+      "field": "drainage_area_sqmi",
+      "value": 24100.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 49,
+        "title": "2011, Selected streamflow statistics for streamgage locations in and near Pennsylvania:  U.S. Geological Survey Open-File Report 2011-1070, 88 p.",
+        "author": "Stuckey, M.H., and Roland, M.A.,",
+        "citationURL": "http://pubs.er.usgs.gov/publication/ofr20111070http://pubs.er.usgs.gov/publication/ofr20111070"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01570500?include=characteristics"
+    },
+    {
+      "station_id": "01491000",
+      "field": "mean_elevation_ft",
+      "value": 60.0,
+      "source_variable": "ELEV",
+      "source_unit": "ft",
+      "citation": {
+        "id": 94,
+        "title": "1996, Low-flow characteristics of streams in Maryland and Delaware: U.S. Geological Survey Water-Resources Investigations Report 94-4020, 113 p., 10 plates",
+        "author": "Carpenter, D.H., and Hayes, D.C.,",
+        "citationURL": "https://pubs.er.usgs.gov/publication/wri944020"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01491000?include=characteristics"
+    },
+    {
+      "station_id": "01491000",
+      "field": "forest_cover_pct",
+      "value": 35.0,
+      "source_variable": "FOREST",
+      "source_unit": "%",
+      "citation": {
+        "id": 94,
+        "title": "1996, Low-flow characteristics of streams in Maryland and Delaware: U.S. Geological Survey Water-Resources Investigations Report 94-4020, 113 p., 10 plates",
+        "author": "Carpenter, D.H., and Hayes, D.C.,",
+        "citationURL": "https://pubs.er.usgs.gov/publication/wri944020"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01491000?include=characteristics"
+    },
+    {
+      "station_id": "01491000",
+      "field": "slope_pct",
+      "value": 0.006099,
+      "source_variable": "BSLDEM30M",
+      "source_unit": "%",
+      "citation": {
+        "id": 75,
+        "title": "2010, An Update of Regional Regression Equations for Maryland, Appendix 3 in Application of Hydrologic Methods in Maryland, Third Edition, September 2010: Maryland State Highway Administration and Maryland Department of the Environment, 38 p.",
+        "author": "Thomas, Jr., W.O. and Moglen, G.E.,",
+        "citationURL": "http://gishydro.eng.umd.edu/HydroPanel/hydrology_panel_report_3rd_edition_final.pdf"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01491000?include=characteristics"
+    },
+    {
+      "station_id": "01491000",
+      "field": "slope_pct",
+      "value": 0.72,
+      "source_variable": "BSLDEM10M",
+      "source_unit": "%",
+      "citation": {
+        "id": 92,
+        "title": "2006, Magnitude and frequency of floods in Delaware: Scientific Investigations Report 2006-5146, 59 p.",
+        "author": "Ries, K.G., III, and Dillow, J.J.A.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2006/5146/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01491000?include=characteristics"
+    },
+    {
+      "station_id": "01491000",
+      "field": "forest_cover_pct",
+      "value": 11.17459674,
+      "source_variable": "FOREST",
+      "source_unit": "%",
+      "citation": {
+        "id": 205,
+        "title": "2021, Magnitude and Frequency of Peak Flows and Low Flows on Nontidal Streams in Delaware: peak and low flow estimates and basin characteristics: U.S. Geological Survey data release",
+        "author": "Hammond, J.C.",
+        "citationURL": "https://doi.org/10.5066/P9B7CUVO"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01491000?include=characteristics"
+    },
+    {
+      "station_id": "01491000",
+      "field": "mean_elevation_ft",
+      "value": 57.05009186,
+      "source_variable": "ELEV",
+      "source_unit": "ft",
+      "citation": {
+        "id": 205,
+        "title": "2021, Magnitude and Frequency of Peak Flows and Low Flows on Nontidal Streams in Delaware: peak and low flow estimates and basin characteristics: U.S. Geological Survey data release",
+        "author": "Hammond, J.C.",
+        "citationURL": "https://doi.org/10.5066/P9B7CUVO"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01491000?include=characteristics"
+    },
+    {
+      "station_id": "01491000",
+      "field": "impervious_surface_pct",
+      "value": 0.855922,
+      "source_variable": "IMPERV",
+      "source_unit": "%",
+      "citation": {
+        "id": 205,
+        "title": "2021, Magnitude and Frequency of Peak Flows and Low Flows on Nontidal Streams in Delaware: peak and low flow estimates and basin characteristics: U.S. Geological Survey data release",
+        "author": "Hammond, J.C.",
+        "citationURL": "https://doi.org/10.5066/P9B7CUVO"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01491000?include=characteristics"
+    },
+    {
+      "station_id": "01491000",
+      "field": "slope_pct",
+      "value": 2.42358,
+      "source_variable": "BSLDEM3M",
+      "source_unit": "%",
+      "citation": {
+        "id": 205,
+        "title": "2021, Magnitude and Frequency of Peak Flows and Low Flows on Nontidal Streams in Delaware: peak and low flow estimates and basin characteristics: U.S. Geological Survey data release",
+        "author": "Hammond, J.C.",
+        "citationURL": "https://doi.org/10.5066/P9B7CUVO"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01491000?include=characteristics"
+    },
+    {
+      "station_id": "01491000",
+      "field": "drainage_area_sqmi",
+      "value": 115.6929826,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 205,
+        "title": "2021, Magnitude and Frequency of Peak Flows and Low Flows on Nontidal Streams in Delaware: peak and low flow estimates and basin characteristics: U.S. Geological Survey data release",
+        "author": "Hammond, J.C.",
+        "citationURL": "https://doi.org/10.5066/P9B7CUVO"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01491000?include=characteristics"
+    },
+    {
+      "station_id": "01578310",
+      "field": "drainage_area_sqmi",
+      "value": 27100.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01578310?include=characteristics"
+    },
+    {
+      "station_id": "01646500",
+      "field": "drainage_area_sqmi",
+      "value": 11536.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 249,
+        "title": "2025, Data in Support of Estimation of Magnitude and Frequency of Floods for Rural, Unregulated Streams in and near Virginia and West Virginia: U.S. Geological Survey data release",
+        "author": "Duda, J.M., Messinger, T., Scott, J.D., Kandel, C., Hamilton, W.B. and Hopkins, A.L.",
+        "citationURL": "https://doi.org/10.5066/P9RBZ8OJ"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01646500?include=characteristics"
+    },
+    {
+      "station_id": "01638500",
+      "field": "drainage_area_sqmi",
+      "value": 9652.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 249,
+        "title": "2025, Data in Support of Estimation of Magnitude and Frequency of Floods for Rural, Unregulated Streams in and near Virginia and West Virginia: U.S. Geological Survey data release",
+        "author": "Duda, J.M., Messinger, T., Scott, J.D., Kandel, C., Hamilton, W.B. and Hopkins, A.L.",
+        "citationURL": "https://doi.org/10.5066/P9RBZ8OJ"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01638500?include=characteristics"
+    },
+    {
+      "station_id": "01651000",
+      "field": "slope_pct",
+      "value": 0.06941,
+      "source_variable": "BSLDEM30M",
+      "source_unit": "%",
+      "citation": {
+        "id": 75,
+        "title": "2010, An Update of Regional Regression Equations for Maryland, Appendix 3 in Application of Hydrologic Methods in Maryland, Third Edition, September 2010: Maryland State Highway Administration and Maryland Department of the Environment, 38 p.",
+        "author": "Thomas, Jr., W.O. and Moglen, G.E.,",
+        "citationURL": "http://gishydro.eng.umd.edu/HydroPanel/hydrology_panel_report_3rd_edition_final.pdf"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01651000?include=characteristics"
+    },
+    {
+      "station_id": "01651000",
+      "field": "drainage_area_sqmi",
+      "value": 49.4,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 249,
+        "title": "2025, Data in Support of Estimation of Magnitude and Frequency of Floods for Rural, Unregulated Streams in and near Virginia and West Virginia: U.S. Geological Survey data release",
+        "author": "Duda, J.M., Messinger, T., Scott, J.D., Kandel, C., Hamilton, W.B. and Hopkins, A.L.",
+        "citationURL": "https://doi.org/10.5066/P9RBZ8OJ"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/01651000?include=characteristics"
+    },
+    {
+      "station_id": "02037500",
+      "field": "drainage_area_sqmi",
+      "value": 6753.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 93,
+        "title": "2011, Low-flow characteristics of Virginia streams: U.S. Geological Survey Scientific Investigations Report 2011\u20135143, 122 p. + 9 tables on CD.",
+        "author": "Austin, S.H., Krstolic, J.L., and Wiegand, Ute,",
+        "citationURL": "http://pubs.usgs.gov/sir/2011/5143/ "
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02037500?include=characteristics"
+    },
+    {
+      "station_id": "02037500",
+      "field": "mean_elevation_ft",
+      "value": 2267.0,
+      "source_variable": "ELEV",
+      "source_unit": "ft",
+      "citation": {
+        "id": 93,
+        "title": "2011, Low-flow characteristics of Virginia streams: U.S. Geological Survey Scientific Investigations Report 2011\u20135143, 122 p. + 9 tables on CD.",
+        "author": "Austin, S.H., Krstolic, J.L., and Wiegand, Ute,",
+        "citationURL": "http://pubs.usgs.gov/sir/2011/5143/ "
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02037500?include=characteristics"
+    },
+    {
+      "station_id": "02037500",
+      "field": "drainage_area_sqmi",
+      "value": 6753.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 249,
+        "title": "2025, Data in Support of Estimation of Magnitude and Frequency of Floods for Rural, Unregulated Streams in and near Virginia and West Virginia: U.S. Geological Survey data release",
+        "author": "Duda, J.M., Messinger, T., Scott, J.D., Kandel, C., Hamilton, W.B. and Hopkins, A.L.",
+        "citationURL": "https://doi.org/10.5066/P9RBZ8OJ"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02037500?include=characteristics"
+    },
+    {
+      "station_id": "02035000",
+      "field": "drainage_area_sqmi",
+      "value": 6252.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 93,
+        "title": "2011, Low-flow characteristics of Virginia streams: U.S. Geological Survey Scientific Investigations Report 2011\u20135143, 122 p. + 9 tables on CD.",
+        "author": "Austin, S.H., Krstolic, J.L., and Wiegand, Ute,",
+        "citationURL": "http://pubs.usgs.gov/sir/2011/5143/ "
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02035000?include=characteristics"
+    },
+    {
+      "station_id": "02035000",
+      "field": "mean_elevation_ft",
+      "value": 2336.0,
+      "source_variable": "ELEV",
+      "source_unit": "ft",
+      "citation": {
+        "id": 93,
+        "title": "2011, Low-flow characteristics of Virginia streams: U.S. Geological Survey Scientific Investigations Report 2011\u20135143, 122 p. + 9 tables on CD.",
+        "author": "Austin, S.H., Krstolic, J.L., and Wiegand, Ute,",
+        "citationURL": "http://pubs.usgs.gov/sir/2011/5143/ "
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02035000?include=characteristics"
+    },
+    {
+      "station_id": "02035000",
+      "field": "drainage_area_sqmi",
+      "value": 6252.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 249,
+        "title": "2025, Data in Support of Estimation of Magnitude and Frequency of Floods for Rural, Unregulated Streams in and near Virginia and West Virginia: U.S. Geological Survey data release",
+        "author": "Duda, J.M., Messinger, T., Scott, J.D., Kandel, C., Hamilton, W.B. and Hopkins, A.L.",
+        "citationURL": "https://doi.org/10.5066/P9RBZ8OJ"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02035000?include=characteristics"
+    },
+    {
+      "station_id": "02084000",
+      "field": "drainage_area_sqmi",
+      "value": 2660.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02084000?include=characteristics"
+    },
+    {
+      "station_id": "02084000",
+      "field": "mean_elevation_ft",
+      "value": 222.4,
+      "source_variable": "ELEV",
+      "source_unit": "ft",
+      "citation": {
+        "id": 156,
+        "title": "2009, Magnitude and frequency of rural floods in the Southeastern United States, through 2006\u2014Volume 2, North Carolina: U.S. Geological Survey Scientific Investigations Report 2009\u20135158, 111 p.",
+        "author": "Weaver, J.C., Feaster, T.D., and Gotvald, A.J.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2009/5158/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02084000?include=characteristics"
+    },
+    {
+      "station_id": "02084000",
+      "field": "forest_cover_pct",
+      "value": 44.17,
+      "source_variable": "FOREST",
+      "source_unit": "%",
+      "citation": {
+        "id": 156,
+        "title": "2009, Magnitude and frequency of rural floods in the Southeastern United States, through 2006\u2014Volume 2, North Carolina: U.S. Geological Survey Scientific Investigations Report 2009\u20135158, 111 p.",
+        "author": "Weaver, J.C., Feaster, T.D., and Gotvald, A.J.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2009/5158/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02084000?include=characteristics"
+    },
+    {
+      "station_id": "02084000",
+      "field": "impervious_surface_pct",
+      "value": 1.15,
+      "source_variable": "IMPERV",
+      "source_unit": "%",
+      "citation": {
+        "id": 156,
+        "title": "2009, Magnitude and frequency of rural floods in the Southeastern United States, through 2006\u2014Volume 2, North Carolina: U.S. Geological Survey Scientific Investigations Report 2009\u20135158, 111 p.",
+        "author": "Weaver, J.C., Feaster, T.D., and Gotvald, A.J.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2009/5158/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02084000?include=characteristics"
+    },
+    {
+      "station_id": "02084000",
+      "field": "drainage_area_sqmi",
+      "value": 2696.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 230,
+        "title": "2023, Magnitude and frequency of floods for rural streams in Georgia, South Carolina, and North Carolina, 2017\u2014Results: U.S. Geological Survey Scientific Investigations Report 2023\u20135006, 75 p.",
+        "author": "Feaster, T.D., Gotvald, A.J., Musser, J.W., Weaver, J.C., Kolb, K.R., Veilleux, A.G., and Wagner, D.M.",
+        "citationURL": "https://pubs.er.usgs.gov/publication/sir20235006"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02084000?include=characteristics"
+    },
+    {
+      "station_id": "02197000",
+      "field": "drainage_area_sqmi",
+      "value": 7510.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 140,
+        "title": "2009, Magnitude and Frequency of Rural Floods in the Southeastern United States, 2006: Volume 3, South Carolina: U.S. Geological Survey Scientific Investigations Report 2009-5156, 226 p.",
+        "author": "Feaster, T.D., Gotvald, A.J., and Weaver, J.C.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2009/5156/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02197000?include=characteristics"
+    },
+    {
+      "station_id": "02197000",
+      "field": "drainage_area_sqmi",
+      "value": 7510.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02197000?include=characteristics"
+    },
+    {
+      "station_id": "02197000",
+      "field": "drainage_area_sqmi",
+      "value": 7332.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 230,
+        "title": "2023, Magnitude and frequency of floods for rural streams in Georgia, South Carolina, and North Carolina, 2017\u2014Results: U.S. Geological Survey Scientific Investigations Report 2023\u20135006, 75 p.",
+        "author": "Feaster, T.D., Gotvald, A.J., Musser, J.W., Weaver, J.C., Kolb, K.R., Veilleux, A.G., and Wagner, D.M.",
+        "citationURL": "https://pubs.er.usgs.gov/publication/sir20235006"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02197000?include=characteristics"
+    },
+    {
+      "station_id": "02197000",
+      "field": "impervious_surface_pct",
+      "value": 2.25,
+      "source_variable": "LC19IMP",
+      "source_unit": "%",
+      "citation": {
+        "id": 266,
+        "title": "2026, Methods for estimating selected low-flow frequency and mean annual flow statistics at gaged and ungaged locations on streams in Georgia, North Carolina, and South Carolina: U.S. Geological Survey Scientific Investigations Report 2026\u20135021, 48 p.",
+        "author": "Feaster, T.D., Harken, B.J., Aulenbach, B.T., Kolb, K.R., Mitchell, C.E., and Weaver, J.C.",
+        "citationURL": "https://doi.org/10.3133/sir20265021"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02197000?include=characteristics"
+    },
+    {
+      "station_id": "02197000",
+      "field": "drainage_area_sqmi",
+      "value": 7332.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 266,
+        "title": "2026, Methods for estimating selected low-flow frequency and mean annual flow statistics at gaged and ungaged locations on streams in Georgia, North Carolina, and South Carolina: U.S. Geological Survey Scientific Investigations Report 2026\u20135021, 48 p.",
+        "author": "Feaster, T.D., Harken, B.J., Aulenbach, B.T., Kolb, K.R., Mitchell, C.E., and Weaver, J.C.",
+        "citationURL": "https://doi.org/10.3133/sir20265021"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02197000?include=characteristics"
+    },
+    {
+      "station_id": "02138500",
+      "field": "drainage_area_sqmi",
+      "value": 66.7,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02138500?include=characteristics"
+    },
+    {
+      "station_id": "02138500",
+      "field": "mean_elevation_ft",
+      "value": 3313.94,
+      "source_variable": "ELEV",
+      "source_unit": "ft",
+      "citation": {
+        "id": 156,
+        "title": "2009, Magnitude and frequency of rural floods in the Southeastern United States, through 2006\u2014Volume 2, North Carolina: U.S. Geological Survey Scientific Investigations Report 2009\u20135158, 111 p.",
+        "author": "Weaver, J.C., Feaster, T.D., and Gotvald, A.J.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2009/5158/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02138500?include=characteristics"
+    },
+    {
+      "station_id": "02138500",
+      "field": "forest_cover_pct",
+      "value": 79.48,
+      "source_variable": "FOREST",
+      "source_unit": "%",
+      "citation": {
+        "id": 156,
+        "title": "2009, Magnitude and frequency of rural floods in the Southeastern United States, through 2006\u2014Volume 2, North Carolina: U.S. Geological Survey Scientific Investigations Report 2009\u20135158, 111 p.",
+        "author": "Weaver, J.C., Feaster, T.D., and Gotvald, A.J.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2009/5158/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02138500?include=characteristics"
+    },
+    {
+      "station_id": "02138500",
+      "field": "impervious_surface_pct",
+      "value": 0.9,
+      "source_variable": "IMPERV",
+      "source_unit": "%",
+      "citation": {
+        "id": 156,
+        "title": "2009, Magnitude and frequency of rural floods in the Southeastern United States, through 2006\u2014Volume 2, North Carolina: U.S. Geological Survey Scientific Investigations Report 2009\u20135158, 111 p.",
+        "author": "Weaver, J.C., Feaster, T.D., and Gotvald, A.J.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2009/5158/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02138500?include=characteristics"
+    },
+    {
+      "station_id": "02138500",
+      "field": "drainage_area_sqmi",
+      "value": 67.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 230,
+        "title": "2023, Magnitude and frequency of floods for rural streams in Georgia, South Carolina, and North Carolina, 2017\u2014Results: U.S. Geological Survey Scientific Investigations Report 2023\u20135006, 75 p.",
+        "author": "Feaster, T.D., Gotvald, A.J., Musser, J.W., Weaver, J.C., Kolb, K.R., Veilleux, A.G., and Wagner, D.M.",
+        "citationURL": "https://pubs.er.usgs.gov/publication/sir20235006"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02138500?include=characteristics"
+    },
+    {
+      "station_id": "02138500",
+      "field": "drainage_area_sqmi",
+      "value": 67.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 266,
+        "title": "2026, Methods for estimating selected low-flow frequency and mean annual flow statistics at gaged and ungaged locations on streams in Georgia, North Carolina, and South Carolina: U.S. Geological Survey Scientific Investigations Report 2026\u20135021, 48 p.",
+        "author": "Feaster, T.D., Harken, B.J., Aulenbach, B.T., Kolb, K.R., Mitchell, C.E., and Weaver, J.C.",
+        "citationURL": "https://doi.org/10.3133/sir20265021"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02138500?include=characteristics"
+    },
+    {
+      "station_id": "02138500",
+      "field": "impervious_surface_pct",
+      "value": 1.21,
+      "source_variable": "LC19IMP",
+      "source_unit": "%",
+      "citation": {
+        "id": 266,
+        "title": "2026, Methods for estimating selected low-flow frequency and mean annual flow statistics at gaged and ungaged locations on streams in Georgia, North Carolina, and South Carolina: U.S. Geological Survey Scientific Investigations Report 2026\u20135021, 48 p.",
+        "author": "Feaster, T.D., Harken, B.J., Aulenbach, B.T., Kolb, K.R., Mitchell, C.E., and Weaver, J.C.",
+        "citationURL": "https://doi.org/10.3133/sir20265021"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02138500?include=characteristics"
+    },
+    {
+      "station_id": "02087500",
+      "field": "drainage_area_sqmi",
+      "value": 1150.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02087500?include=characteristics"
+    },
+    {
+      "station_id": "02087500",
+      "field": "mean_elevation_ft",
+      "value": 423.75,
+      "source_variable": "ELEV",
+      "source_unit": "ft",
+      "citation": {
+        "id": 156,
+        "title": "2009, Magnitude and frequency of rural floods in the Southeastern United States, through 2006\u2014Volume 2, North Carolina: U.S. Geological Survey Scientific Investigations Report 2009\u20135158, 111 p.",
+        "author": "Weaver, J.C., Feaster, T.D., and Gotvald, A.J.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2009/5158/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02087500?include=characteristics"
+    },
+    {
+      "station_id": "02087500",
+      "field": "forest_cover_pct",
+      "value": 50.34,
+      "source_variable": "FOREST",
+      "source_unit": "%",
+      "citation": {
+        "id": 156,
+        "title": "2009, Magnitude and frequency of rural floods in the Southeastern United States, through 2006\u2014Volume 2, North Carolina: U.S. Geological Survey Scientific Investigations Report 2009\u20135158, 111 p.",
+        "author": "Weaver, J.C., Feaster, T.D., and Gotvald, A.J.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2009/5158/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02087500?include=characteristics"
+    },
+    {
+      "station_id": "02087500",
+      "field": "impervious_surface_pct",
+      "value": 4.76,
+      "source_variable": "IMPERV",
+      "source_unit": "%",
+      "citation": {
+        "id": 156,
+        "title": "2009, Magnitude and frequency of rural floods in the Southeastern United States, through 2006\u2014Volume 2, North Carolina: U.S. Geological Survey Scientific Investigations Report 2009\u20135158, 111 p.",
+        "author": "Weaver, J.C., Feaster, T.D., and Gotvald, A.J.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2009/5158/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02087500?include=characteristics"
+    },
+    {
+      "station_id": "02087500",
+      "field": "drainage_area_sqmi",
+      "value": 1153.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 230,
+        "title": "2023, Magnitude and frequency of floods for rural streams in Georgia, South Carolina, and North Carolina, 2017\u2014Results: U.S. Geological Survey Scientific Investigations Report 2023\u20135006, 75 p.",
+        "author": "Feaster, T.D., Gotvald, A.J., Musser, J.W., Weaver, J.C., Kolb, K.R., Veilleux, A.G., and Wagner, D.M.",
+        "citationURL": "https://pubs.er.usgs.gov/publication/sir20235006"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02087500?include=characteristics"
+    },
+    {
+      "station_id": "02231000",
+      "field": "drainage_area_sqmi",
+      "value": 707.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 55,
+        "title": "2011, Magnitude and Frequency of Floods for Rural Streams in Florida, 2006: U.S. Geological Survey Scientific Investigations Report 2011\u20135034, 69 p., 1 pl.",
+        "author": "Verdi, R.J., and Dixon, J.F.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2011/5034/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02231000?include=characteristics"
+    },
+    {
+      "station_id": "02479000",
+      "field": "drainage_area_sqmi",
+      "value": 6590.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 68,
+        "title": "2018, Regions and Tables for Mississippi Flood Frequency, Data through 2013",
+        "author": "Anderson, B.T.,",
+        "citationURL": "https://doi.org/10.5066/F7ZP45B8"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/02479000?include=characteristics"
+    },
+    {
+      "station_id": "03086000",
+      "field": "drainage_area_sqmi",
+      "value": 19500.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 49,
+        "title": "2011, Selected streamflow statistics for streamgage locations in and near Pennsylvania:  U.S. Geological Survey Open-File Report 2011-1070, 88 p.",
+        "author": "Stuckey, M.H., and Roland, M.A.,",
+        "citationURL": "http://pubs.er.usgs.gov/publication/ofr20111070http://pubs.er.usgs.gov/publication/ofr20111070"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/03086000?include=characteristics"
+    },
+    {
+      "station_id": "03339000",
+      "field": "forest_cover_pct",
+      "value": 23.378,
+      "source_variable": "FOREST",
+      "source_unit": "%",
+      "citation": {
+        "id": 111,
+        "title": "2004, Estimating Flood-Peak Discharge Magnitudes and Frequencies for Rural Streams in Illinois, U.S. Geological Survey Scientific Investigations Report 2004-5103. 147 p.",
+        "author": "Soong, D.T., Ishii, A.L., Sharpe, J.B., and Avery, C.F.,",
+        "citationURL": "https://pubs.er.usgs.gov/publication/sir20045103"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/03339000?include=characteristics"
+    },
+    {
+      "station_id": "03339000",
+      "field": "drainage_area_sqmi",
+      "value": 1286.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 236,
+        "title": "2023, Estimating peak-flow quantiles for selected annual exceedance probabilities in Illinois (Report No. FHWA-ICT-23-014). Illinois Center for Transportation.",
+        "author": "Over, T.M., Marti, M.K., O'Shea, P.S., Sharpe, J.B.",
+        "citationURL": "https://doi.org/10.36501/0197-9191/23-019"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/03339000?include=characteristics"
+    },
+    {
+      "station_id": "03353000",
+      "field": "drainage_area_sqmi",
+      "value": 1635.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 151,
+        "title": "2015, Low-flow characteristics for selected streams in Indiana: U.S. Geological Survey Scientific Investigations Report 2014\u20135242, 353 p.",
+        "author": "Fowler, K.K., and Wilson, J.T.,",
+        "citationURL": "http://dx.doi.org/10.3133/sir20145242"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/03353000?include=characteristics"
+    },
+    {
+      "station_id": "03353000",
+      "field": "drainage_area_sqmi",
+      "value": 1640.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 207,
+        "title": "2014, Estimation of regional flow-duration curves for Indiana and Illinois: U.S. Geological Survey Scientific Investigations Report 2014\u20135177, 24 p. and additional downloads, Tables 2\u20135, 8\u201313, and 18",
+        "author": "Over, T.M., Riley, J.D., Sharpe, J.B., and Arvin, Donald",
+        "citationURL": "http://dx.doi.org/10.3133/sir20145177"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/03353000?include=characteristics"
+    },
+    {
+      "station_id": "03451500",
+      "field": "drainage_area_sqmi",
+      "value": 945.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/03451500?include=characteristics"
+    },
+    {
+      "station_id": "03451500",
+      "field": "mean_elevation_ft",
+      "value": 2688.21,
+      "source_variable": "ELEV",
+      "source_unit": "ft",
+      "citation": {
+        "id": 156,
+        "title": "2009, Magnitude and frequency of rural floods in the Southeastern United States, through 2006\u2014Volume 2, North Carolina: U.S. Geological Survey Scientific Investigations Report 2009\u20135158, 111 p.",
+        "author": "Weaver, J.C., Feaster, T.D., and Gotvald, A.J.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2009/5158/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/03451500?include=characteristics"
+    },
+    {
+      "station_id": "03451500",
+      "field": "forest_cover_pct",
+      "value": 68.31,
+      "source_variable": "FOREST",
+      "source_unit": "%",
+      "citation": {
+        "id": 156,
+        "title": "2009, Magnitude and frequency of rural floods in the Southeastern United States, through 2006\u2014Volume 2, North Carolina: U.S. Geological Survey Scientific Investigations Report 2009\u20135158, 111 p.",
+        "author": "Weaver, J.C., Feaster, T.D., and Gotvald, A.J.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2009/5158/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/03451500?include=characteristics"
+    },
+    {
+      "station_id": "03451500",
+      "field": "impervious_surface_pct",
+      "value": 2.87,
+      "source_variable": "IMPERV",
+      "source_unit": "%",
+      "citation": {
+        "id": 156,
+        "title": "2009, Magnitude and frequency of rural floods in the Southeastern United States, through 2006\u2014Volume 2, North Carolina: U.S. Geological Survey Scientific Investigations Report 2009\u20135158, 111 p.",
+        "author": "Weaver, J.C., Feaster, T.D., and Gotvald, A.J.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2009/5158/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/03451500?include=characteristics"
+    },
+    {
+      "station_id": "03451500",
+      "field": "drainage_area_sqmi",
+      "value": 944.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 230,
+        "title": "2023, Magnitude and frequency of floods for rural streams in Georgia, South Carolina, and North Carolina, 2017\u2014Results: U.S. Geological Survey Scientific Investigations Report 2023\u20135006, 75 p.",
+        "author": "Feaster, T.D., Gotvald, A.J., Musser, J.W., Weaver, J.C., Kolb, K.R., Veilleux, A.G., and Wagner, D.M.",
+        "citationURL": "https://pubs.er.usgs.gov/publication/sir20235006"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/03451500?include=characteristics"
+    },
+    {
+      "station_id": "04213500",
+      "field": "drainage_area_sqmi",
+      "value": 436.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 26,
+        "title": "2006, Magnitude and Frequency of Floods in New York: U.S. Geological Survey Scientific Investigations Report 2006\u20135112, 152 p.",
+        "author": "Lumia, Richard, Freehafer, D.A., and Smith, M.J.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2006/5112/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/04213500?include=characteristics"
+    },
+    {
+      "station_id": "04213500",
+      "field": "forest_cover_pct",
+      "value": 57.25,
+      "source_variable": "FOREST",
+      "source_unit": "%",
+      "citation": {
+        "id": 26,
+        "title": "2006, Magnitude and Frequency of Floods in New York: U.S. Geological Survey Scientific Investigations Report 2006\u20135112, 152 p.",
+        "author": "Lumia, Richard, Freehafer, D.A., and Smith, M.J.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2006/5112/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/04213500?include=characteristics"
+    },
+    {
+      "station_id": "04193500",
+      "field": "drainage_area_sqmi",
+      "value": 6330.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 106,
+        "title": "2002, Techniques for Estimating Selected Streamflow Characteristics of Rural, Unregulated Streams in Ohio: U. S. Geological Survey Water-Resources Investigations Report 02-4068, 50 p",
+        "author": "Koltun, G. F., and Whitehead, M. T.,",
+        "citationURL": "https://pubs.er.usgs.gov/publication/wri024068"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/04193500?include=characteristics"
+    },
+    {
+      "station_id": "04193500",
+      "field": "mean_elevation_ft",
+      "value": 816.0,
+      "source_variable": "ELEV",
+      "source_unit": "ft",
+      "citation": {
+        "id": 104,
+        "title": "2003, Techniques for Estimating Flood-Peak Discharges of Rural, Unregulated Streams in Ohio, Second Edition: U. S. Geological Survey Water-Resources Investigations Report 03-4164, 76 p.",
+        "author": "Koltun, G. F.,",
+        "citationURL": "https://pubs.er.usgs.gov/publication/wri034164"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/04193500?include=characteristics"
+    },
+    {
+      "station_id": "04193500",
+      "field": "impervious_surface_pct",
+      "value": 2.54,
+      "source_variable": "LC11IMP",
+      "source_unit": "%",
+      "citation": {
+        "id": 79,
+        "title": "2019, Flood-frequency estimates for Ohio streamgages based on data through water year 2015 and techniques for estimating flood-frequency characteristics of rural, unregulated Ohio streams: U.S. Geological Survey Scientific Investigations Report 2019\u20135018, 25 p.",
+        "author": "Koltun, G.F.,",
+        "citationURL": "https://dx.doi.org/10.3133/sir20195018 "
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/04193500?include=characteristics"
+    },
+    {
+      "station_id": "04193500",
+      "field": "drainage_area_sqmi",
+      "value": 6310.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 79,
+        "title": "2019, Flood-frequency estimates for Ohio streamgages based on data through water year 2015 and techniques for estimating flood-frequency characteristics of rural, unregulated Ohio streams: U.S. Geological Survey Scientific Investigations Report 2019\u20135018, 25 p.",
+        "author": "Koltun, G.F.,",
+        "citationURL": "https://dx.doi.org/10.3133/sir20195018 "
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/04193500?include=characteristics"
+    },
+    {
+      "station_id": "04193500",
+      "field": "drainage_area_sqmi",
+      "value": 6309.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 243,
+        "title": "2024, Low-flow statistics computed for streamflow gages and methods for estimating selected low-flow statistics for ungaged stream locations in Ohio, water years 1975\u20132020 (ver. 1.1, October 2024): U.S. Geological Survey Scientific Investigations Report 2024\u20135075",
+        "author": "VonIns, B.L., and Koltun, G.F.",
+        "citationURL": "https://doi.org/10.3133/sir20245075"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/04193500?include=characteristics"
+    },
+    {
+      "station_id": "05054000",
+      "field": "drainage_area_sqmi",
+      "value": 6800.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/05054000?include=characteristics"
+    },
+    {
+      "station_id": "05114000",
+      "field": "drainage_area_sqmi",
+      "value": 8940.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/05114000?include=characteristics"
+    },
+    {
+      "station_id": "05464500",
+      "field": "drainage_area_sqmi",
+      "value": 6510.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 16,
+        "title": "2016, Methods for estimating selected spring and fall low-flow frequency statistics for ungaged stream sites in Iowa, based on data through June 2014: U.S. Geological Survey Scientific Investigations Report 2016\u20135111, 32 p.",
+        "author": "Eash, D.A., Barnes, K.K., and O\u2019Shea, P.S.,",
+        "citationURL": "http://dx.doi.org/10.3133/sir20165111"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/05464500?include=characteristics"
+    },
+    {
+      "station_id": "05464500",
+      "field": "slope_pct",
+      "value": 2.266,
+      "source_variable": "BSLDEM10M",
+      "source_unit": "%",
+      "citation": {
+        "id": 16,
+        "title": "2016, Methods for estimating selected spring and fall low-flow frequency statistics for ungaged stream sites in Iowa, based on data through June 2014: U.S. Geological Survey Scientific Investigations Report 2016\u20135111, 32 p.",
+        "author": "Eash, D.A., Barnes, K.K., and O\u2019Shea, P.S.,",
+        "citationURL": "http://dx.doi.org/10.3133/sir20165111"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/05464500?include=characteristics"
+    },
+    {
+      "station_id": "05586100",
+      "field": "drainage_area_sqmi",
+      "value": 26743.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/05586100?include=characteristics"
+    },
+    {
+      "station_id": "05586100",
+      "field": "drainage_area_sqmi",
+      "value": 26670.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 236,
+        "title": "2023, Estimating peak-flow quantiles for selected annual exceedance probabilities in Illinois (Report No. FHWA-ICT-23-014). Illinois Center for Transportation.",
+        "author": "Over, T.M., Marti, M.K., O'Shea, P.S., Sharpe, J.B.",
+        "citationURL": "https://doi.org/10.36501/0197-9191/23-019"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/05586100?include=characteristics"
+    },
+    {
+      "station_id": "06813500",
+      "field": "drainage_area_sqmi",
+      "value": 414900.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/06813500?include=characteristics"
+    },
+    {
+      "station_id": "06934500",
+      "field": "drainage_area_sqmi",
+      "value": 522500.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/06934500?include=characteristics"
+    },
+    {
+      "station_id": "07010000",
+      "field": "drainage_area_sqmi",
+      "value": 697000.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/07010000?include=characteristics"
+    },
+    {
+      "station_id": "07022000",
+      "field": "drainage_area_sqmi",
+      "value": 713200.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/07022000?include=characteristics"
+    },
+    {
+      "station_id": "07374000",
+      "field": "drainage_area_sqmi",
+      "value": 1129766.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/07374000?include=characteristics"
+    },
+    {
+      "station_id": "07289000",
+      "field": "drainage_area_sqmi",
+      "value": 1144500.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/07289000?include=characteristics"
+    },
+    {
+      "station_id": "07289000",
+      "field": "drainage_area_sqmi",
+      "value": 1144500.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 68,
+        "title": "2018, Regions and Tables for Mississippi Flood Frequency, Data through 2013",
+        "author": "Anderson, B.T.,",
+        "citationURL": "https://doi.org/10.5066/F7ZP45B8"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/07289000?include=characteristics"
+    },
+    {
+      "station_id": "08170500",
+      "field": "drainage_area_sqmi",
+      "value": 48.9,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 162,
+        "title": "2009, Regression equations for estimation of annual peak-streamflow frequency for undeveloped watersheds in Texas using an L-moment-based, PRESS-minimized, residual-adjusted approach: U.S. Geological Survey Scientific Investigations Report 2009-5087, 48 p.",
+        "author": "Asquith,W.H., and Roussel, M.C.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2009/5087"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/08170500?include=characteristics"
+    },
+    {
+      "station_id": "08313000",
+      "field": "drainage_area_sqmi",
+      "value": 14300.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/08313000?include=characteristics"
+    },
+    {
+      "station_id": "10109000",
+      "field": "drainage_area_sqmi",
+      "value": 214.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/10109000?include=characteristics"
+    },
+    {
+      "station_id": "09380000",
+      "field": "drainage_area_sqmi",
+      "value": 111800.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/09380000?include=characteristics"
+    },
+    {
+      "station_id": "09402500",
+      "field": "drainage_area_sqmi",
+      "value": 141600.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/09402500?include=characteristics"
+    },
+    {
+      "station_id": "11251000",
+      "field": "drainage_area_sqmi",
+      "value": 1676.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/11251000?include=characteristics"
+    },
+    {
+      "station_id": "11425500",
+      "field": "drainage_area_sqmi",
+      "value": 21251.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/11425500?include=characteristics"
+    },
+    {
+      "station_id": "12020000",
+      "field": "drainage_area_sqmi",
+      "value": 113.59969335,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 19,
+        "title": "2016, Magnitude, frequency, and trends of floods at gaged and ungaged sites in Washington, based on data through water year 2014 (ver 1.1, October 2016): U.S. Geological Survey Scientific Investigations Report 2016\u20135118, 70 p.",
+        "author": "Mastin, M.C., Konrad, C.P., Veilleux, A.G., and Tecca, A.E.,",
+        "citationURL": "http://dx.doi.org/10.3133/sir20165118"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12020000?include=characteristics"
+    },
+    {
+      "station_id": "12020000",
+      "field": "mean_elevation_ft",
+      "value": 1290.0,
+      "source_variable": "ELEV",
+      "source_unit": "ft",
+      "citation": {
+        "id": 19,
+        "title": "2016, Magnitude, frequency, and trends of floods at gaged and ungaged sites in Washington, based on data through water year 2014 (ver 1.1, October 2016): U.S. Geological Survey Scientific Investigations Report 2016\u20135118, 70 p.",
+        "author": "Mastin, M.C., Konrad, C.P., Veilleux, A.G., and Tecca, A.E.,",
+        "citationURL": "http://dx.doi.org/10.3133/sir20165118"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12020000?include=characteristics"
+    },
+    {
+      "station_id": "12020000",
+      "field": "forest_cover_pct",
+      "value": 89.232,
+      "source_variable": "FOREST",
+      "source_unit": "%",
+      "citation": {
+        "id": 126,
+        "title": "2008, Estimating flow-duration and low-flow frequency statistics for unregulated streams in Oregon: U.S. Geological Survey Scientific Investigations Report 2008-5126, 22 p.",
+        "author": "Risley, John, Stonewall, Adam, and Haluska, Tana,",
+        "citationURL": "http://pubs.usgs.gov/sir/2008/5126/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12020000?include=characteristics"
+    },
+    {
+      "station_id": "12020000",
+      "field": "forest_cover_pct",
+      "value": 73.8,
+      "source_variable": "FOREST",
+      "source_unit": "%",
+      "citation": {
+        "id": 35,
+        "title": "2012, Analysis of low flows and selected methods for estimating low-flow characteristics at partial-record and ungaged stream sites in western Washington: U.S. Geological Survey Scientific Investigations Report 2012-5078, 46 p.",
+        "author": "Curran, C.A., Eng, Ken, and Konrad, C.P.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2012/5078/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12020000?include=characteristics"
+    },
+    {
+      "station_id": "12020000",
+      "field": "impervious_surface_pct",
+      "value": 0.232,
+      "source_variable": "IMPERV",
+      "source_unit": "%",
+      "citation": {
+        "id": 126,
+        "title": "2008, Estimating flow-duration and low-flow frequency statistics for unregulated streams in Oregon: U.S. Geological Survey Scientific Investigations Report 2008-5126, 22 p.",
+        "author": "Risley, John, Stonewall, Adam, and Haluska, Tana,",
+        "citationURL": "http://pubs.usgs.gov/sir/2008/5126/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12020000?include=characteristics"
+    },
+    {
+      "station_id": "12020000",
+      "field": "slope_pct",
+      "value": 34.2,
+      "source_variable": "BSLDEM30M",
+      "source_unit": "%",
+      "citation": {
+        "id": 19,
+        "title": "2016, Magnitude, frequency, and trends of floods at gaged and ungaged sites in Washington, based on data through water year 2014 (ver 1.1, October 2016): U.S. Geological Survey Scientific Investigations Report 2016\u20135118, 70 p.",
+        "author": "Mastin, M.C., Konrad, C.P., Veilleux, A.G., and Tecca, A.E.,",
+        "citationURL": "http://dx.doi.org/10.3133/sir20165118"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12020000?include=characteristics"
+    },
+    {
+      "station_id": "12020000",
+      "field": "slope_pct",
+      "value": 34.11875076801933,
+      "source_variable": "BSLOPD",
+      "source_unit": "\u00b0",
+      "citation": {
+        "id": 126,
+        "title": "2008, Estimating flow-duration and low-flow frequency statistics for unregulated streams in Oregon: U.S. Geological Survey Scientific Investigations Report 2008-5126, 22 p.",
+        "author": "Risley, John, Stonewall, Adam, and Haluska, Tana,",
+        "citationURL": "http://pubs.usgs.gov/sir/2008/5126/"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12020000?include=characteristics"
+    },
+    {
+      "station_id": "12020000",
+      "field": "slope_pct",
+      "value": 35.01950195735489,
+      "source_variable": "BSLOPD",
+      "source_unit": "\u00b0",
+      "citation": {
+        "id": 91,
+        "title": "2005, Estimation of Peak Discharges for Rural, Unregulated Streams in Western Oregon: U.S. Geological Survey Scientific Investigations Report 2005-5116, 76 p.",
+        "author": "Cooper, R.M.,",
+        "citationURL": "http://pubs.usgs.gov/sir/2005/5116/pdf/sir2005-5116.pdf"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12020000?include=characteristics"
+    },
+    {
+      "station_id": "12113000",
+      "field": "drainage_area_sqmi",
+      "value": 411.84,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 19,
+        "title": "2016, Magnitude, frequency, and trends of floods at gaged and ungaged sites in Washington, based on data through water year 2014 (ver 1.1, October 2016): U.S. Geological Survey Scientific Investigations Report 2016\u20135118, 70 p.",
+        "author": "Mastin, M.C., Konrad, C.P., Veilleux, A.G., and Tecca, A.E.,",
+        "citationURL": "http://dx.doi.org/10.3133/sir20165118"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12113000?include=characteristics"
+    },
+    {
+      "station_id": "12113000",
+      "field": "mean_elevation_ft",
+      "value": 1950.0,
+      "source_variable": "ELEV",
+      "source_unit": "ft",
+      "citation": {
+        "id": 19,
+        "title": "2016, Magnitude, frequency, and trends of floods at gaged and ungaged sites in Washington, based on data through water year 2014 (ver 1.1, October 2016): U.S. Geological Survey Scientific Investigations Report 2016\u20135118, 70 p.",
+        "author": "Mastin, M.C., Konrad, C.P., Veilleux, A.G., and Tecca, A.E.,",
+        "citationURL": "http://dx.doi.org/10.3133/sir20165118"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12113000?include=characteristics"
+    },
+    {
+      "station_id": "12113000",
+      "field": "forest_cover_pct",
+      "value": 70.0,
+      "source_variable": "FOREST",
+      "source_unit": "%",
+      "citation": {
+        "id": 110,
+        "title": "1998, Magnitude and Frequency of Floods in Washington: U.S. Geological Survey Water-Resources Investigations Report 97-4277, 91 p.",
+        "author": "Sumioka, S.S., Kresch,  D.L., and Kasnick, K.D.,",
+        "citationURL": "https://pubs.er.usgs.gov/publication/wri974277"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12113000?include=characteristics"
+    },
+    {
+      "station_id": "12113000",
+      "field": "slope_pct",
+      "value": 27.5,
+      "source_variable": "BSLDEM30M",
+      "source_unit": "%",
+      "citation": {
+        "id": 19,
+        "title": "2016, Magnitude, frequency, and trends of floods at gaged and ungaged sites in Washington, based on data through water year 2014 (ver 1.1, October 2016): U.S. Geological Survey Scientific Investigations Report 2016\u20135118, 70 p.",
+        "author": "Mastin, M.C., Konrad, C.P., Veilleux, A.G., and Tecca, A.E.,",
+        "citationURL": "http://dx.doi.org/10.3133/sir20165118"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12113000?include=characteristics"
+    },
+    {
+      "station_id": "12422500",
+      "field": "drainage_area_sqmi",
+      "value": 4290.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12422500?include=characteristics"
+    },
+    {
+      "station_id": "12353000",
+      "field": "mean_elevation_ft",
+      "value": 5742.39571518,
+      "source_variable": "ELEV",
+      "source_unit": "ft",
+      "citation": {
+        "id": 157,
+        "title": "2016, Methods for estimating streamflow characteristics at ungaged sites in western Montana based on data through water year 2009: U.S. Geological Survey Scientific Investigations Report 2015\u20135019\u2013G, 19 p.",
+        "author": "McCarthy, P.M., Sando, Roy, Sando, S.K., and Dutton, D.M.,",
+        "citationURL": "https://doi.org/10.3133/sir20155019"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12353000?include=characteristics"
+    },
+    {
+      "station_id": "12353000",
+      "field": "slope_pct",
+      "value": 28.686069,
+      "source_variable": "BSLDEM30M",
+      "source_unit": "%",
+      "citation": {
+        "id": 157,
+        "title": "2016, Methods for estimating streamflow characteristics at ungaged sites in western Montana based on data through water year 2009: U.S. Geological Survey Scientific Investigations Report 2015\u20135019\u2013G, 19 p.",
+        "author": "McCarthy, P.M., Sando, Roy, Sando, S.K., and Dutton, D.M.,",
+        "citationURL": "https://doi.org/10.3133/sir20155019"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/12353000?include=characteristics"
+    },
+    {
+      "station_id": "14211720",
+      "field": "drainage_area_sqmi",
+      "value": 11200.0,
+      "source_variable": "DRNAREA",
+      "source_unit": "mi^2",
+      "citation": {
+        "id": 193,
+        "title": "Imported from NWIS file",
+        "author": "",
+        "citationURL": "http://waterdata.usgs.gov/nwis/si"
+      },
+      "url": "https://streamstats.usgs.gov/gagestatsservices/stations/14211720?include=characteristics"
+    },
+    {
+      "station_id": "01463500",
+      "field": "drainage_area_sqmi",
+      "value": 6787.59872674449,
+      "source_variable": "DRAIN_SQKM",
+      "source_unit": "km\u00b2 \u2192 mi\u00b2",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02323500",
+      "field": "drainage_area_sqmi",
+      "value": 9682.78576257502,
+      "source_variable": "DRAIN_SQKM",
+      "source_unit": "km\u00b2 \u2192 mi\u00b2",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "04024000",
+      "field": "drainage_area_sqmi",
+      "value": 3413.336132594493,
+      "source_variable": "DRAIN_SQKM",
+      "source_unit": "km\u00b2 \u2192 mi\u00b2",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "10311000",
+      "field": "drainage_area_sqmi",
+      "value": 886.065843639059,
+      "source_variable": "DRAIN_SQKM",
+      "source_unit": "km\u00b2 \u2192 mi\u00b2",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "11370500",
+      "field": "drainage_area_sqmi",
+      "value": 6456.1300236358,
+      "source_variable": "DRAIN_SQKM",
+      "source_unit": "km\u00b2 \u2192 mi\u00b2",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "12353000",
+      "field": "drainage_area_sqmi",
+      "value": 9016.643708441738,
+      "source_variable": "DRAIN_SQKM",
+      "source_unit": "km\u00b2 \u2192 mi\u00b2",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01463500",
+      "field": "mean_elevation_ft",
+      "value": 1253.6089238795003,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01638500",
+      "field": "mean_elevation_ft",
+      "value": 1415.6824146925,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01646500",
+      "field": "mean_elevation_ft",
+      "value": 1269.028871386,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01651000",
+      "field": "mean_elevation_ft",
+      "value": 322.834645668,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02197000",
+      "field": "mean_elevation_ft",
+      "value": 790.682414695,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02231000",
+      "field": "mean_elevation_ft",
+      "value": 125.6561679785,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02323500",
+      "field": "mean_elevation_ft",
+      "value": 169.291338582,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02479000",
+      "field": "mean_elevation_ft",
+      "value": 335.95800524800006,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "03339000",
+      "field": "mean_elevation_ft",
+      "value": 709.973753278,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "03353000",
+      "field": "mean_elevation_ft",
+      "value": 903.543307083,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "04024000",
+      "field": "mean_elevation_ft",
+      "value": 1423.5564304405,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "04213500",
+      "field": "mean_elevation_ft",
+      "value": 1613.5170603610002,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "05054000",
+      "field": "mean_elevation_ft",
+      "value": 1173.5564304415,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "05464500",
+      "field": "mean_elevation_ft",
+      "value": 1085.958005245,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "08170500",
+      "field": "mean_elevation_ft",
+      "value": 875.6561679755,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "08313000",
+      "field": "mean_elevation_ft",
+      "value": 8646.325459283,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "10109000",
+      "field": "mean_elevation_ft",
+      "value": 7547.244094458,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "10311000",
+      "field": "mean_elevation_ft",
+      "value": 6754.593175826001,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "11251000",
+      "field": "mean_elevation_ft",
+      "value": 6904.5275590275005,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "11370500",
+      "field": "mean_elevation_ft",
+      "value": 4553.477690270501,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "12422500",
+      "field": "mean_elevation_ft",
+      "value": 3605.6430446050003,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "14211720",
+      "field": "mean_elevation_ft",
+      "value": 1831.3648293890003,
+      "source_variable": "ELEV_MEAN_M_BASIN",
+      "source_unit": "m \u2192 ft",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01463500",
+      "field": "slope_pct",
+      "value": 10.0,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01638500",
+      "field": "slope_pct",
+      "value": 13.0,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01646500",
+      "field": "slope_pct",
+      "value": 11.7,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02035000",
+      "field": "slope_pct",
+      "value": 13.7,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02037500",
+      "field": "slope_pct",
+      "value": 12.9,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02084000",
+      "field": "slope_pct",
+      "value": 1.8,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02087500",
+      "field": "slope_pct",
+      "value": 3.1,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02138500",
+      "field": "slope_pct",
+      "value": 20.3,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02197000",
+      "field": "slope_pct",
+      "value": 5.5,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02231000",
+      "field": "slope_pct",
+      "value": 0.6,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02323500",
+      "field": "slope_pct",
+      "value": 0.7,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02479000",
+      "field": "slope_pct",
+      "value": 2.6,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "03339000",
+      "field": "slope_pct",
+      "value": 0.5,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "03353000",
+      "field": "slope_pct",
+      "value": 0.7,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "03451500",
+      "field": "slope_pct",
+      "value": 17.2,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "04024000",
+      "field": "slope_pct",
+      "value": 1.0,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "04193500",
+      "field": "slope_pct",
+      "value": 0.4,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "04213500",
+      "field": "slope_pct",
+      "value": 6.9,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "05054000",
+      "field": "slope_pct",
+      "value": 0.8,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "08170500",
+      "field": "slope_pct",
+      "value": 3.4,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "08313000",
+      "field": "slope_pct",
+      "value": 14.7,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "10109000",
+      "field": "slope_pct",
+      "value": 27.5,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "10311000",
+      "field": "slope_pct",
+      "value": 20.6,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "11251000",
+      "field": "slope_pct",
+      "value": 26.1,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "11370500",
+      "field": "slope_pct",
+      "value": 13.6,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "12422500",
+      "field": "slope_pct",
+      "value": 27.0,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "14211720",
+      "field": "slope_pct",
+      "value": 18.0,
+      "source_variable": "SLOPE_PCT",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01463500",
+      "field": "forest_cover_pct",
+      "value": 67.27,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01638500",
+      "field": "forest_cover_pct",
+      "value": 63.88,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01646500",
+      "field": "forest_cover_pct",
+      "value": 58.58,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01651000",
+      "field": "forest_cover_pct",
+      "value": 23.31,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02035000",
+      "field": "forest_cover_pct",
+      "value": 76.54,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02037500",
+      "field": "forest_cover_pct",
+      "value": 75.54,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02197000",
+      "field": "forest_cover_pct",
+      "value": 58.7,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02231000",
+      "field": "forest_cover_pct",
+      "value": 37.37,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02323500",
+      "field": "forest_cover_pct",
+      "value": 30.54,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02479000",
+      "field": "forest_cover_pct",
+      "value": 54.67,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "03353000",
+      "field": "forest_cover_pct",
+      "value": 5.43,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "04024000",
+      "field": "forest_cover_pct",
+      "value": 34.66,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "04193500",
+      "field": "forest_cover_pct",
+      "value": 6.44,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "05054000",
+      "field": "forest_cover_pct",
+      "value": 8.53,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "05464500",
+      "field": "forest_cover_pct",
+      "value": 2.13,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "08170500",
+      "field": "forest_cover_pct",
+      "value": 53.99,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "08313000",
+      "field": "forest_cover_pct",
+      "value": 42.36,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "10109000",
+      "field": "forest_cover_pct",
+      "value": 71.84,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "10311000",
+      "field": "forest_cover_pct",
+      "value": 23.6,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "11251000",
+      "field": "forest_cover_pct",
+      "value": 53.37,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "11370500",
+      "field": "forest_cover_pct",
+      "value": 56.31,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "12353000",
+      "field": "forest_cover_pct",
+      "value": 58.86,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "12422500",
+      "field": "forest_cover_pct",
+      "value": 71.71,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "14211720",
+      "field": "forest_cover_pct",
+      "value": 54.07,
+      "source_variable": "FORESTNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01463500",
+      "field": "impervious_surface_pct",
+      "value": 1.93,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01470500",
+      "field": "impervious_surface_pct",
+      "value": 2.98,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01638500",
+      "field": "impervious_surface_pct",
+      "value": 1.53,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01646500",
+      "field": "impervious_surface_pct",
+      "value": 2.07,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "01651000",
+      "field": "impervious_surface_pct",
+      "value": 18.64,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02035000",
+      "field": "impervious_surface_pct",
+      "value": 0.99,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02037500",
+      "field": "impervious_surface_pct",
+      "value": 1.06,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02231000",
+      "field": "impervious_surface_pct",
+      "value": 0.61,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02323500",
+      "field": "impervious_surface_pct",
+      "value": 0.99,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "02479000",
+      "field": "impervious_surface_pct",
+      "value": 0.96,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "03339000",
+      "field": "impervious_surface_pct",
+      "value": 2.31,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "03353000",
+      "field": "impervious_surface_pct",
+      "value": 6.67,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "04024000",
+      "field": "impervious_surface_pct",
+      "value": 0.46,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "04213500",
+      "field": "impervious_surface_pct",
+      "value": 0.52,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "05054000",
+      "field": "impervious_surface_pct",
+      "value": 0.66,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "05464500",
+      "field": "impervious_surface_pct",
+      "value": 1.63,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "08170500",
+      "field": "impervious_surface_pct",
+      "value": 1.55,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "08313000",
+      "field": "impervious_surface_pct",
+      "value": 0.39,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "10109000",
+      "field": "impervious_surface_pct",
+      "value": 0.07,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "10311000",
+      "field": "impervious_surface_pct",
+      "value": 1.14,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "11251000",
+      "field": "impervious_surface_pct",
+      "value": 0.11,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "11370500",
+      "field": "impervious_surface_pct",
+      "value": 0.23,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "12113000",
+      "field": "impervious_surface_pct",
+      "value": 4.18,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "12353000",
+      "field": "impervious_surface_pct",
+      "value": 0.5,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "12422500",
+      "field": "impervious_surface_pct",
+      "value": 1.45,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    },
+    {
+      "station_id": "14211720",
+      "field": "impervious_surface_pct",
+      "value": 2.52,
+      "source_variable": "IMPNLCD06",
+      "source_unit": "%",
+      "citation": {
+        "title": "Falcone (2011), GAGES-II: Geospatial attributes of gages for evaluating streamflow",
+        "citationURL": "https://doi.org/10.5066/P96CPHOT"
+      },
+      "url": "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+    }
+  ]
+}
