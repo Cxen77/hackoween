@@ -17,6 +17,7 @@ import type { Grid } from './terrain';
 import MonitorPanel from './MonitorPanel';
 import HydrographOutlookCard from './components/HydrographOutlookCard';
 import RidgelineDitherFooter from '@/components/ui/ridgeline-dither-footer';
+import RidgeMark from '@/components/ui/RidgeMark';
 import { evaluateMonitor, validBoundary, validMonitor } from './geofence.mjs';
 import type { AreaMonitor, MonitorResult } from './monitorTypes';
 import type { FeatureCollection, Polygon, LineString } from 'geojson';
@@ -661,41 +662,103 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <header className="topbar">
-        <div className="brand-group">
-          <a className="brand" href="/" aria-label="FLOODCAST home">
-            <span className="brand-mark"><Waves size={22} /></span>
-            <div className="brand-text">
-              <strong>FLOODCAST</strong>
-              <span className="brand-sub">Hydrological Intelligence</span>
+      {/* Floating Pill Navbar matching reference image aesthetics */}
+      <header className="pill-navbar-wrapper">
+        <div className="pill-navbar">
+          {/* Brand with footer RidgeMark logo */}
+          <a
+            href="/"
+            className="pill-navbar-brand"
+            onClick={(e) => {
+              e.preventDefault();
+              setModelOpen(false);
+              setSources(false);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            title="FloodCast Hydrological Intelligence"
+          >
+            <RidgeMark width={28} height={20} />
+            <span className="pill-brand-text">FloodCast</span>
+          </a>
+
+          {/* Clean navigation matching reference layout */}
+          <nav className="pill-navbar-center" aria-label="Main Navigation">
+            <button
+              type="button"
+              className={`pill-nav-link ${!modelOpen && !sources ? 'active' : ''}`}
+              onClick={() => {
+                setModelOpen(false);
+                setSources(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            >
+              <span>River Explorer</span>
+              <ChevronDown size={14} className="pill-chevron" />
+            </button>
+
+            <button
+              type="button"
+              className={`pill-nav-link ${modelOpen ? 'active' : ''}`}
+              onClick={() => {
+                setModelOpen(true);
+                setSources(false);
+              }}
+            >
+              <span>Hydrology Model</span>
+              <ChevronDown size={14} className="pill-chevron" />
+            </button>
+
+            <button
+              type="button"
+              className={`pill-nav-link ${sources ? 'active' : ''}`}
+              onClick={() => {
+                setSources(true);
+                setModelOpen(false);
+              }}
+            >
+              <span>Methodology</span>
+              <ChevronDown size={14} className="pill-chevron" />
+            </button>
+
+            <button
+              type="button"
+              className="pill-nav-link"
+              onClick={() => {
+                const el = document.querySelector('.monitored-zones-section') || document.querySelector('.acet-river-list');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              <span>Basins</span>
+            </button>
+          </nav>
+
+          {/* Right actions: Language pill, Sign in outline pill, Request a demo solid pill */}
+          <div className="pill-navbar-right">
+            <div className="pill-lang-selector" title="Active Regional Coverage: United States & India">
+              <span className="pill-lang-glyph">文A</span>
+              <span className="pill-lang-code">EN</span>
+              <ChevronDown size={13} className="pill-chevron" />
             </div>
-          </a>
-        </div>
 
-        <nav aria-label="Main navigation">
-          <button className={!modelOpen ? 'nav-active' : ''} onClick={() => setModelOpen(false)}>
-            <Compass size={16} />
-            <span>River Explorer</span>
-          </button>
-          <button className={modelOpen ? 'nav-active' : ''} onClick={() => setModelOpen(true)}>
-            <Activity size={16} />
-            <span>Discharge ML Model</span>
-            <span className="nav-badge">293k rows</span>
-          </button>
-        </nav>
+            <button
+              type="button"
+              className="pill-btn-outline"
+              onClick={() => setSources(true)}
+              title="Data Provenance, Citations & Methodology"
+            >
+              Sign in
+            </button>
 
-        <div className="header-right">
-          <div className="telemetry-status-pill">
-            <span className="pulse-beacon" />
-            <span>USGS & GloFAS Active</span>
+            <a
+              href="https://github.com/Cxen77/hackoween"
+              target="_blank"
+              rel="noreferrer"
+              className="pill-btn-solid"
+              title="GitHub Repository & Interactive Demonstration"
+            >
+              Request a demo
+            </a>
           </div>
-          <button className="icon-button" aria-label="About data and methods" onClick={() => setSources(true)}>
-            <CircleHelp size={18} />
-          </button>
-          <a className="github-link" href="https://github.com/Cxen77/hackoween" target="_blank" rel="noreferrer">
-            <span>GitHub</span>
-            <ArrowUpRight size={14} />
-          </a>
         </div>
       </header>
 
@@ -713,10 +776,10 @@ export default function App() {
                       setSources(false);
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    title="FloodCast / Acet Labs"
+                    title="FloodCast"
                   >
-                    <div className="acet-logo-squircle" />
-                    <span className="acet-brand-text">Acet Labs</span>
+                    <RidgeMark width={26} height={18} />
+                    <span className="acet-brand-text">FloodCast</span>
                   </div>
                   <button
                     type="button"
@@ -879,10 +942,12 @@ export default function App() {
             ) : (
               <div className="sidebar-collapsed-content">
                 <div
-                  className="acet-logo-squircle collapsed-squircle"
+                  className="collapsed-ridge-logo"
                   onClick={() => setSidebarOpen(true)}
-                  title="Expand Acet Labs Sidebar"
-                />
+                  title="Expand FloodCast Sidebar"
+                >
+                  <RidgeMark width={24} height={17} />
+                </div>
 
                 <button
                   type="button"
@@ -1314,14 +1379,14 @@ export default function App() {
                   <h3>River conditions</h3>
                   <span className="station-code">{station.usgs ? `USGS ${station.usgs}` : 'GloFAS Model'}</span>
                 </div>
-                <button className="icon-button" aria-label="Refresh river telemetry" onClick={() => setRefresh(n => n + 1)}>
+                <button className="icon-button" aria-label="Refresh observations" onClick={() => setRefresh(n => n + 1)}>
                   <RefreshCw size={14} className={gauge.loading ? 'spin' : ''} />
                 </button>
               </div>
 
               <div className={`source-badge ${!gauge.data || stale ? 'neutral' : 'live'}`}>
                 <span className="status-dot" />
-                <span>{gauge.loading ? 'Connecting to gauge…' : gauge.data ? (stale ? 'Delayed observation' : 'Live USGS Telemetry') : 'GloFAS modeled station'}</span>
+                <span>{gauge.loading ? 'Connecting to gauge…' : gauge.data ? (stale ? 'Delayed observation' : 'Live USGS Observation') : 'GloFAS modeled station'}</span>
               </div>
 
               <div className="metric">
@@ -1423,7 +1488,7 @@ export default function App() {
           preset="glacier"
           maxWidth="100%"
           name="FloodCast"
-          tagline="Hydrological intelligence platform connecting real-time USGS telemetry, ECMWF GloFAS forecasts, and high-resolution 3D hydraulic terrain inundation modeling."
+          tagline="Hydrological intelligence platform connecting real-time water gauges and high-resolution hydraulic inundation modeling."
           brandHref="#"
           columns={[
             {

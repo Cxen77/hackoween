@@ -2,10 +2,10 @@
 @import "tailwindcss";
 
 :root {
-  --font-acet: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+  --font-sans: "Inter", "Inter Variable", "Geist", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-heading: "Inter", "Inter Variable", "Geist", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Geist Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  --font-acet: "Inter", "Inter Variable", "Geist", "Helvetica Neue", Arial, system-ui, sans-serif;
 
   --bg-app: #f8fafc;
   --bg-surface: #ffffff;
@@ -55,7 +55,7 @@
   margin: 0;
 }
 
-body {
+html, body, #root {
   margin: 0;
   font-family: var(--font-sans);
   background: var(--bg-app);
@@ -64,6 +64,10 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body * {
+  font-family: inherit;
 }
 
 h1, h2, h3, h4 {
@@ -276,7 +280,7 @@ svg {
 /* Workspace Layout */
 .workspace {
   display: flex;
-  min-height: calc(100vh - 68px);
+  min-height: calc(100vh - 84px);
   position: relative;
   align-items: stretch;
 }
@@ -285,8 +289,8 @@ svg {
 .floodcast-sidebar-body {
   height: 100%;
   position: sticky;
-  top: 68px;
-  max-height: calc(100vh - 68px);
+  top: 84px;
+  max-height: calc(100vh - 84px);
   display: flex;
   flex-direction: column;
   padding: 18px 14px;
@@ -2849,8 +2853,8 @@ svg {
 .floodcast-sidebar-body {
   height: 100%;
   position: sticky;
-  top: 68px;
-  max-height: calc(100vh - 68px);
+  top: 84px;
+  max-height: calc(100vh - 84px);
   display: flex;
   flex-direction: column;
   padding: 16px 14px 14px;
@@ -3418,4 +3422,231 @@ svg {
 .collapsed-avatar-btn:hover .collapsed-avatar {
   transform: scale(1.1);
   box-shadow: 0 0 0 2px #09090b;
+}
+
+
+/* =========================================================================
+   FLOATING PILL NAVBAR (MATCHING REFERENCE AESTHETICS & LAYOUT)
+   ========================================================================= */
+
+.pill-navbar-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 12px 24px 8px;
+  background: var(--bg-app);
+  width: 100%;
+}
+
+.pill-navbar {
+  max-width: 1340px;
+  margin: 0 auto;
+  height: 58px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 9999px;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 0 20px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.pill-navbar:hover {
+  box-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.08), 0 2px 8px -1px rgba(0, 0, 0, 0.03);
+}
+
+/* Brand */
+.pill-navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #09090b;
+  user-select: none;
+  padding: 4px 6px;
+}
+
+.pill-brand-text {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #09090b;
+}
+
+/* Center Nav */
+.pill-navbar-center {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.pill-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  padding: 6px 6px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  user-select: none;
+}
+
+.pill-nav-link:hover {
+  color: #09090b;
+}
+
+.pill-nav-link.active {
+  color: #09090b;
+  font-weight: 600;
+}
+
+.pill-chevron {
+  color: #9ca3af;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.pill-nav-link:hover .pill-chevron {
+  color: #111827;
+}
+
+/* Right Nav Actions */
+.pill-navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pill-lang-selector {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #4b5563;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 9999px;
+  transition: color 0.15s ease;
+  user-select: none;
+}
+
+.pill-lang-selector:hover {
+  color: #09090b;
+}
+
+.pill-lang-glyph {
+  font-size: 13.5px;
+  letter-spacing: -0.04em;
+  color: #6b7280;
+}
+
+.pill-lang-code {
+  font-weight: 500;
+}
+
+.pill-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: 0 18px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #1f2937;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.pill-btn-outline:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #09090b;
+}
+
+.pill-btn-solid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: 0 20px;
+  background: #09090b;
+  border: 1px solid #09090b;
+  border-radius: 9999px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #ffffff;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  user-select: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.pill-btn-solid:hover {
+  background: #27272a;
+  border-color: #27272a;
+}
+
+/* FloodCast Ridge Mark Everywhere */
+.floodcast-ridge-mark {
+  display: block;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.floodcast-ridge-mark rect {
+  fill: #ffffff;
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+
+.pill-navbar-brand:hover .floodcast-ridge-mark .rdf-mist-a,
+.acet-brand-logo:hover .floodcast-ridge-mark .rdf-mist-a {
+  transform: translateX(4px);
+}
+
+.pill-navbar-brand:hover .floodcast-ridge-mark .rdf-mist-b,
+.acet-brand-logo:hover .floodcast-ridge-mark .rdf-mist-b {
+  transform: translateX(-5px);
+}
+
+.collapsed-ridge-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  margin: 2px auto 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.collapsed-ridge-logo:hover {
+  transform: scale(1.08);
+  background: #f4f4f5;
+}
+
+@media (max-width: 900px) {
+  .pill-navbar-center {
+    display: none;
+  }
+  .pill-navbar-wrapper {
+    padding: 8px 12px;
+  }
 }
