@@ -3,7 +3,7 @@ import * as maplibregl from 'maplibre-gl';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import type { GeoJSONSource, StyleSpecification } from 'maplibre-gl';
 import {
-  Activity, Anchor, ArrowDownToLine, ArrowUpRight, Check, ChevronDown, ChevronRight,
+  Activity, Anchor, ArrowDownToLine, Bot, ArrowUpRight, Check, ChevronDown, ChevronRight,
   CircleHelp, CloudRain, Compass, Database, Download, Droplets, Expand, Layers, MapPin,
   Minus, Mountain, PanelLeftClose, PanelLeftOpen, Pause, Play, Plus, Radio, RefreshCw, Search, Shield, ShieldAlert,
   Sun, Sunrise, Trees, Waves, X
@@ -129,6 +129,7 @@ export default function App() {
   const [modelReport, setModelReport] = useState<Record<string, any> | null>(null);
   // Live data from the local model server (observed flow); used to improve "Sync 3D Map to Live Level" where no stage gauge exists.
   const [modelLive, setModelLive] = useState<Record<string, any> | null>(null);
+  const [simTab, setSimTab] = useState<'flood' | 'forecast'>('flood');
 
   const mapNode = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
@@ -1138,150 +1139,180 @@ export default function App() {
             </section>
 
             <section className="simulation-card">
-              <div className="card-heading">
-                <h3><Waves size={16} /><span>Flood scenario</span></h3>
+              <div className="card-heading sim-toggle-heading">
+                <div className="sim-mode-toggle" role="tablist" aria-label="Simulation view mode">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={simTab === 'flood'}
+                    className={`sim-mode-tab ${simTab === 'flood' ? 'active' : ''}`}
+                    onClick={() => setSimTab('flood')}
+                  >
+                    <Waves size={13} />
+                    <span>Flood scenario</span>
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={simTab === 'forecast'}
+                    className={`sim-mode-tab ${simTab === 'forecast' ? 'active' : ''}`}
+                    onClick={() => setSimTab('forecast')}
+                  >
+                    <Bot size={13} />
+                    <span>ML model forecast</span>
+                  </button>
+                </div>
                 <button
-                  className={`switch ${showSimulation ? 'on' : ''}`}
+                  type="button"
+                  className={`switch ${simTab === 'forecast' ? 'on' : ''}`}
                   role="switch"
-                  aria-checked={showSimulation}
-                  aria-label="Toggle flood scenario"
-                  onClick={() => { setShowSimulation(!showSimulation); setPlaying(false); }}
+                  aria-checked={simTab === 'forecast'}
+                  aria-label="Toggle between Flood scenario and ML model forecast"
+                  title={simTab === 'flood' ? "Switch to ML model forecast" : "Switch to Flood scenario"}
+                  onClick={() => setSimTab(t => t === 'flood' ? 'forecast' : 'flood')}
                 >
                   <span />
                 </button>
               </div>
-              <p className="sim-description">Raise the river and watch water spread across connected low ground. {(corridorSpan / 1000).toFixed(0)} km terrain window.</p>
-              <label className="simulation-window">Terrain window
-                <select value={corridorSpan} onChange={e => setCorridorSpan(Number(e.target.value))}>
-                  <option value={6000}>6 km · finer detail</option>
-                  <option value={12000}>12 km</option>
-                  <option value={20000}>20 km · wider area</option>
-                </select>
-              </label>
 
-              <div className="slider-group">
-                <div className="slider-label">
-                  <span>Rise above reference river surface</span>
-                  <strong className="rise-numeric">+{animatedRise.toFixed(profile.step < 0.1 ? 2 : 1)} <span>m</span></strong>
-                </div>
-                <div className="slider-track-wrap">
-                  <input
-                    id="water-rise"
-                    type="range"
-                    className="reference-slider"
-                    min={0}
-                    max={profile.maxRise}
-                    step={profile.step}
-                    value={rise}
-                    style={{
-                      background: `linear-gradient(to right, #18181b 0%, #18181b ${sliderProgress}%, #e2e8f0 ${sliderProgress}%, #e2e8f0 100%)`
-                    }}
-                    onChange={e => { setRise(Number(e.target.value)); setPlaying(false); }}
-                    aria-label="Water rise above channel"
-                  />
-                  <div className="slider-ticks-container">
-                    {sliderTicks.map(t => (
-                      <div
-                        key={t.val}
-                        className={`slider-tick ${t.isMajor ? 'major-tick' : 'minor-tick'}`}
-                        style={{ left: `calc(11px + (100% - 22px) * ${t.percent / 100})` }}
-                        onClick={() => { setRise(t.val); setPlaying(false); }}
-                        title={`Set to +${t.val}m`}
-                      >
-                        <span className="tick-line" />
-                        {t.isMajor && <span className="tick-label">{t.val}</span>}
-                      </div>
-                    ))}
+              {/* Pane 1: Flood Scenario */}
+              <div className={`sim-view-pane ${simTab === 'flood' ? 'active' : 'hidden'}`}>
+                <p className="sim-description">Raise the river and watch water spread across connected low ground. {(corridorSpan / 1000).toFixed(0)} km terrain window.</p>
+                <label className="simulation-window">Terrain window
+                  <select value={corridorSpan} onChange={e => setCorridorSpan(Number(e.target.value))}>
+                    <option value={6000}>6 km · finer detail</option>
+                    <option value={12000}>12 km</option>
+                    <option value={20000}>20 km · wider area</option>
+                  </select>
+                </label>
+
+                <div className="slider-group">
+                  <div className="slider-label">
+                    <span>Rise above reference river surface</span>
+                    <strong className="rise-numeric">+{animatedRise.toFixed(profile.step < 0.1 ? 2 : 1)} <span>m</span></strong>
+                  </div>
+                  <div className="slider-track-wrap">
+                    <input
+                      id="water-rise"
+                      type="range"
+                      className="reference-slider"
+                      min={0}
+                      max={profile.maxRise}
+                      step={profile.step}
+                      value={rise}
+                      style={{
+                        background: `linear-gradient(to right, #18181b 0%, #18181b ${sliderProgress}%, #e2e8f0 ${sliderProgress}%, #e2e8f0 100%)`
+                      }}
+                      onChange={e => { setRise(Number(e.target.value)); setPlaying(false); }}
+                      aria-label="Water rise above channel"
+                    />
+                    <div className="slider-ticks-container">
+                      {sliderTicks.map(t => (
+                        <div
+                          key={t.val}
+                          className={`slider-tick ${t.isMajor ? 'major-tick' : 'minor-tick'}`}
+                          style={{ left: `calc(11px + (100% - 22px) * ${t.percent / 100})` }}
+                          onClick={() => { setRise(t.val); setPlaying(false); }}
+                          title={`Set to +${t.val}m`}
+                        >
+                          <span className="tick-line" />
+                          {t.isMajor && <span className="tick-label">{t.val}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="river-context-note">
+                    {profile.contextNote}
                   </div>
                 </div>
-                <div className="river-context-note">
-                  {profile.contextNote}
+
+                <div className="simulation-playback-status">
+                  <span>{gridLoading ? 'Preparing river' : playing ? 'Rising' : Math.abs(animatedRise - rise) > .02 ? 'Paused / adjusting' : 'At target'} · target +{rise.toFixed(1)} m</span>
+                  <button type="button" onClick={() => { setPlaying(false); setRise(0); displayedRise.current = 0; setAnimatedRise(0); }}>Reset to river level</button>
                 </div>
+
+                <LongPressButton
+                  disabled={gridLoading || !!gridError || !grid || rise === 0}
+                  active={playing}
+                  className="w-full"
+                  onLongPress={() => {
+                    if (gridLoading || !!gridError) return;
+                    if (!showSimulation) {
+                      setShowSimulation(true);
+                      setPlaying(true);
+                    } else {
+                      setPlaying(prev => !prev);
+                    }
+                  }}
+                  onClick={() => {
+                    if (gridLoading || !!gridError) return;
+                    if (!showSimulation) {
+                      setShowSimulation(true);
+                      setPlaying(true);
+                    } else {
+                      setPlaying(prev => !prev);
+                    }
+                  }}
+                >
+                  {gridLoading ? (
+                    <>
+                      <RefreshCw className="spin" size={14} />
+                      <span>Loading elevation…</span>
+                    </>
+                  ) : playing ? (
+                    <>
+                      <Pause size={14} />
+                      <span>Pause scenario</span>
+                    </>
+                  ) : showSimulation ? (
+                    <>
+                      <Play size={14} />
+                      <span>{Math.abs(animatedRise - rise) > .02 ? 'Resume water rise' : 'Replay water rise'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play size={14} />
+                      <span>Enable flood scenario</span>
+                    </>
+                  )}
+                </LongPressButton>
+
+                {gridError ? (
+                  <p className="inline-error">
+                    {gridError}
+                    <button onClick={() => { setShowSimulation(false); setTimeout(() => setShowSimulation(true), 0); }}>Retry</button>
+                  </p>
+                ) : showSimulation && grid ? (
+                  <div className="scenario-stats">
+                    <div className="stat-box">
+                      <strong>{number(floodStats.area, 2)} <small>km²</small></strong>
+                      <span>Additional inundated land</span>
+                    </div>
+                    <div className="stat-box">
+                      <strong>{number(floodStats.maxDepth, 1)} <small>m</small></strong>
+                      <span>Max depth over land</span>
+                    </div>
+                  </div>
+                ) : null}
+
+                {grid && <p className="simulation-source-note">{grid.channelSource} · {Math.round(Math.sqrt(grid.cellArea))} m cells. {grid.channelSource === 'Point-source fallback' && 'Channel data unavailable; local point-source scenario only.'}</p>}
+                {floodStats.boundaryReached && <p className="inline-error">Water reaches the terrain-window edge. The affected area extends beyond this view.</p>}
               </div>
 
-              <div className="simulation-playback-status">
-                <span>{gridLoading ? 'Preparing river' : playing ? 'Rising' : Math.abs(animatedRise - rise) > .02 ? 'Paused / adjusting' : 'At target'} · target +{rise.toFixed(1)} m</span>
-                <button type="button" onClick={() => { setPlaying(false); setRise(0); displayedRise.current = 0; setAnimatedRise(0); }}>Reset to river level</button>
+              {/* Pane 2: ML Model Forecast */}
+              <div className={`sim-view-pane ${simTab === 'forecast' ? 'active' : 'hidden'}`}>
+                <ModelForecastCard
+                  usgs={station.usgs}
+                  nwic={station.nwic}
+                  river={station.river}
+                  onData={setModelLive}
+                  onSimulate={(metres) => {
+                    setRise(Math.min(profile.maxRise, Math.max(0, Number(metres.toFixed(2)))));
+                    setPlaying(false);
+                    if (!showSimulation) setShowSimulation(true);
+                  }}
+                />
               </div>
-
-              <LongPressButton
-                disabled={gridLoading || !!gridError || !grid || rise === 0}
-                active={playing}
-                className="w-full"
-                onLongPress={() => {
-                  if (gridLoading || !!gridError) return;
-                  if (!showSimulation) {
-                    setShowSimulation(true);
-                    setPlaying(true);
-                  } else {
-                    setPlaying(prev => !prev);
-                  }
-                }}
-                onClick={() => {
-                  if (gridLoading || !!gridError) return;
-                  if (!showSimulation) {
-                    setShowSimulation(true);
-                    setPlaying(true);
-                  } else {
-                    setPlaying(prev => !prev);
-                  }
-                }}
-              >
-                {gridLoading ? (
-                  <>
-                    <RefreshCw className="spin" size={14} />
-                    <span>Loading elevation…</span>
-                  </>
-                ) : playing ? (
-                  <>
-                    <Pause size={14} />
-                    <span>Pause scenario</span>
-                  </>
-                ) : showSimulation ? (
-                  <>
-                    <Play size={14} />
-                    <span>{Math.abs(animatedRise - rise) > .02 ? 'Resume water rise' : 'Replay water rise'}</span>
-                  </>
-                ) : (
-                  <>
-                    <Play size={14} />
-                    <span>Enable flood scenario</span>
-                  </>
-                )}
-              </LongPressButton>
-
-              {gridError ? (
-                <p className="inline-error">
-                  {gridError}
-                  <button onClick={() => { setShowSimulation(false); setTimeout(() => setShowSimulation(true), 0); }}>Retry</button>
-                </p>
-              ) : showSimulation && grid ? (
-                <div className="scenario-stats">
-                  <div className="stat-box">
-                    <strong>{number(floodStats.area, 2)} <small>km²</small></strong>
-                    <span>Additional inundated land</span>
-                  </div>
-                  <div className="stat-box">
-                    <strong>{number(floodStats.maxDepth, 1)} <small>m</small></strong>
-                    <span>Max depth over land</span>
-                  </div>
-                </div>
-              ) : null}
-
-              {grid && <p className="simulation-source-note">{grid.channelSource} · {Math.round(Math.sqrt(grid.cellArea))} m cells. {grid.channelSource === 'Point-source fallback' && 'Channel data unavailable; local point-source scenario only.'}</p>}
-              {floodStats.boundaryReached && <p className="inline-error">Water reaches the terrain-window edge. The affected area extends beyond this view.</p>}
-
-              <ModelForecastCard
-                usgs={station.usgs}
-                nwic={station.nwic}
-                river={station.river}
-                onData={setModelLive}
-                onSimulate={(metres) => {
-                  setRise(Math.min(profile.maxRise, Math.max(0, Number(metres.toFixed(2)))));
-                  setPlaying(false);
-                  if (!showSimulation) setShowSimulation(true);
-                }}
-              />
             </section>
           </div>
 
