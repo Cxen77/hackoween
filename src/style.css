@@ -743,6 +743,13 @@ svg {
   margin-bottom: 22px;
 }
 
+.heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .breadcrumbs {
   display: flex;
   align-items: center;

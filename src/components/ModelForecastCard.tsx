@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { AlertTriangle, Bot, Download, Play, RefreshCw } from 'lucide-react';
-import { toBasinshiftRecord } from '../modelMetrics.mjs';
+import { useEffect, useState } from 'react';
+import { AlertTriangle, Bot, RefreshCw } from 'lucide-react';
 import './model-forecast.css';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -93,8 +92,6 @@ export default function ModelForecastCard({ usgs, nwic, river, onSimulate, onDat
   const [state, setState] = useState<{ data: Json; error: string | null; offline: boolean; loading: boolean }>({ data: null, error: null, offline: false, loading: false });
   const [tick, setTick] = useState(0);
   const [activeHorizon, setActiveHorizon] = useState<number>(1);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<Record<number, HTMLDivElement | null>>({});
   useEffect(() => {
     const query = usgs ? `station=${encodeURIComponent(usgs)}` : nwic ? `india=${encodeURIComponent(nwic)}` : null;
     onData?.(null);
@@ -114,12 +111,6 @@ export default function ModelForecastCard({ usgs, nwic, river, onSimulate, onDat
       .catch((e: Json) => { if (!ctl.signal.aborted) setState({ data: null, error: e.offline ? null : String(e.message ?? e), offline: !!e.offline || e instanceof TypeError, loading: false }); });
     return () => ctl.abort();
   }, [usgs, nwic, tick]);
-
-  const exportJson = useCallback(() => {
-    if (!state.data) return;
-    const blob = new Blob([JSON.stringify(toBasinshiftRecord(state.data), null, 2)], { type: 'application/json' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `basinshift-forecast-${state.data.station}.json`; a.click(); URL.revokeObjectURL(a.href);
-  }, [state.data]);
 
   const d = state.data;
   return (
@@ -179,22 +170,11 @@ export default function ModelForecastCard({ usgs, nwic, river, onSimulate, onDat
             );
           })()}
         </div>
-
-        {/* Scrollable details for ratings, warnings, and hindcast */}
-        <div className="mf-details-scroll">
-          <p className="mf-foot">
-            Map rises are exploratory assumptions, not calibrated inundation depths. {' '}
-            {d.rating
-              ? <>Flow → water level uses this gauge's own last 30 days ({fmt(d.rating.n)} readings, fit R² {d.rating.r2.toFixed(3)}, observed {fmt(d.rating.q_min)}–{fmt(d.rating.q_max)} cfs). {d.horizons.some((h: Json) => h.extrapolated) && '* = outside the observed range, so extrapolated.'}</>
-              : 'No stage rating available for this gauge; showing discharge only.'}
-          </p>
-          {d.warnings?.map((w: string) => <p key={w} className="mf-warn"><AlertTriangle size={12} /> {w}</p>)}
-          {d.hindcast && Object.keys(d.hindcast.horizons).length > 0 && <Hindcast h={d.hindcast} />}
-          <div className="mf-actions">
-            <button className="mf-btn" onClick={exportJson}><Download size={13} /> Export in BASINSHIFT format</button>
+        {d.hindcast && Object.keys(d.hindcast.horizons).length > 0 && (
+          <div className="mf-details-scroll">
+            <Hindcast h={d.hindcast} />
           </div>
-          <p className="mf-foot">Research model, not a flood warning. Soil moisture comes from a forecast model and is approximate.</p>
-        </div>
+        )}
       </>)}
     </section>
   );

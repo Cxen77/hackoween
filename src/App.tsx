@@ -4,12 +4,13 @@ import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import type { GeoJSONSource, StyleSpecification } from 'maplibre-gl';
 import {
   Activity, Anchor, ArrowDownToLine, ArrowUpRight, Check, ChevronDown, ChevronRight,
-  CircleHelp, CloudRain, Compass, Database, Droplets, Expand, Layers, MapPin,
+  CircleHelp, CloudRain, Compass, Database, Download, Droplets, Expand, Layers, MapPin,
   Minus, Mountain, PanelLeftClose, PanelLeftOpen, Pause, Play, Plus, Radio, RefreshCw, Search, Shield, ShieldAlert,
   Sun, Sunrise, Trees, Waves, X
 } from 'lucide-react';
 import { Sidebar, SidebarBody } from '@/components/ui/sidebar';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toBasinshiftRecord } from './modelMetrics.mjs';
 import { stations, number, forecastUrl, weatherUrl, jsonFetch, fetchGauge, download, riverProfiles, defaultRiverProfile } from './data';
 import type { Station, Forecast, Weather, Gauge, Remote, RiverHydraulicProfile } from './data';
 import { loadGrid, floodFeatures } from './terrain';
@@ -688,12 +689,20 @@ export default function App() {
     const matchesFilter = filterRegion === 'all' || (filterRegion === 'us' && !!s.usgs) || (filterRegion === 'in' && s.region.endsWith(', India'));
     return matchesQuery && matchesFilter;
   });
-
   const exportData = () => {
     if (!forecast.data) return;
     download('floodcast-river-forecast.csv', 'location,date,discharge_cfs,source\n' + forecast.data.daily.time.map((date, i) =>
       `"${station.river.replaceAll('"', '""')}",${date},${forecast.data!.daily.river_discharge[i] == null ? '' : forecast.data!.daily.river_discharge[i]! * 35.3146667},Open-Meteo GloFAS model forecast`
     ).join('\n'));
+  };
+
+  const exportBasinshift = () => {
+    if (!modelLive) return;
+    download(
+      `basinshift-forecast-${modelLive.station || station.usgs || station.id}.json`,
+      JSON.stringify(toBasinshiftRecord(modelLive), null, 2),
+      'application/json'
+    );
   };
 
   return (
@@ -963,10 +972,21 @@ export default function App() {
                 )}
               </p>
             </div>
-            <button className="outline-button export-btn" onClick={exportData} disabled={!forecast.data}>
-              <ArrowDownToLine size={15} />
-              <span>Export CSV</span>
-            </button>
+            <div className="heading-actions">
+              <button className="outline-button export-btn" onClick={exportData} disabled={!forecast.data}>
+                <ArrowDownToLine size={15} />
+                <span>Export CSV</span>
+              </button>
+              <button
+                className="outline-button export-btn"
+                onClick={exportBasinshift}
+                disabled={!modelLive}
+                title={modelLive ? "Export live forecast in official BASINSHIFT JSON benchmark format" : "Model forecast data not loaded"}
+              >
+                <Download size={15} />
+                <span>Export in BASINSHIFT format</span>
+              </button>
+            </div>
           </div>
 
           <div className="explorer-layout">
@@ -1262,11 +1282,6 @@ export default function App() {
                   if (!showSimulation) setShowSimulation(true);
                 }}
               />
-
-              <div className="method-note">
-                <Mountain size={13} />
-                <span>Exploratory elevation model. Excludes hydrodynamics, levees, and storm drains.</span>
-              </div>
             </section>
           </div>
 
