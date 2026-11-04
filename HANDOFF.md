@@ -29,6 +29,12 @@ Script: scripts/basinshift_horizon.py. Summary: data/experiments/basinshift_hori
 - Chosen approach for BASINSHIFT-style forecasts: blend_50. Not applicable to FLOODCAST 2025 (no discharge inputs). FLOODCAST V2 champion unchanged.
 - Caveat: gains over persistence are modest (about 1-7%); no exceedance-probability or calibration model yet.
 
+## Recalibration and hyperparameter sweeps (2026-11-04) - REJECTED, V2 unchanged
+
+- scripts/calibrate_peaks.py: isotonic recalibration learned from cached validation predictions of non-held-out stations, tested on held-out stations. Full: extreme RMSE 150,397 vs 115,119 (worse). Shrink 0.25/0.5: overall RMSE and MAE improve (70,126 / 25,888 at 0.5) but extreme RMSE worsens (122,383 / 130,819). Gate failed.
+- scripts/tune_regional.py: 7 HistGB hyperparameter variants of regional_raw in the V2 blend, both validation splits. NONE passed the overall+extreme RMSE gate in both splits; differences were about 1% (noise level; the control re-fit differed from the cached reference by 0.3%). Best-looking: l2_120 lowered unseen extreme to 110,567 but raised temporal RMSE/extreme slightly.
+- Conclusion: FLOODCAST V2 is at a plateau for tuning-level changes. Remaining levers need new information: basin-wide upstream weather, same-source extra stations (scripts/expand_stations.py after Open-Meteo quota reset), complete large-basin attributes.
+
 ## Extra-station experiment with NASA POWER weather (2026-11-04) - REJECTED, V2 unchanged
 
 Open-Meteo quota was exhausted, so 36 vetted extra USGS stations used NASA POWER weather (scripts/build_plus_dataset.py), quantile-mapped to the Open-Meteo scale using original-station training rows only (corr after mapping: precip 0.81, tmax 0.98, tmin 0.98, soil 0.71). Dataset data/large_plus (local, ignored): 91 stations, 490,274 train rows.
