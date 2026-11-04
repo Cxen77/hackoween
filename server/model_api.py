@@ -33,7 +33,7 @@ import numpy as np
 import pandas as pd
 
 from solution import read_input
-from scripts.basinshift_model import HORIZONS, clim_forecast, evaluate, forecast
+from scripts.basinshift_model import clim_forecast, evaluate, forecast
 from scripts.clean_data import clean_frame
 from scripts.external_caravan_eval import load_basins
 
@@ -83,7 +83,7 @@ def load_state(model_path: Path, train_path: Path, metadata_path: Path) -> None:
         static_cols = ['drainage_area_sqmi', 'mean_elevation_ft', 'slope_pct', 'forest_cover_pct', 'impervious_surface_pct']
         static = ours.sort_values('date').groupby('station_id')[static_cols].last()
         train_rows, stations, source = len(ours), sorted(ours.station_id.unique()), 'training CSV'
-    STATE.update(bundle=saved['bundle'], thr=thr, static=static, meta=meta, train_rows=train_rows, quality=quality,
+    STATE.update(horizons=sorted(saved['bundle']['horizons']), bundle=saved['bundle'], thr=thr, static=static, meta=meta, train_rows=train_rows, quality=quality,
                  stations=stations, model_path=str(model_path))
     print(f"loaded model {model_path.name} (gauge facts from {source}); {len(stations)} stations, {train_rows:,} training rows", flush=True)
 
@@ -148,8 +148,15 @@ def fit_rating(sid: str):
             return float(np.polyval(coef, lo) - slope_lo * (lo - x)), True
         return float(np.polyval(coef, x)), False
 
-    return {'stage_of': stage_of, 'n': int(len(pairs)), 'r2': r2, 'q_min': float(math.exp(lo)), 'q_max': float(math.exp(hi)),
+    return {'stage_of': stage_of, 'median_stage_ft': float(np.median(stage)), 'n': int(len(pairs)), 'r2': r2, 'q_min': float(math.exp(lo)), 'q_max': float(math.exp(hi)),
             'current_stage_ft': float(stage[-1]), 'current_q': float(pairs[-1, 0])}
+
+
+def rule_rise(q_cfs: float, ref_cfs: float) -> float:
+    """Rough rise in metres of the water surface when flow goes from the reference (normal) flow to q. Rule of thumb
+    h ~ (Q/300 m3/s)^0.42, as used elsewhere in the app for ungauged rivers. Never negative."""
+    f = lambda c: (max(c, 1e-6) / CFS_PER_M3S / 300.0) ** 0.42
+    return round(float(min(22.0, max(0.0, f(q_cfs) - f(ref_cfs)))), 2)
 
 
 def live_forecast(sid: str) -> dict:
@@ -161,11 +168,12 @@ def live_forecast(sid: str) -> dict:
     meta = STATE['meta'].loc[sid]
     q = recent_discharge(sid)
     last = q.index.max()
+    ref_flow = float(q.iloc[-30:].median())  # the river's normal level: median of the last 30 days
     w = recent_weather(float(meta.latitude), float(meta.longitude))
     # Open-Meteo's forecast API keeps only about the last 40 days of weather; start at the first day it has.
     first_wx = pd.to_datetime(w.dropna(subset=['precipitation_mm']).date.min())
     start = max(last - pd.Timedelta(days=59), first_wx)
-    days = pd.date_range(start, last + pd.Timedelta(days=max(HORIZONS)))
+    days = pd.date_range(start, last + pd.Timedelta(days=max(STATE['horizons'])))
     frame = pd.DataFrame({'station_id': sid, 'date': days.strftime('%Y-%m-%d')})
     frame = frame.merge(w, on='date', how='left')
     frame['discharge_cfs'] = q.reindex(days).to_numpy()
@@ -173,8 +181,8 @@ def live_forecast(sid: str) -> dict:
         frame[c] = v
     missing_wx = frame[['precipitation_mm', 'temp_max_c', 'temp_min_c', 'soil_moisture']].isna().any(axis=1)
     warnings = []
-    if len(days) - max(HORIZONS) < 30:
-        warnings.append(f'Only {len(days) - max(HORIZONS)} days of input history are available; accuracy may be reduced.')
+    if len(days) - max(STATE['horizons']) < 30:
+        warnings.append(f'Only {len(days) - max(STATE['horizons'])} days of input history are available; accuracy may be reduced.')
     # Only warn about gaps that can matter: the last 30 days before the forecast origin and the forecast days. A gap in the
     # oldest part of the window (e.g. the first day's soil moisture, which the weather API publishes a day late) is harmless.
     relevant = missing_wx.to_numpy() & (pd.to_datetime(frame.date) > last - pd.Timedelta(days=30)).to_numpy()
@@ -190,11 +198,11 @@ def live_forecast(sid: str) -> dict:
            'threshold_q90_cfs': float(thr.T90.iloc[0]), 'threshold_q99_cfs': float(thr.T99.iloc[0]),
            'recent': [{'date': d.strftime('%Y-%m-%d'), 'cfs': float(v)} for d, v in q.iloc[-30:].items()], 'horizons': [], 'warnings': warnings,
            'sources': ['USGS NWIS daily values', 'Open-Meteo forecast API (weather)', 'FLOODCAST BASINSHIFT-style model trained on 55 USGS gauges'],
-           'rating': None if rating is None else {k: rating[k] for k in ('n', 'r2', 'q_min', 'q_max', 'current_stage_ft', 'current_q')}}
+           'rating': None if rating is None else {k: rating[k] for k in ('n', 'r2', 'q_min', 'q_max', 'current_stage_ft', 'current_q', 'median_stage_ft')}}
     out['rain_forecast'] = [{'date': r.date, 'mm': None if pd.isna(r.precipitation_mm) else float(r.precipitation_mm)}
                             for r in frame[frame.date > last.strftime('%Y-%m-%d')].itertuples()]
     with LOCK:
-        for h in HORIZONS:
+        for h in STATE['horizons']:
             o = forecast(STATE['bundle'], frame, '2000-01-01', h, thr_override=thr)
             i = int(np.flatnonzero(frame.date.to_numpy() == (last + pd.Timedelta(days=h)).strftime('%Y-%m-%d'))[0])
             entry = {'horizon_days': h, 'target_date': frame.date.iloc[i], 'point_cfs': float(o['point'][i]),
@@ -206,10 +214,21 @@ def live_forecast(sid: str) -> dict:
                     if val is not None:
                         st, extra = rating['stage_of'](val)
                         entry[f'stage_{key}_ft'] = st
-                        entry[f'rise_{key}_m'] = round(st / FT_PER_M, 2)
+                        # Rise above the reference river surface (the gauge's 30-day median stage), never negative.
+                        entry[f'rise_{key}_m'] = round(max(0.0, (st - rating['median_stage_ft']) / FT_PER_M), 2)
                         if key == 'point':
                             entry['extrapolated'] = extra
+            if not rating:  # no stage gauge: rule-of-thumb rise of the forecast flow above its normal flow
+                entry['rise_point_m'] = rule_rise(entry['point_cfs'], ref_flow)
+                entry['rise_is_rule_of_thumb'] = True
             out['horizons'].append(entry)
+    out['reference_flow_cfs'] = ref_flow
+    if rating:
+        out['live_rise_m'] = round(max(0.0, (rating['current_stage_ft'] - rating['median_stage_ft']) / FT_PER_M), 2)
+        out['live_rise_basis'] = 'live gauge height above its 30-day median'
+    else:
+        out['live_rise_m'] = rule_rise(float(q.iloc[-1]), ref_flow)
+        out['live_rise_basis'] = 'estimated from today\'s flow compared with its 30-day median (no stage gauge)'
     out = clean(out)
     CACHE[sid] = (time.time(), out)
     return out
@@ -264,11 +283,12 @@ def live_forecast_new(lat: float, lon: float, name: str) -> dict:
     last = pd.Timestamp(date.today() - timedelta(days=1))
     obs = gl[gl.index <= last] * CFS_PER_M3S
     last = obs.index.max()
+    ref_flow = float(obs.iloc[-30:].median())  # the river's normal level: median of the last 30 days
     glofas_fc = gl[gl.index > last] * CFS_PER_M3S
     w = recent_weather(lat, lon)
     first_wx = pd.to_datetime(w.dropna(subset=['precipitation_mm']).date.min())
     start = max(last - pd.Timedelta(days=59), first_wx)
-    days = pd.date_range(start, last + pd.Timedelta(days=max(HORIZONS)))
+    days = pd.date_range(start, last + pd.Timedelta(days=max(STATE['horizons'])))
     frame = pd.DataFrame({'station_id': 'NEW', 'date': days.strftime('%Y-%m-%d')}).merge(w, on='date', how='left')
     frame['discharge_cfs'] = obs.reindex(days).to_numpy()
     for c in ('drainage_area_sqmi', 'mean_elevation_ft', 'slope_pct', 'forest_cover_pct', 'impervious_surface_pct'):
@@ -277,8 +297,8 @@ def live_forecast_new(lat: float, lon: float, name: str) -> dict:
     warnings = ['New river: not in the training data. Flow history is GloFAS modelled discharge (no gauge record), so this is a transfer test and the numbers are unverified.']
     if snap['mean_m3s'] > 2 * max(snap['original_mean_m3s'], 1e-6):
         warnings.append(f"The map point was moved to the main river channel in GloFAS's grid ({slat}, {slon}); the original cell carried only {snap['original_mean_m3s']:.1f} m3/s.")
-    if len(days) - max(HORIZONS) < 30:
-        warnings.append(f'Only {len(days) - max(HORIZONS)} days of input history are available; accuracy may be reduced.')
+    if len(days) - max(STATE['horizons']) < 30:
+        warnings.append(f'Only {len(days) - max(STATE['horizons'])} days of input history are available; accuracy may be reduced.')
     out = {'station': name, 'name': name, 'new_river': True, 'origin_date': last.strftime('%Y-%m-%d'), 'latest_observed_cfs': float(obs.iloc[-1]),
            'threshold_q90_cfs': float(thr.T90.iloc[0]), 'threshold_q99_cfs': float(thr.T99.iloc[0]), 'snapped_to': [slat, slon],
            'recent': [{'date': d.strftime('%Y-%m-%d'), 'cfs': float(v)} for d, v in obs.iloc[-30:].items()], 'horizons': [], 'warnings': warnings, 'rating': None,
@@ -286,7 +306,7 @@ def live_forecast_new(lat: float, lon: float, name: str) -> dict:
     out['rain_forecast'] = [{'date': r.date, 'mm': None if pd.isna(r.precipitation_mm) else float(r.precipitation_mm)}
                             for r in frame[frame.date > last.strftime('%Y-%m-%d')].itertuples()]
     with LOCK:
-        for h in HORIZONS:
+        for h in STATE['horizons']:
             o = forecast(STATE['bundle'], frame, '2000-01-01', h, thr_override=thr)
             tgt = last + pd.Timedelta(days=h)
             i = int(np.flatnonzero(frame.date.to_numpy() == tgt.strftime('%Y-%m-%d'))[0])
@@ -296,8 +316,11 @@ def live_forecast_new(lat: float, lon: float, name: str) -> dict:
                      'p_high_flow': float(o['p90'][i]), 'p_extreme_flow': float(o['p99'][i]), 'persistence_cfs': float(o['persistence'][i]),
                      'used_fallback': bool(o['fallback'][i]), 'glofas_forecast_cfs': float(glofas_fc.get(tgt, np.nan)),
                      # Same rough flow->water-rise rule the map already uses for ungauged rivers.
-                     'rise_point_m': round(float(min(22.0, max(0.3, (q_m3s / 300.0) ** 0.42))), 2), 'rise_is_rule_of_thumb': True, 'extrapolated': False}
+                     'rise_point_m': rule_rise(float(o['point'][i]), ref_flow), 'rise_is_rule_of_thumb': True, 'extrapolated': False}
             out['horizons'].append(entry)
+    out['reference_flow_cfs'] = ref_flow
+    out['live_rise_m'] = rule_rise(float(obs.iloc[-1]), ref_flow)
+    out['live_rise_basis'] = 'estimated from today\'s flow compared with its 30-day median (no stage gauge)'
     out = clean(out)
     CACHE[ck] = (time.time(), out)
     return out
@@ -344,10 +367,11 @@ def live_forecast_india(key: str) -> dict:
     st = reg[key]
     obs = nwic_recent_daily(st)
     last = obs.index.max()
+    ref_flow = float(obs.iloc[-30:].median())  # the river's normal level: median of the last 30 days
     w = recent_weather(st['lat'], st['lon'])
     first_wx = pd.to_datetime(w.dropna(subset=['precipitation_mm']).date.min())
     start = max(last - pd.Timedelta(days=59), first_wx)
-    days = pd.date_range(start, last + pd.Timedelta(days=max(HORIZONS)))
+    days = pd.date_range(start, last + pd.Timedelta(days=max(STATE['horizons'])))
     frame = pd.DataFrame({'station_id': st['key'], 'date': days.strftime('%Y-%m-%d')}).merge(w, on='date', how='left')
     frame['discharge_cfs'] = obs.reindex(days).to_numpy()
     for c in ('drainage_area_sqmi', 'mean_elevation_ft', 'slope_pct', 'forest_cover_pct', 'impervious_surface_pct'):
@@ -357,8 +381,8 @@ def live_forecast_india(key: str) -> dict:
     stale = (pd.Timestamp.today().normalize() - last).days
     if stale > 3:
         warnings.append(f'The latest NWIC value is {stale} days old (last reading {last.strftime("%Y-%m-%d")}); forecasts start from that date.')
-    if len(days) - max(HORIZONS) < 30:
-        warnings.append(f'Only {len(days) - max(HORIZONS)} days of input history are available.')
+    if len(days) - max(STATE['horizons']) < 30:
+        warnings.append(f'Only {len(days) - max(STATE['horizons'])} days of input history are available.')
     out = {'station': key, 'name': f"{st['station']} ({st['river']})", 'new_river': True, 'origin_date': last.strftime('%Y-%m-%d'),
            'latest_observed_cfs': float(obs.iloc[-1]), 'threshold_q90_cfs': st['threshold_q90_cfs'], 'threshold_q99_cfs': st['threshold_q99_cfs'],
            'recent': [{'date': d.strftime('%Y-%m-%d'), 'cfs': float(v)} for d, v in obs.iloc[-30:].items()], 'horizons': [], 'warnings': warnings,
@@ -368,7 +392,7 @@ def live_forecast_india(key: str) -> dict:
     out['rain_forecast'] = [{'date': r.date, 'mm': None if pd.isna(r.precipitation_mm) else float(r.precipitation_mm)}
                             for r in frame[frame.date > last.strftime('%Y-%m-%d')].itertuples()]
     with LOCK:
-        for h in HORIZONS:
+        for h in STATE['horizons']:
             o = forecast(STATE['bundle'], frame, '2000-01-01', h, thr_override=thr)
             tgt = last + pd.Timedelta(days=h)
             i = int(np.flatnonzero(frame.date.to_numpy() == tgt.strftime('%Y-%m-%d'))[0])
@@ -377,7 +401,7 @@ def live_forecast_india(key: str) -> dict:
                                     'lo_cfs': float(o['lo'][i]) if not o['fallback'][i] else None, 'hi_cfs': float(o['hi'][i]) if not o['fallback'][i] else None,
                                     'p_high_flow': float(o['p90'][i]), 'p_extreme_flow': float(o['p99'][i]), 'persistence_cfs': float(o['persistence'][i]),
                                     'used_fallback': bool(o['fallback'][i]),
-                                    'rise_point_m': round(float(min(22.0, max(0.3, (q_m3s / 300.0) ** 0.42))), 2), 'rise_is_rule_of_thumb': True, 'extrapolated': False})
+                                    'rise_point_m': rule_rise(float(o['point'][i]), ref_flow), 'rise_is_rule_of_thumb': True, 'extrapolated': False})
             # Hindcast: forecasts the model would have made for each of the last 30 observed days, scored against NWIC.
             ts = pd.to_datetime(frame.date)
             win = (ts > last - pd.Timedelta(days=30)) & (ts <= last)
@@ -390,6 +414,9 @@ def live_forecast_india(key: str) -> dict:
                 out['hindcast']['horizons'][str(h)] = {'n': int(ok.sum()), 'rmse_model': rm(m), 'rmse_persistence': rm(p), 'mae_model': mae(m), 'mae_persistence': mae(p),
                                                        'rmse_ratio': rm(m) / max(rm(p), 1e-9)}
                 out['hindcast']['series'][str(h)] = {'dates': frame.date[ok].tolist(), 'observed': a.tolist(), 'model': m.tolist(), 'persistence': p.tolist()}
+    out['reference_flow_cfs'] = ref_flow
+    out['live_rise_m'] = rule_rise(float(obs.iloc[-1]), ref_flow)
+    out['live_rise_basis'] = 'estimated from today\'s flow compared with its 30-day median (no stage gauge)'
     out = clean(out)
     CACHE[('in', key)] = (time.time(), out)
     return out
@@ -410,7 +437,7 @@ def run_caravan_test(n: int, seed: int) -> dict:
     clim = clim_forecast(frame, (frame.date < '2010-01-01').to_numpy())
     res = {'dataset': 'caravan_random_subset', 'basins': len(pick), 'seed': seed, 'cleaning': {k: v for k, v in report.items() if k.startswith(('rows', 'dropped', 'clipped'))}, 'horizons': {}}
     with LOCK:
-        for h in HORIZONS:
+        for h in STATE['horizons']:
             o = forecast(STATE['bundle'], frame, '2010-01-01', h)
             mask = in_test & ~np.isnan(o['thr'].T90.to_numpy()) & ~np.isnan(clim)
             rep = evaluate(o, frame, y, mask, STATE['bundle']['horizons'][h], area, True, clim)
@@ -443,7 +470,7 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if url.path == '/api/health':
                 self._send(200, {'ok': True, 'model': Path(STATE['model_path']).name, 'stations': STATE['stations'], 'train_rows': STATE['train_rows'],
-                                 'horizons': HORIZONS, 'note': 'Research benchmark; not a certified flood warning.'})
+                                 'horizons': STATE['horizons'], 'note': 'Research benchmark; not a certified flood warning.'})
             elif url.path == '/api/live_forecast':
                 if 'india' in q:
                     self._send(200, live_forecast_india(q['india'][0]))
@@ -470,7 +497,9 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument('--port', type=int, default=8765)
     ap.add_argument('--host', default='127.0.0.1')
-    ap.add_argument('--model', default=str(ROOT / 'data/experiments/basinshift_model/models_caravan.joblib'))
+    daily = ROOT / 'data/experiments/basinshift_model/models_daily.joblib'
+    ap.add_argument('--model', default=str(daily if daily.exists() else ROOT / 'data/experiments/basinshift_model/models_caravan.joblib'),
+                    help='trained model bundle (models_daily.joblib = horizons +1..+7 if present, else models_caravan.joblib = +1/+3/+7)')
     ap.add_argument('--train', default=str(ROOT / 'data/large/train/train.csv'))
     ap.add_argument('--metadata', default=str(ROOT / 'data/large/metadata/station_metadata.csv'))
     args = ap.parse_args()

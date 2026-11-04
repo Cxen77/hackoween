@@ -386,10 +386,30 @@ function JudgeTests({ summary }: { summary: Json }) {
         </>) : <div className="mp-empty">Not available yet.</div>}
       </section>
 
+      <DailyHorizons summary={summary} />
       <IndiaLiveTest />
       <LiveCaravanTest />
       <ContractCheck />
     </div>
+  );
+}
+
+function DailyHorizons({ summary }: { summary: Json }) {
+  const d = summary.basinshift?.heldout_daily;
+  if (!d) return null;
+  const rows = Object.entries(d.horizons) as [string, Json][];
+  return (
+    <section className="mp-card">
+      <div className="mp-eyebrow"><LineChart size={14} /> Every forecast day</div>
+      <h3>Daily forecasts, +1 to +7 days, on gauges the model never saw</h3>
+      <p className="mp-muted">The live model is trained for every day from +1 to +7, so the hydrograph is a predicted daily curve and not a drawing between three points. Held-out gauges, 2022–2024 ({fmt(d.stations)} gauges, {fmt(d.rows)} days). Ratio = model error ÷ persistence error (below 1.00 is better).</p>
+      <table className="mp-table">
+        <thead><tr><th>Day</th><th>Model RMSE</th><th>Persistence RMSE</th><th>Ratio</th><th>Median NSE (model / persist.)</th><th>90% coverage</th><th>High-flow AUPRC</th></tr></thead>
+        <tbody>{rows.map(([h, v]) => (
+          <tr key={h}><td>+{h}</td><td>{fmt(v.blend.rmse)}</td><td>{fmt(v.persistence.rmse)}</td><td><b>{fmt(v.blend.rmse / v.persistence.rmse, 3)}×</b></td>
+            <td>{fmt(v.blend.median_basin_nse, 3)} / {fmt(v.persistence.median_basin_nse, 3)}</td><td>{fmt(v.interval.coverage * 100, 1)}%</td><td>{fmt(v.high_flow_q90.auprc, 3)}</td></tr>))}</tbody>
+      </table>
+    </section>
   );
 }
 

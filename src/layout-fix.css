@@ -1,0 +1,11 @@
+/* Narrow windows (< 768px, Tailwind's md breakpoint).
+ *
+ * The sidebar component draws a desktop panel (`hidden md:flex`) AND a mobile bar (`md:hidden`). Our unlayered
+ * `.floodcast-sidebar-body { display: flex }` beats Tailwind's layered `hidden`, so below 768px the desktop panel stayed
+ * visible next to the mobile bar and squeezed the map area to ~64px, pushing the map and the flood simulation off screen.
+ * Hide the desktop panel again and stack the mobile bar above the content. */
+@media (max-width: 767px) {
+  .workspace { flex-direction: column; }
+  .floodcast-sidebar-body.hidden { display: none; }
+  .main-view { width: 100%; padding: 16px 12px; }
+}

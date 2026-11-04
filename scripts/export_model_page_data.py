@@ -52,7 +52,7 @@ def main() -> None:
                       'overall': demo['overall'], 'median_baseline': demo['training_station_median_baseline'],
                       'train_rows': 293057, 'test_rows': demo['overall']['rows'], 'stations_trained': 55},
         'basinshift': {}}
-    for label in ('heldout', 'caravan'):
+    for label in ('heldout', 'caravan', 'heldout_daily'):
         p = EXP / f'basinshift_{label}.json'
         if p.exists():
             res = json.loads(p.read_text(encoding='utf-8'))

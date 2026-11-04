@@ -128,7 +128,8 @@ export default function HydrographOutlookCard({
   });
   const hasModel = mlVal.some(v => v !== null);
   const observedNow: number | null = modelLive?.latest_observed_cfs != null ? modelLive.latest_observed_cfs * toUnit : null;
-  const allVals = [...glofasSeries, ...mlVal, ...mlHi, ...(observedNow !== null ? [observedNow] : [])].filter((v): v is number => v !== null && Number.isFinite(v));
+  // Scale to the forecast lines, not the long upper tail of the 90% band (the band is clipped at the top of the chart).
+  const allVals = [...glofasSeries, ...mlVal, ...(observedNow !== null ? [observedNow] : [])].filter((v): v is number => v !== null && Number.isFinite(v));
   const peakVal = Math.max(...allVals) * 1.15 || 1;
 
   // Chart Geometry (viewBox: 800 x 280)
@@ -151,7 +152,7 @@ export default function HydrographOutlookCard({
   const line = (pts: [number, number][]) => pts.map((p, k) => `${k ? 'L' : 'M'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
   const bandIdx = mlIdx.filter(i => mlLo[i] !== null && mlHi[i] !== null);
   const pathBand = bandIdx.length > 1
-    ? `${line(bandIdx.map(i => [getX(i), getY(mlHi[i] as number)] as [number, number]))} ${[...bandIdx].reverse().map(i => `L${getX(i).toFixed(1)},${getY(mlLo[i] as number).toFixed(1)}`).join(' ')} Z`
+    ? `${line(bandIdx.map(i => [getX(i), Math.max(padTop, getY(mlHi[i] as number))] as [number, number]))} ${[...bandIdx].reverse().map(i => `L${getX(i).toFixed(1)},${getY(mlLo[i] as number).toFixed(1)}`).join(' ')} Z`
     : '';
   const pathGlofas = getCurvedPath(ptsGlofas);
   const pathML = ptsML.length > 1 ? line(ptsML) : '';

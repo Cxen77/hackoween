@@ -256,3 +256,8 @@
 .mf-axis-strong { fill: #0369a1; font-weight: 700; }
 
 .hydro-note { margin: 6px 4px 0; padding: 6px 10px; border-radius: 8px; background: var(--amber-light); border: 1px solid #fde68a; color: #92400e; font-size: 11.5px; line-height: 1.45; }
+
+.live-level-note { margin: 8px 0 2px; font-size: 11.5px; line-height: 1.5; color: var(--text-muted); }
+.live-level-note b { color: var(--text-main); }
+.live-level-note button { margin-left: 8px; font: inherit; font-size: 11.5px; font-weight: 600; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--primary); background: var(--bg-surface); color: var(--primary); cursor: pointer; }
+.live-level-note button:hover { background: var(--primary); color: #fff; }

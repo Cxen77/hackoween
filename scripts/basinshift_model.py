@@ -114,7 +114,7 @@ def forecast(bundle, frame, ref_cut, h, hist_frame=None, weather_frame=None, del
     Ll = np.log1p(lag_safe)
     resid = np.expm1(Ll + b['mean'].predict(Xp))
     point = np.where(fallback, wo, 0.5 * lag_safe + 0.5 * resid)
-    qs = np.sort(np.column_stack([b['q'][q].predict(Xp) for q in QUANTILES]), axis=1)
+    qs = np.sort(np.column_stack([b['q'][q].predict(Xp) for q in sorted(b['q'])]), axis=1)  # outer quantiles are first/last
     quant = np.expm1(Ll[:, None] + qs).clip(min=0)
     k = b['conformal_k']
     lo, hi = np.expm1(Ll + qs[:, 0] - k).clip(min=0), np.expm1(Ll + qs[:, -1] + k)
@@ -262,7 +262,11 @@ def main() -> None:
     ap.add_argument('--caravan', default='data/external/caravan/Caravan')
     ap.add_argument('--out', default='data/experiments/basinshift_model')
     ap.add_argument('--seed', type=int, default=42)
+    ap.add_argument('--horizons', type=int, nargs='+', default=None, help='forecast horizons in days (default 1 3 7)')
+    ap.add_argument('--tag', default='', help='suffix for output file names, e.g. _daily')
     args = ap.parse_args()
+    if args.horizons:
+        HORIZONS[:] = args.horizons
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     ours, rep = clean_frame(read_input(args.train, True), target=True)
@@ -271,7 +275,7 @@ def main() -> None:
         ids = sorted(ours.station_id.unique())
         held = sorted(np.random.default_rng(args.seed).choice(ids, size=max(2, len(ids) // 5), replace=False).tolist())
         run(ours[~ours.station_id.isin(held)], ours[ours.station_id.isin(held)], '2022-01-01', '2020-07-01', '2022-01-01',
-            '2022-01-01', '2022-01-01', '2024-12-31', 'heldout', out)
+            '2022-01-01', '2022-01-01', '2024-12-31', 'heldout' + args.tag, out)
     else:
         from scripts.external_caravan_eval import load_basins
         caravan, crep = clean_frame(load_basins(Path(args.caravan), set(ours.station_id)), target=True)
@@ -279,7 +283,7 @@ def main() -> None:
         # Keep 1995-2020: thresholds come from 1995-2009 (reference), tests from 2010-2020. Limits memory/runtime.
         caravan = caravan[caravan.date >= '1995-01-01'].reset_index(drop=True)
         print('caravan basins', caravan.station_id.nunique(), 'rows', len(caravan), flush=True)
-        run(ours, caravan, '2023-01-01', '2023-01-01', '2025-01-01', '2010-01-01', '2010-01-01', '2020-12-31', 'caravan', out)
+        run(ours, caravan, '2023-01-01', '2023-01-01', '2025-01-01', '2010-01-01', '2010-01-01', '2020-12-31', 'caravan' + args.tag, out)
 
 
 if __name__ == '__main__':

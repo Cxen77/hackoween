@@ -50,12 +50,12 @@ const rasterStyle = (satellite: boolean): StyleSpecification => ({
       tiles: [
         satellite
           ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-          : 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
+          : 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'
       ],
       tileSize: 256,
       attribution: satellite
         ? 'Tiles © Esri — Sources: Esri, Maxar, Earthstar Geographics'
-        : '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        : 'Tiles © Esri — Esri, HERE, Garmin, FAO, NOAA, USGS'
     }
   },
   layers: [{ id: 'base', type: 'raster', source: 'base' }]
@@ -129,6 +129,8 @@ export default function App() {
   const [modelReport, setModelReport] = useState<Record<string, any> | null>(null);
   // Live data from the local model server (observed flow); used to improve "Sync 3D Map to Live Level" where no stage gauge exists.
   const [modelLive, setModelLive] = useState<Record<string, any> | null>(null);
+  // The simulation follows the live level by default; moving the slider yourself (or using a forecast button) turns that off.
+  const followLive = useRef<boolean>(!(() => { try { return new URLSearchParams(window.location.search).has('rise'); } catch { return false; } })());
   const [simTab, setSimTab] = useState<'flood' | 'forecast'>('flood');
 
   const mapNode = useRef<HTMLDivElement>(null);
@@ -185,13 +187,30 @@ export default function App() {
     const ticks: { val: number; isMajor: boolean; percent: number }[] = [];
     for (let v = 0; v <= max + 0.001; v += minorStep) {
       const isMajor = Math.abs(v % majorStep) < 0.001 || Math.abs(v - max) < 0.001;
-      const percent = Math.min(100, Math.max(0, ((v - min) / (max - min)) * 100));
+      const percent = Math.min(100, Math.max(0, Math.sqrt(Math.max(0, v - min) / (max - min)) * 100));
       ticks.push({ val: Math.round(v * 10) / 10, isMajor, percent });
     }
-    return ticks;
+    // Fine ticks where the scale is stretched: the first metre.
+    for (const v of [0.25, 0.5]) if (max > 2) ticks.push({ val: v, isMajor: false, percent: Math.sqrt(v / (max - min)) * 100 });
+    return ticks.sort((a, b) => a.val - b.val);
   }, [profile.minRise, profile.maxRise]);
 
-  const sliderProgress = Math.min(100, Math.max(0, ((rise - profile.minRise) / (profile.maxRise - profile.minRise)) * 100));
+  const sliderProgress = Math.min(100, Math.max(0, Math.sqrt(Math.max(0, rise - profile.minRise) / (profile.maxRise - profile.minRise)) * 100));
+
+  // The slider position (0-1000) maps to the rise on a square-root scale, so the first metre gets about a third of the track.
+  // Flooding changes fastest there; on a linear slider a small move jumped from nothing to several km2.
+  const SLIDER_STEPS = 1000;
+  const riseToPos = (r: number) => Math.round(Math.sqrt(Math.min(Math.max(r, 0), profile.maxRise) / profile.maxRise) * SLIDER_STEPS);
+  const posToRise = (pos: number) => Math.round(profile.maxRise * (pos / SLIDER_STEPS) ** 2 * 100) / 100;
+
+  // Live level = how far above its own normal (30-day median) level the river is right now, from the model server.
+  // The simulation starts there and follows it until the user moves the slider.
+  const liveRise = modelLive?.live_rise_m != null && Number.isFinite(modelLive.live_rise_m) ? Math.min(profile.maxRise, Math.max(0, modelLive.live_rise_m)) : null;
+  useEffect(() => {
+    if (liveRise == null || !followLive.current || playing) return;
+    setRise(liveRise);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveRise, station.id]);
 
   const pick = (s: Station) => {
     setStation(s);
@@ -200,7 +219,8 @@ export default function App() {
     setDay(0);
     setPlaying(false);
     const prof = riverProfiles[s.id] || defaultRiverProfile;
-    setRise(prof.defaultRise);
+    followLive.current = true;
+    setRise(s.usgs || s.nwic ? 0 : prof.defaultRise); // live rivers start at their live level (0 until it loads)
     setCorridorSpan(Math.min(12000, prof.defaultReach));
   };
 
@@ -281,7 +301,7 @@ export default function App() {
       if (!m.isStyleLoaded() && !fallback && e.error?.message?.includes('geoapify')) {
         fallback = true;
         m.setStyle(rasterStyle(false));
-        setMapError('Using keyless CARTO dark map fallback.');
+        setMapError('Using keyless Esri dark map fallback.');
       }
     });
 
@@ -1178,7 +1198,7 @@ export default function App() {
                 <div className="slider-group">
                   <div className="slider-label">
                     <span>Rise above reference river surface</span>
-                    <strong className="rise-numeric">+{animatedRise.toFixed(profile.step < 0.1 ? 2 : 1)} <span>m</span></strong>
+                    <strong className="rise-numeric">+{animatedRise.toFixed(animatedRise < 1 || profile.step < 0.1 ? 2 : 1)} <span>m</span>{liveRise != null && Math.abs(rise - liveRise) < 0.015 && <span className="live-tag" title={modelLive?.live_rise_basis}>● LIVE</span>}</strong>
                   </div>
                   <div className="slider-track-wrap">
                     <input
@@ -1186,13 +1206,14 @@ export default function App() {
                       type="range"
                       className="reference-slider"
                       min={0}
-                      max={profile.maxRise}
-                      step={profile.step}
-                      value={rise}
+                      max={SLIDER_STEPS}
+                      step={1}
+                      value={riseToPos(rise)}
+                      aria-valuetext={`+${rise} metres above the reference river surface`}
                       style={{
                         background: `linear-gradient(to right, #18181b 0%, #18181b ${sliderProgress}%, #e2e8f0 ${sliderProgress}%, #e2e8f0 100%)`
                       }}
-                      onChange={e => { setRise(Number(e.target.value)); setPlaying(false); }}
+                      onChange={e => { followLive.current = false; setRise(posToRise(Number(e.target.value))); setPlaying(false); }}
                       aria-label="Water rise above channel"
                     />
                     <div className="slider-ticks-container">
@@ -1201,7 +1222,7 @@ export default function App() {
                           key={t.val}
                           className={`slider-tick ${t.isMajor ? 'major-tick' : 'minor-tick'}`}
                           style={{ left: `calc(11px + (100% - 22px) * ${t.percent / 100})` }}
-                          onClick={() => { setRise(t.val); setPlaying(false); }}
+                          onClick={() => { followLive.current = false; setRise(t.val); setPlaying(false); }}
                           title={`Set to +${t.val}m`}
                         >
                           <span className="tick-line" />
@@ -1210,6 +1231,14 @@ export default function App() {
                       ))}
                     </div>
                   </div>
+                  {liveRise != null && (
+                    <div className="live-level-note">
+                      Live level: <b>+{liveRise.toFixed(2)} m</b> above this river's normal ({modelLive?.live_rise_basis}).
+                      {Math.abs(rise - liveRise) >= 0.015 && (
+                        <button type="button" onClick={() => { followLive.current = true; setPlaying(false); setRise(liveRise); }}>Use live level</button>
+                      )}
+                    </div>
+                  )}
                   <div className="river-context-note">
                     {profile.contextNote}
                   </div>
@@ -1296,6 +1325,7 @@ export default function App() {
                   river={station.river}
                   onData={setModelLive}
                   onSimulate={(metres) => {
+                  followLive.current = false;
                     setRise(Math.min(profile.maxRise, Math.max(0, Number(metres.toFixed(2)))));
                     setPlaying(false);
                     if (!showSimulation) setShowSimulation(true);
@@ -1571,8 +1601,8 @@ export default function App() {
                 <div className="source-row">
                   <Layers size={20} />
                   <div>
-                    <h3>Geoapify & CARTO Basemaps</h3>
-                    <p>Vector styling with OpenStreetMap water features. Fallback to CARTO Dark Matter raster tiles. Optional high-resolution Esri World Imagery satellite layer.</p>
+                    <h3>Geoapify & Esri Basemaps</h3>
+                    <p>Vector styling with OpenStreetMap water features. Fallback to Esri World Dark Gray raster tiles (CARTO's keyless tiles now return an API-key placeholder). Optional high-resolution Esri World Imagery satellite layer.</p>
                   </div>
                 </div>
               </>
