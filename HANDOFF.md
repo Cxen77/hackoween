@@ -31,7 +31,7 @@ Script: scripts/basinshift_horizon.py. Summary: data/experiments/basinshift_hori
 
 ## Event readiness check (2026-11-04)
 
-Dry run of solution.py --improved --regional on files in the organizers exact schema (4 public stations, no impervious column, 6-column metadata, train through 2022, test 2023): completed, validator PASS (1,460 rows). Held-out RMSE 51,848 cfs vs 82,720 median baseline (small 4-station set). README event section now uses this command. Still open: team name/members, and the official event CSVs (not supplied).
+Dry run of solution.py --improved --regional on files in the organizers exact schema (4 public stations, no impervious column, 6-column metadata, train through 2022, test 2023): completed, validator PASS (1,460 rows). Held-out RMSE 51,848 cfs vs 82,720 median baseline (small 4-station set). README event section now uses this command. Team details filled in README (Straw_Hats; Harsh Srivastav 1BY25CB020, Arman Jha 1BY25CS057, Sumit Santosh Bulbule 1TD25CS307, Dev Chandra Prasad Yadav 1BY25CS085). User confirmed the organizers gave ONLY the briefs, no event CSVs, so the public-data predictions.csv is the submission. Remaining: presentation speaker notes still say team name pending; target definition (peak vs daily mean) unconfirmed.
 
 ## LATEST CHECKPOINT — MODEL IMPROVEMENT COMPLETE
 
@@ -81,7 +81,7 @@ User now said to actually improve the model. `scripts/improve_model.py` implemen
 5. Add geographic boundaries plus water-height thresholds that trigger alerts. Code is now wired and build/unit-tested; browser QA remains.
 6. User says tokens are nearly exhausted: save ALL current context/next steps here and push all code/results to GitHub. Do not keep doing unrelated work before handoff.
 7. Latest question: why is accuracy low, read original file and find improvements. Brief reread and actual errors audited; IMPROVEMENT_PLAN.md created. No new improved model has been trained yet.
-8. User explicitly authorized periodic pushes to https://github.com/Cxen77/hackoween.git main. Team name/member names will be filled by user later; do not ask again or block.
+8. User explicitly authorized periodic pushes to https://github.com/Cxen77/hackoween.git main. Team details were supplied 2026-11-04 and are in README.
 
 ## Workspace and references
 

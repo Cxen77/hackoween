@@ -2,8 +2,12 @@
 
 Predict river discharge from weather and catchment characteristics, then explore observations, model forecasts, and flood scenarios on an interactive 3D map.
 
-**Team name:** FLOODCAST (working project name; confirm before event submission).  
-**Members:** Not supplied yet; add actual team members before submitting to organizers.
+**Team name:** Straw_Hats  
+**Members:**
+- Harsh Srivastav (1BY25CB020)
+- Arman Jha (1BY25CS057)
+- Sumit Santosh Bulbule (1TD25CS307)
+- Dev Chandra Prasad Yadav (1BY25CS085)
 
 ## Approach
 
@@ -11,7 +15,7 @@ The regression pipeline joins actual USGS daily discharge, Open-Meteo historical
 
 ## Important submission distinction
 
-The attached brief's official `train.csv` and `test.csv` were not supplied. The root **`predictions.csv` is generated from the downloaded public-data experiment**, not from the organizers' hidden test set. Replace it by running the same code against the actual event files before submission. Never upload the public-data CSV as if it covered the official test rows.
+The organizers supplied only the briefs; no `train.csv` or `test.csv` were provided (confirmed by the team). The root **`predictions.csv` is therefore generated from the public-data experiment** (USGS, Open-Meteo and StreamStats, 55 stations, 2025 test period) using the same code and the same file schema as the brief, not from a hidden organizer test set. If organizer files are released later, rerun the command in "Generate the official event submission" on them. Do not describe the public-data CSV as scored on the organizers' hidden rows.
 
 The public target is **USGS daily mean discharge, parameter 00060 / statistic 00003, in cfs**. The brief uses both “peak daily discharge” and daily-mean source examples; confirm the organizers' actual target definition. The supplied training script learns the target from their CSV without substituting public labels.
 
@@ -165,4 +169,4 @@ npm test
 npm run build
 ```
 
-The training metrics are validation evidence, not the official normalized leaderboard score. Only organizers can score the hidden event targets. Confirm team details and the target definition, regenerate the CSV on official test rows, and submit the repo and that output through the event's form yourself.
+The training metrics are validation evidence, not the official normalized leaderboard score. Only organizers can score the hidden event targets. Confirm the target definition with the organizers, regenerate the CSV if official test rows are released, and submit the repo and that output through the event's form yourself.
