@@ -1,0 +1,31 @@
+{
+  "purpose": "Public-data demo only. Not official event train/test data.",
+  "target": "USGS 00060, statistic 00003: DAILY MEAN discharge in cfs, not instantaneous daily peak.",
+  "period": [
+    "2021-01-01",
+    "2024-12-31"
+  ],
+  "test_start": "2024-07-01",
+  "stations": [
+    "01646500",
+    "07010000",
+    "08158000",
+    "02087500",
+    "11425500"
+  ],
+  "train_rows": 6385,
+  "test_rows": 920,
+  "missing_features": [
+    "mean_elevation_ft",
+    "slope_pct",
+    "forest_cover_pct"
+  ],
+  "weather": "Open-Meteo ERA5 reanalysis; daily weather and hourly soil moisture averaged by local day. Same-day reanalysis is retrospective, not operational forecast data.",
+  "timezone": "Station-local time zones: America/New_York, America/Chicago, or America/Los_Angeles. DST boundaries may still differ from USGS fixed standard-time reporting.",
+  "station_substitution": "11447650 (Freeport) had no daily 00060 observations in the requested period; using 11425500 (Sacramento at Verona) instead.",
+  "sources": [
+    "https://waterservices.usgs.gov/",
+    "https://open-meteo.com/en/docs/historical-weather-api"
+  ],
+  "note": "Download cache preserves raw responses and USGS quality flags. Demo includes provisional observations if supplied; review flags before official use. StreamStats attributes require a delineated workspace and are left missing, never fabricated."
+}
