@@ -193,6 +193,11 @@ if __name__ == '__main__':
     parser.add_argument('--inventory',default='data/large/raw/station_inventory.rdb')
     parser.add_argument('--validation-cache')
     parser.add_argument('--optimize-ensemble',action='store_true')
+    parser.add_argument('--minimax-ensemble',action='store_true')
+    parser.add_argument('--upstream',action='store_true')
+    parser.add_argument('--skip-pair-grid',action='store_true')
+    parser.add_argument('--advanced',action='store_true',help='Test optional LightGBM/CatBoost candidates; install requirements-advanced.txt')
+    parser.add_argument('--incumbent-gate',action='store_true',help='Require improvement over the sealed cached champion')
     args=parser.parse_args()
     if args.improved:
         run_improved(args)

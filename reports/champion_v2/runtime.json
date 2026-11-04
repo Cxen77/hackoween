@@ -1,0 +1,22 @@
+{
+  "python": "3.11.9",
+  "numpy": "2.4.6",
+  "pandas": "3.1.0",
+  "scikit_learn": "1.9.1",
+  "joblib": "1.6.0",
+  "model_sha256": "63bd682c6acc6d6592afc82b95b459293d7ca62c9ce1d6d01d01f0fe48d32697",
+  "model_bytes": 1917264,
+  "feature_count": 49,
+  "schema_version": 2,
+  "selected_components": [
+    {
+      "kind": "baseline_log",
+      "weight": 0.25
+    },
+    {
+      "kind": "regional_raw",
+      "weight": 0.75
+    }
+  ],
+  "note": "V2 component bundle; use solution.py --improved to regenerate. Serialized model is local/ignored."
+}

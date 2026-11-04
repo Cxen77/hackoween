@@ -41,7 +41,7 @@ def main(args):
     for source,target in [('predictions.csv','predictions.csv'),('metrics.json','reports/metrics.json'),('model.joblib','floodcast.joblib'),('benchmark.json','reports/demo_holdout.json')]:
         shutil.copyfile(experiment/source,target)
     current=json.loads(Path('reports/demo_holdout.json').read_text(encoding='utf-8'))
-    current['purpose']='Validation-selected v2 evaluated on the previously inspected 2025 public benchmark. Not a new independent test or official leaderboard score.'
+    current['purpose']='Validation-selected ensemble evaluated on the previously inspected 2025 public benchmark. Not a new independent test or official leaderboard score.'
     current['benchmark_previously_inspected']=True
     Path('reports/demo_holdout.json').write_text(json.dumps(current,indent=2),encoding='utf-8')
     organize(Namespace(data='data/large',predictions='predictions.csv'))
@@ -52,6 +52,12 @@ def main(args):
              'model_sha256':hashlib.sha256(model_bytes).hexdigest(),'model_bytes':len(model_bytes),
              'feature_count':len(selection['features']),'schema_version':2,'selected_components':selection['selected_components'],
              'note':'V2 component bundle; use solution.py --improved to regenerate. Serialized model is local/ignored.'}
+    if any(c['kind'].startswith('lgbm') for c in selection['selected_components']):
+        import lightgbm
+        runtime['lightgbm']=lightgbm.__version__
+    if any(c['kind'].startswith('catboost') for c in selection['selected_components']):
+        import catboost
+        runtime['catboost']=catboost.__version__
     Path('reports/runtime.json').write_text(json.dumps(runtime,indent=2),encoding='utf-8')
     for filename in ['metrics.json','demo_holdout.json','improvement_v2.json']:
         shutil.copyfile(Path('reports')/filename,Path('public/reports')/filename)

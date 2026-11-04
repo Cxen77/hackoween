@@ -1,0 +1,3 @@
+-r requirements-evaluation.txt
+lightgbm>=4.5,<5
+catboost>=1.2.7,<2

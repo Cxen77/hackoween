@@ -1,6 +1,6 @@
 # Improve FLOODCAST prediction quality
 
-This plan follows the uploaded participant brief and the measured errors of the frozen public-data model. It contains **proposed experiments, not claimed accuracy gains**. Current model: `hist_log`; 2025 public test R² 0.890945, RMSE 52,695.26 cfs, extreme RMSE 113,268.22 cfs, MAE 16,063.87 cfs.
+This plan follows the uploaded participant brief and measured public-data errors. Current promoted model is the V2 regional/raw-log ensemble: reused 2025 benchmark R² 0.914924, RMSE 46,542.88 cfs, extreme RMSE 111,776.95 cfs, MAE 14,002.94 cfs. Historical V1 diagnoses below are retained to explain the experiments; the completed-results section records measured changes.
 
 ## What the brief rewards
 

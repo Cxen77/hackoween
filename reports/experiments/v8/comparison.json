@@ -1,0 +1,53 @@
+{
+  "comparison_note": "2025 is a reused public benchmark, not a new untouched final test. No benchmark targets are used in training or ensemble weight selection.",
+  "selected_components": [
+    {
+      "kind": "baseline_log",
+      "weight": 0.19021179540516442
+    },
+    {
+      "kind": "baseline_raw",
+      "weight": 0.0173424712758687
+    },
+    {
+      "kind": "lgbm_regional_raw",
+      "weight": 0.4534949172690972
+    },
+    {
+      "kind": "lgbm_regional_tweedie",
+      "weight": 0.33895081604986965
+    }
+  ],
+  "validation_gate": true,
+  "validation_score_relative_to_v1": 0.8473218090886296,
+  "baseline": {
+    "rmse": 52695.25874496755,
+    "extreme_rmse": 113268.2216330612,
+    "mae": 16063.873282544597,
+    "r2": 0.8909453989466699,
+    "rows": 19306,
+    "extreme_rows": 1983
+  },
+  "incumbent": {
+    "rmse": 46542.883401006955,
+    "extreme_rmse": 111776.95445236984,
+    "mae": 14002.938842002019,
+    "r2": 0.9149239181062689,
+    "rows": 19306,
+    "extreme_rows": 1983
+  },
+  "candidate": {
+    "rmse": 48048.359918134585,
+    "extreme_rmse": 114742.91942540242,
+    "mae": 13780.859023765463,
+    "r2": 0.9093311626490375,
+    "rows": 19306,
+    "extreme_rows": 1983
+  },
+  "percentage_error_reduction": {
+    "rmse": 8.818438200147838,
+    "extreme_rmse": -1.3019519253322231,
+    "mae": 14.212103261919495
+  },
+  "promoted": false
+}

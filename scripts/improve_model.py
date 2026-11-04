@@ -17,6 +17,36 @@ from solution import read_input, features, metrics, validate_output, build_model
 
 CANDIDATES=['baseline_log','baseline_raw','weather_log','weather_raw','weather_peak_raw','weather_specific','weather_poisson']
 REGIONAL_CANDIDATES=['no_geo_log','regional_log','regional_raw','regional_peak_raw','base_poisson']
+ADVANCED_CANDIDATES=['lgbm_regional_raw','lgbm_regional_log','lgbm_regional_tweedie','catboost_regional_raw','catboost_regional_log','lgbm_combined_log','lgbm_regional_peak']
+UPSTREAM_CANDIDATES=['upstream_raw','upstream_log','upstream_peak_raw']
+
+def upstream_features(frame,metadata,history=None):
+    """Separate upstream-region point-weather histories for Lower Mississippi.
+
+    These are sampled regional weather proxies, not basin-average forcings or a
+    hydraulic routing model. No discharge is aggregated or used as a feature.
+    """
+    x=regional_features(frame,metadata,history)
+    huc=metadata.set_index('station_id').huc2 if 'huc2' in metadata else pd.Series(dtype=str)
+    current=frame[KEYS+FEATURES].copy()
+    if history is not None:current=pd.concat([history[KEYS+FEATURES],current],ignore_index=True)
+    current['date']=pd.to_datetime(current.date)
+    current['region']=current.station_id.map(huc)
+    current['temperature_mean']=(current.temp_min_c+current.temp_max_c)/2
+    dates=pd.to_datetime(frame.date)
+    applicable=frame.station_id.map(huc).eq('08').to_numpy()
+    for region in ['05','06','07','08','10','11']:
+        weather=current[current.region.eq(region)].groupby('date')[['precipitation_mm','soil_moisture','temperature_mean']].mean().sort_index()
+        rain=weather.precipitation_mm
+        for days in [7,14,30,60,90]:
+            weather[f'rain_previous_{days}d']=rain.rolling(f'{days}D',closed='left',min_periods=1).sum()
+        for low,high in [(7,14),(14,30),(30,60),(60,90)]:
+            weather[f'rain_{low}_to_{high}d_ago']=weather[f'rain_previous_{high}d']-weather[f'rain_previous_{low}d']
+        weather['soil_previous_14d']=weather.soil_moisture.rolling('14D',closed='left',min_periods=1).mean()
+        for col in weather:
+            values=weather[col].reindex(dates).to_numpy()
+            x[f'upstream_huc{region}_{col}']=np.where(applicable,values,np.nan)
+    return x.replace([np.inf,-np.inf],np.nan)
 
 def regional_features(frame,metadata,history=None):
     """Weather-point regional proxies, not basin-average rainfall and never discharge aggregates."""
@@ -25,7 +55,7 @@ def regional_features(frame,metadata,history=None):
     current=frame[KEYS+FEATURES].copy();current['_row']=np.arange(len(frame))
     if history is not None:
         past=history[KEYS+FEATURES].copy();past['_row']=-1;current=pd.concat([past,current],ignore_index=True)
-    current['region']=current.station_id.map(huc).fillna('unknown')
+    current['region']=current.station_id.map(huc).astype('string').fillna('unknown')
     current['date']=pd.to_datetime(current.date)
     current['temperature_mean']=(current.temp_max_c+current.temp_min_c)/2
     results=[]
@@ -46,7 +76,13 @@ def regional_features(frame,metadata,history=None):
     for region in sorted(huc.dropna().unique()):x[f'huc2_{region}']=(frame.station_id.map(huc)==region).astype(float)
     return x.replace([np.inf,-np.inf],np.nan)
 
-def design(kind,base,enriched,regional):
+def design(kind,base,enriched,regional,upstream=None):
+    if kind.startswith('upstream'):
+        if upstream is None:raise ValueError('Upstream candidates require upstream weather features')
+        return upstream
+    if '_regional_' in kind:return regional
+    if '_combined_' in kind:
+        return pd.concat([regional,enriched.drop(columns=[c for c in enriched if c in regional])],axis=1)
     if kind.startswith('baseline') or kind=='base_poisson':return base
     if kind.startswith('regional'):return regional
     if kind=='no_geo_log':return enriched.drop(columns=['latitude','longitude'])
@@ -91,10 +127,22 @@ def peak_weights(frame, multiplier=3.):
     return np.where(frame.discharge_cfs.to_numpy()>=threshold.to_numpy(),multiplier,1.)
 
 def candidate_model(kind,seed):
+    if kind.startswith('lgbm'):
+        from lightgbm import LGBMRegressor
+        estimator=LGBMRegressor(objective='tweedie' if kind.endswith('tweedie') else 'regression',
+            tweedie_variance_power=1.35,n_estimators=1300,learning_rate=.035,num_leaves=31,
+            min_child_samples=120,reg_lambda=35,colsample_bytree=.9,subsample=.9,subsample_freq=1,
+            max_bin=255,random_state=seed,n_jobs=8,verbosity=-1,deterministic=True,force_col_wise=True)
+        return make_pipeline(SimpleImputer(strategy='median',add_indicator=True,keep_empty_features=True),estimator)
+    if kind.startswith('catboost'):
+        from catboost import CatBoostRegressor
+        estimator=CatBoostRegressor(iterations=900,depth=7,learning_rate=.055,loss_function='RMSE',
+            l2_leaf_reg=15,random_seed=seed,thread_count=8,verbose=False,allow_writing_files=False)
+        return make_pipeline(SimpleImputer(strategy='median',add_indicator=True,keep_empty_features=True),estimator)
     if kind.startswith('baseline'):return build_model('hist_log' if kind.endswith('log') else 'hist_raw',seed)
     model=HistGradientBoostingRegressor(loss='poisson' if kind.endswith('poisson') else 'squared_error',
-        max_iter=420,learning_rate=.055,max_leaf_nodes=23 if kind.startswith('regional') or kind=='base_poisson' else 31,
-        l2_regularization=40 if kind.startswith('regional') else 12,
+        max_iter=420,learning_rate=.055,max_leaf_nodes=23 if kind.startswith(('regional','upstream')) or kind=='base_poisson' else 31,
+        l2_regularization=40 if kind.startswith(('regional','upstream')) else 12,
         early_stopping=False,random_state=seed)
     return make_pipeline(SimpleImputer(strategy='median',add_indicator=True,keep_empty_features=True),model)
 
@@ -105,7 +153,7 @@ def fit_candidate(kind,frame,x,seed):
     specific=kind.endswith('specific');log=kind.endswith('log')
     scale=frame.drainage_area_sqmi.where(lambda s:s>0).fillna(fallback).to_numpy() if specific else np.ones(len(frame))
     transformed=np.log1p(y) if log else y/scale
-    kwargs={'histgradientboostingregressor__sample_weight':peak_weights(frame,1.8 if kind=='regional_peak_raw' else 3.)} if kind in ['weather_peak_raw','regional_peak_raw'] else {}
+    kwargs={model.steps[-1][0]+'__sample_weight':peak_weights(frame,2. if kind=='lgbm_regional_peak' else 1.8 if kind in ['regional_peak_raw','upstream_peak_raw'] else 3.)} if kind in ['weather_peak_raw','regional_peak_raw','upstream_peak_raw','lgbm_regional_peak'] else {}
     model.fit(x,transformed,**kwargs)
     return {'kind':kind,'pipeline':model,'target_log':log,'target_specific':specific,'drainage_fallback':fallback,'features':x.columns.tolist()}
 
@@ -124,6 +172,10 @@ def relative_score(report,reference):
     return float(np.mean(scores))
 
 def run(args):
+    if getattr(args,'upstream',False) and not getattr(args,'regional',False):
+        raise ValueError('--upstream requires --regional and a hydrologic-region inventory')
+    if getattr(args,'incumbent_gate',False) and not getattr(args,'validation_cache',None):
+        raise ValueError('--incumbent-gate requires a sealed --validation-cache')
     start=time.time();out=Path(args.experiment);out.mkdir(parents=True,exist_ok=True)
     train,test=read_input(args.train,True),read_input(args.test)
     if 'discharge_cfs' in test:raise ValueError('No test targets are allowed')
@@ -143,7 +195,8 @@ def run(args):
             'unseen_station_future_dates':((train.date<cutoff)&~train.station_id.isin(held),(train.date>=cutoff)&train.station_id.isin(held))}
     base=features(train);enriched=improved_features(train,metadata)
     regional=regional_features(train,metadata) if getattr(args,'regional',False) else base
-    candidates=CANDIDATES+(REGIONAL_CANDIDATES if getattr(args,'regional',False) else [])
+    upstream=upstream_features(train,metadata) if getattr(args,'upstream',False) else None
+    candidates=CANDIDATES+(REGIONAL_CANDIDATES if getattr(args,'regional',False) else [])+(ADVANCED_CANDIDATES if getattr(args,'advanced',False) else [])+(UPSTREAM_CANDIDATES if getattr(args,'upstream',False) else [])
     hashes={k:hashlib.sha256(Path(v).read_bytes()).hexdigest() for k,v in [('train',args.train),('test',args.test),('metadata',args.metadata)] if v and Path(v).exists()}
     cache_report=None;cache_predictions=None
     if getattr(args,'validation_cache',None):
@@ -154,7 +207,7 @@ def run(args):
         cache_predictions=np.load(folder/'validation_predictions.npz')
     reports={};predictions={}
     for kind in candidates:
-        reports[kind]={};predictions[kind]={};x=design(kind,base,enriched,regional)
+        reports[kind]={};predictions[kind]={};x=design(kind,base,enriched,regional,upstream)
         if cache_report and kind in cache_report['validation']:
             reports[kind]=cache_report['validation'][kind]
             predictions[kind]={name:cache_predictions[f'{kind}__{name}'] for name in splits}
@@ -178,6 +231,7 @@ def run(args):
         return result
     for kind in candidates:options.append((relative_score(reports[kind],reference),[(kind,1.)],reports[kind]))
     for i,left in enumerate(candidates):
+        if getattr(args,'skip_pair_grid',False):break
         for right in candidates[i+1:]:
             for weight in [.1,.25,.5,.75,.9]:
                 parts=[(left,weight),(right,1-weight)];r=evaluate_components(parts)
@@ -220,32 +274,58 @@ def run(args):
             options.append((relative_score(candidate_report,reference),refined,candidate_report))
             print('Continuous validation-only ensemble accepted',refined,flush=True)
         else:print('Continuous refinement discarded; existing validation ensemble retained.',result.message,flush=True)
-    # Predeclared gate: both validation splits must improve BOTH overall and extreme RMSE.
-    eligible=[o for o in options if all(o[2][name]['model']['rmse']<reference[name]['model']['rmse']
-              and o[2][name]['model']['extreme_rmse']<reference[name]['model']['extreme_rmse'] for name in splits)]
-    score,parts,selected=min(eligible,key=lambda o:o[0]) if eligible else (1.,[('baseline_log',1.)],reference)
+    if getattr(args,'minimax_ensemble',False):
+        from scripts.robust_ensemble import minimax_weights
+        incumbent=cache_report['validation'][cache_report['selected_model']] if cache_report else reference
+        matrices=[]
+        for name,(_,val) in splits.items():
+            g=train.loc[val];actual=g.discharge_cfs.to_numpy()
+            error=np.column_stack([predictions[kind][name]-actual for kind in candidates])
+            peak=actual>=g.groupby('station_id').discharge_cfs.transform(lambda y:y.quantile(.9)).to_numpy()
+            matrices.extend([error.T@error/len(actual)/incumbent[name]['model']['rmse']**2,
+                             error[peak].T@error[peak]/peak.sum()/incumbent[name]['model']['extreme_rmse']**2])
+        initial=np.zeros(len(candidates))
+        for component in (cache_report or {}).get('selected_components',[{'kind':'baseline_log','weight':1.}]):
+            initial[candidates.index(component['kind'])]=component['weight']
+        weights,diagnostics=minimax_weights(matrices,initial)
+        (out/'minimax_optimizer.json').write_text(json.dumps(diagnostics,indent=2),encoding='utf-8')
+        if diagnostics['success'] and diagnostics['worst_relative_mse']<1:
+            parts=[(kind,float(weight)) for kind,weight in zip(candidates,weights) if weight>1e-8]
+            total=sum(weight for _,weight in parts);parts=[(kind,weight/total) for kind,weight in parts]
+            result=evaluate_components(parts)
+            options.append((relative_score(result,reference),parts,result))
+        print('Minimax validation-only refinement:',json.dumps(diagnostics),flush=True)
+    # Advanced experiments must improve the CURRENT ensemble, not just the original V1.
+    gate_reference=cache_report['validation'][cache_report['selected_model']] if getattr(args,'incumbent_gate',False) and cache_report else reference
+    eligible=[o for o in options if all(o[2][name]['model']['rmse']<gate_reference[name]['model']['rmse']
+              and o[2][name]['model']['extreme_rmse']<gate_reference[name]['model']['extreme_rmse'] for name in splits)]
+    fallback=(relative_score(gate_reference,reference),[(c['kind'],c['weight']) for c in cache_report['selected_components']],gate_reference) if getattr(args,'incumbent_gate',False) and cache_report else (1.,[('baseline_log',1.)],reference)
+    score,parts,selected=min(eligible,key=lambda o:o[0]) if eligible else fallback
     best='ensemble_v2' if len(parts)>1 else parts[0][0]
     reports[best]=selected
     selection={'selected_model':best,'selected_components':[{'kind':k,'weight':w} for k,w in parts],
                'validation_cutoff':cutoff,'held_out_stations':held,'validation_score_relative_to_v1':score,
                'passes_both_rmse_gate':bool(eligible),'validation':reports,
-               'selection_note':'Candidates and fixed-grid ensembles selected using training-period temporal/geographic validation only. Optional continuous refinement constrains all four RMSE metrics not to worsen against the incumbent validation ensemble. Gate requires lower overall AND extreme RMSE in BOTH splits than baseline v1. 2025 labels are not read.',
+               'selection_note':'Candidates and ensembles selected using training-period temporal/geographic validation only. Optional continuous/minimax refinement uses four validation RMSE objectives. Gate requires lower overall AND extreme RMSE in BOTH splits than the recorded gate_reference. 2025 labels are not read.',
                'train_rows':len(train),'test_rows':len(test),'train_dates':[train.date.min(),train.date.max()],
                'test_dates':[test.date.min(),test.date.max()],'seed':args.seed,
-               'features':list(dict.fromkeys(col for kind,_ in parts for col in design(kind,base,enriched,regional).columns)),
+               'features':list(dict.fromkeys(col for kind,_ in parts for col in design(kind,base,enriched,regional,upstream).columns)),
                'schema_version':2,'input_hashes':hashes,'uses_regional_weather_proxies':getattr(args,'regional',False),
+               'advanced_models_tested':getattr(args,'advanced',False),'gate_reference':'incumbent' if getattr(args,'incumbent_gate',False) else 'baseline_v1',
+               'upstream_weather_tested':getattr(args,'upstream',False),
                'benchmark_note':'2025 is a previously inspected public benchmark, not a new untouched independent test.'}
     (out/'selection_locked.json').write_text(json.dumps(selection,indent=2),encoding='utf-8')
     print('SELECTION LOCKED',best,parts,'score',score,'both-RMSE gate',bool(eligible),flush=True)
     history=train[pd.to_datetime(train.date)>=pd.to_datetime(test.date).min()-pd.Timedelta(days=90)]
     test_base=features(test,history=history);test_enriched=improved_features(test,metadata,history=history)
     test_regional=regional_features(test,metadata,history=history) if getattr(args,'regional',False) else test_base
+    test_upstream=upstream_features(test,metadata,history=history) if getattr(args,'upstream',False) else None
     trained=[];train_pred=np.zeros(len(train));test_pred=np.zeros(len(test))
     for kind,weight in parts:
-        x=design(kind,base,enriched,regional)
+        x=design(kind,base,enriched,regional,upstream)
         component=fit_candidate(kind,train,x,args.seed);component['weight']=weight;trained.append(component)
         train_pred+=weight*predict_candidate(component,train,x)
-        test_pred+=weight*predict_candidate(component,test,design(kind,test_base,test_enriched,test_regional))
+        test_pred+=weight*predict_candidate(component,test,design(kind,test_base,test_enriched,test_regional,test_upstream))
     output=test[KEYS].copy();output['discharge_cfs']=test_pred;validate_output(test,output)
     output.to_csv(out/'predictions.csv',index=False,encoding='utf-8',float_format='%.6f')
     validate_output(test,pd.read_csv(out/'predictions.csv',dtype={'station_id':str}))
@@ -262,4 +342,8 @@ if __name__=='__main__':
     parser.add_argument('--metadata',default='data/large/metadata/station_metadata.csv');parser.add_argument('--experiment',default='data/experiments/v2')
     parser.add_argument('--regional',action='store_true');parser.add_argument('--inventory',default='data/large/raw/station_inventory.rdb')
     parser.add_argument('--optimize-ensemble',action='store_true')
+    parser.add_argument('--minimax-ensemble',action='store_true')
+    parser.add_argument('--upstream',action='store_true')
+    parser.add_argument('--skip-pair-grid',action='store_true',help='Use individual candidates and requested continuous refinements only')
+    parser.add_argument('--advanced',action='store_true');parser.add_argument('--incumbent-gate',action='store_true')
     parser.add_argument('--validation-cache');parser.add_argument('--seed',type=int,default=42);run(parser.parse_args())

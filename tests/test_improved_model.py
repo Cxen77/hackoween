@@ -1,11 +1,20 @@
 import unittest
+from argparse import Namespace
 import numpy as np
 import pandas as pd
 from solution import FEATURES
-from scripts.improve_model import improved_features,regional_features,peak_weights
+from scripts.improve_model import improved_features,regional_features,upstream_features,peak_weights,run
 from scripts.regime_ensemble import combine
 
 class ImprovedFeaturesTests(unittest.TestCase):
+    def test_incumbent_gate_requires_a_sealed_cache(self):
+        with self.assertRaisesRegex(ValueError,'sealed'):
+            run(Namespace(incumbent_gate=True,validation_cache=None))
+
+    def test_upstream_candidates_require_real_regions(self):
+        with self.assertRaisesRegex(ValueError,'--regional'):
+            run(Namespace(upstream=True,regional=False))
+
     def data(self):
         return pd.DataFrame({'station_id':['a']*4,'date':['2020-01-01','2020-01-02','2020-01-04','2020-01-05'],
             **{name:[1.,2.,3.,4.] for name in FEATURES},'discharge_cfs':[10.,20.,30.,100.]})
@@ -55,5 +64,16 @@ class ImprovedFeaturesTests(unittest.TestCase):
         self.assertTrue(((expected>=log)&(expected<=raw)).all())
         self.assertEqual(expected[0],log[0]);frame['discharge_cfs']=9e12
         np.testing.assert_array_equal(expected,combine(log,raw,frame,config))
+
+    def test_upstream_weather_is_separate_causal_and_target_free(self):
+        frame=pd.concat([self.data().assign(station_id='a'),self.data().assign(station_id='b',precipitation_mm=[10.,20.,30.,40.])],ignore_index=True)
+        metadata=pd.DataFrame({'station_id':['a','b'],'huc2':['08','07']})
+        result=upstream_features(frame,metadata)
+        self.assertEqual(result.upstream_huc07_rain_previous_7d.iloc[2],30.)
+        self.assertTrue(result.upstream_huc07_rain_previous_7d.iloc[4:].isna().all())
+        frame['discharge_cfs']=1e12
+        pd.testing.assert_frame_equal(result,upstream_features(frame,metadata))
+        frame.loc[6,'precipitation_mm']=1e9
+        self.assertEqual(upstream_features(frame,metadata).upstream_huc07_rain_previous_7d.iloc[2],30.)
 
 if __name__=='__main__':unittest.main()

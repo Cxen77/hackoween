@@ -10,6 +10,11 @@ def main():
     model_description=('Original raw/log baselines; enriched raw/log, peak-weighted, drainage-normalized and Poisson gradient boosting; and validation-selected convex ensembles. Additional experiments remove coordinate predictors and add weather-only hydrologic-region proxies. Peak sample weights use fitting labels only.' if v2 else 'Raw-target and log-target gradient boosting, raw-target ExtraTrees, drainage-normalized gradient boosting, and drainage-normalized ExtraTrees.')
     selection_description=(m['selection_note']+' The 2025 public benchmark was previously inspected for diagnostics; it is not a newly untouched independent test. No benchmark target is read by training or ensemble selection.' if v2 else 'Model selection averages temporal/geographic weighted error ratios relative to fitting-set median baselines. Final public holdout evaluation follows selection.')
     components=json.dumps(m.get('selected_components',[]))
+    advanced=any(c['kind'].startswith(('lgbm','catboost')) for c in m.get('selected_components',[]))
+    if m.get('advanced_models_tested'):
+        model_description+=' Advanced trials include raw/log/Tweedie LightGBM and raw/log CatBoost, plus a convex minimax ensemble of validation errors.'
+    if m.get('upstream_weather_tested'):
+        model_description+=' Upstream trials retain separate HUC05/06/07/08/10/11 weather-point histories for Lower Mississippi stations, including disjoint antecedent rainfall windows; they are not basin-weighted observations or physical routing.'
     rows=[('Training fit (not validation)',m['training_metrics']),
           ('Later-date validation',selected['future_dates']['model']),
           ('Unseen-station + later-date validation',selected['unseen_station_future_dates']['model']),
@@ -23,7 +28,7 @@ def main():
 ## Identity and intended use
 
 - Model: `{m['selected_model']}`; selected and trained during this project session, not imported as an external pretrained model.
-- Implementation: `solution.py` {'`--improved --regional` and `scripts/improve_model.py`' if v2 else 'baseline pipeline'}, scikit-learn, fixed seed {m['seed']}.
+- Implementation: `solution.py` {'`--improved --regional` and `scripts/improve_model.py`' if v2 else 'baseline pipeline'}, scikit-learn{' plus LightGBM/CatBoost where selected' if advanced else ''}, fixed seed {m['seed']}.
 - Selected components: {components if v2 else 'single selected baseline model'}.
 - Intended use: retrospective daily river-discharge regression experiments and producing the exact competition CSV from supplied train/test features.
 - Not intended for emergency warnings, evacuation decisions, calibrated inundation forecasts, or claims of reliable peak prediction at every unseen basin.
@@ -81,7 +86,7 @@ Extreme events are the actual top 10% of discharge within each evaluated station
 ## Reproduction and submission checks
 
 ```powershell
-python -m pip install -r requirements.txt
+python -m pip install -r {'requirements-advanced.txt' if advanced else 'requirements.txt'}
 python scripts/prepare_large.py
 python scripts/validate_submission.py --test data/large/test.csv --predictions predictions.csv
 ```
