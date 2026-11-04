@@ -652,7 +652,7 @@ export default function App() {
 
   const filtered = stations.filter(s => {
     const matchesQuery = `${s.name} ${s.river} ${s.region}`.toLowerCase().includes(query.toLowerCase());
-    const matchesFilter = filterRegion === 'all' || (filterRegion === 'us' && !!s.usgs) || (filterRegion === 'in' && s.region.includes('India'));
+    const matchesFilter = filterRegion === 'all' || (filterRegion === 'us' && !!s.usgs) || (filterRegion === 'in' && s.region.endsWith(', India'));
     return matchesQuery && matchesFilter;
   });
 
@@ -827,7 +827,7 @@ export default function App() {
                           <span className="acet-river-title">{s.river}</span>
                           <span className="acet-river-sub">
                             <span>{s.name}</span>
-                            <span className="acet-country-tag">{s.region.includes('India') ? 'IN' : 'US'}</span>
+                            <span className="acet-country-tag">{s.region.endsWith(', India') ? 'IN' : 'US'}</span>
                             {s.usgs && <span className="acet-live-dot" title="USGS Water Gauge" />}
                           </span>
                         </span>
@@ -912,7 +912,7 @@ export default function App() {
               <div className="breadcrumbs">
                 <span>FLOODCAST</span>
                 <ChevronRight size={12} />
-                <span>{station.region.includes('India') ? 'India' : station.usgs ? 'United States' : 'Map Pin'}</span>
+                <span>{station.region.endsWith(', India') ? 'India' : station.usgs ? 'United States' : 'Map Pin'}</span>
                 <ChevronRight size={12} />
                 <span className="crumb-current">{station.name}</span>
               </div>

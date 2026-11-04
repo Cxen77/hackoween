@@ -344,7 +344,7 @@
   },
   {
    "station": "HRUITEZAWL",
-   "river": "Duplicate-Kolodyne",
+   "river": "Kolodyne",
    "state": "Mizoram",
    "lat": 22.25055556,
    "lon": 92.83222222,
@@ -384,7 +384,7 @@
   },
   {
    "station": "Sihthangpui",
-   "river": "Duplicate-Kolodyne",
+   "river": "Kolodyne",
    "state": "Mizoram",
    "lat": 22.42361111,
    "lon": 92.94269444,
@@ -404,7 +404,7 @@
   },
   {
    "station": "TUIPUI D",
-   "river": "Duplicate-Kolodyne",
+   "river": "Kolodyne",
    "state": "Mizoram",
    "lat": 22.91833333,
    "lon": 92.94138889,

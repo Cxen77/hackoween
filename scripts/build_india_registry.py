@@ -25,6 +25,11 @@ CFS = 35.3146667
 OUT = Path('server/india_stations.json')
 
 
+def clean_river(name):
+    """The portal tags some records 'Duplicate-<river>'; that is a data label, not part of the river name."""
+    return re.sub(r'^\s*duplicate[-\s]*', '', str(name), flags=re.I).strip()
+
+
 def get(action: str, **params):
     url = B + action + '?' + urllib.parse.urlencode(params)
     with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'FLOODCAST-hackathon/1.0'}), timeout=180) as r:
@@ -75,7 +80,7 @@ def main() -> None:
         recent = g[g.index >= newest.floor('D') - pd.Timedelta(days=74)]
         if g.index.max() >= newest.floor('D') - pd.Timedelta(days=14) and len(recent) >= 60 and recent.mean() >= 20:
             row = live[(live.station == st) & (live.river == riv)].iloc[0]
-            keep.append({'station': st, 'river': riv, 'state': state, 'lat': float(row.lat), 'lon': float(row.lon), 'last_date': g.index.max().strftime('%Y-%m-%d'),
+            keep.append({'station': st, 'river': clean_river(riv), 'state': state, 'lat': float(row.lat), 'lon': float(row.lon), 'last_date': g.index.max().strftime('%Y-%m-%d'),
                          'recent_mean_m3s': float(recent.mean()), 'days_last_75': int(len(recent)), 'table': row.table, 'resource_id': next(r['id'] for r in live_res if r['name'] == row.table)})
     keep.sort(key=lambda x: -x['recent_mean_m3s'])
     print(len(keep), 'candidate current stations', flush=True)
