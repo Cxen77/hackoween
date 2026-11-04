@@ -1,6 +1,6 @@
 {
   "purpose": "Judge-facing evaluation of a public-data experiment. Not official hidden-test or leaderboard results.",
-  "selected_model": "hist_log",
+  "selected_model": "ensemble_v2",
   "train_rows": 293057,
   "test_rows": 19306,
   "station_count": 55,
@@ -12,37 +12,37 @@
     {
       "evaluation": "Training fit (not validation)",
       "rows": 293057,
-      "rmse": 66601.14488153358,
-      "extreme_rmse": 151402.24741467097,
-      "mae": 19099.369146990794,
-      "r2": 0.8477647551580967,
+      "rmse": 35802.674361944606,
+      "extreme_rmse": 71227.0385669966,
+      "mae": 12837.633915245366,
+      "r2": 0.9560070831979665,
       "extreme_rows": 29498
     },
     {
       "evaluation": "Later-date validation",
       "rows": 58645,
-      "rmse": 56184.44340170558,
-      "extreme_rmse": 60395.59890686593,
-      "mae": 18705.642497420125,
-      "r2": 0.8315192222226095,
+      "rmse": 47231.746264231,
+      "extreme_rmse": 53138.152637005966,
+      "mae": 16815.954922093046,
+      "r2": 0.8809344291453675,
       "extreme_rows": 5913
     },
     {
       "evaluation": "Unseen stations + later dates",
       "rows": 12051,
-      "rmse": 79670.91047456674,
-      "extreme_rmse": 136635.2520220088,
-      "mae": 32592.02739476134,
-      "r2": 0.8797023908804855,
+      "rmse": 72109.44562029018,
+      "extreme_rmse": 115119.09735301606,
+      "mae": 27945.70609815113,
+      "r2": 0.9014533764702091,
       "extreme_rows": 1219
     },
     {
-      "evaluation": "2025 independent public test",
+      "evaluation": "2025 public benchmark (reused)",
       "rows": 19306,
-      "rmse": 52695.25874496755,
-      "extreme_rmse": 113268.2216330612,
-      "mae": 16063.873282544597,
-      "r2": 0.8909453989466699,
+      "rmse": 46542.883401006955,
+      "extreme_rmse": 111776.95445236984,
+      "mae": 14002.938842002019,
+      "r2": 0.9149239181062689,
       "extreme_rows": 1983
     },
     {
@@ -55,7 +55,7 @@
       "extreme_rows": 1983
     }
   ],
-  "holdout_rmse_reduction_vs_station_median_percent": 38.36787880865008,
+  "holdout_rmse_reduction_vs_station_median_percent": 45.5636674212236,
   "definitions": {
     "rmse": "Root mean squared error in cfs; lower is better; penalizes large errors.",
     "extreme_rmse": "RMSE on actual top 10% discharge within each station, including threshold ties.",
@@ -68,5 +68,6 @@
     "mae": 0.2,
     "r2": 0.1
   },
+  "benchmark_note": "2025 is a previously inspected public benchmark, not a new untouched independent test.",
   "official_score_note": "Leaderboard normalization depends on all teams and hidden event labels; no official composite score can be claimed here."
 }

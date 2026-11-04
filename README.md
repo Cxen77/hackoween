@@ -15,6 +15,28 @@ The attached brief's official `train.csv` and `test.csv` were not supplied. The 
 
 The public target is **USGS daily mean discharge, parameter 00060 / statistic 00003, in cfs**. The brief uses both “peak daily discharge” and daily-mean source examples; confirm the organizers' actual target definition. The supplied training script learns the target from their CSV without substituting public labels.
 
+## Improved model results
+
+V2 blends 25% log-target boosting with 75% raw-target boosting using regional weather proxies. On the previously inspected 2025 public benchmark:
+
+| Metric | Original V1 | Improved V2 |
+| --- | ---: | ---: |
+| RMSE (cfs) | 52,695 | 46,543 |
+| Extreme RMSE (cfs) | 113,268 | 111,777 |
+| MAE (cfs) | 16,064 | 14,003 |
+| R² | 0.8909 | 0.9149 |
+
+Overall RMSE improved 11.7%; extreme RMSE improved 1.3%. This is a reused benchmark, not a newly untouched test. Performance is uneven: 20/53 stations have negative R², compared with 11/53 in V1. Original model artifacts are preserved in `reports/baseline_v1/` and `evaluation/baseline_v1/`.
+
+Reproduce the selected model from the existing dataset:
+
+```powershell
+python solution.py --improved --regional --train data/large/train/train.csv --test data/large/test/test.csv --metadata data/large/metadata/station_metadata.csv --experiment data/experiments/reproduce --output predictions.csv --metrics reports/metrics.json --model floodcast.joblib
+python scripts/validate_submission.py --test data/large/test/test.csv --predictions predictions.csv
+```
+
+The improved workflow uses averages of available weather points in [USGS hydrologic regions](https://water.usgs.gov/GIS/huc_name.html), with upstream-region pooling for the Lower Mississippi. These are approximate weather proxies, not area-weighted basin precipitation. No test target is used in model fitting or ensemble selection. `python scripts/prepare_large.py` now runs the improved workflow by default; plain `python solution.py` without `--improved` remains the V1 reproduction mode.
+
 ## Run the website
 
 Requires Node.js 22.12+ or 24+.

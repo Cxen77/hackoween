@@ -1,0 +1,4 @@
+{
+  "accepted": false,
+  "reason": "No flow-regime candidate improved all4 incumbent validation RMSE metrics; current ensemble retained. Search did not load benchmark targets."
+}

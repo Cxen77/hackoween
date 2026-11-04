@@ -1,25 +1,25 @@
 # FLOODCAST evaluation matrix
 
-**Public-data experiment, not the official competition test set.** Selected model: `hist_log`. Actual data: 55 stations, 2010-01-01 through 2025-12-31; 293,057 training rows and 19,306 later test rows. The model was selected using internal validation before the separate 2025 public test answers were evaluated.
+**Public-data experiment, not the official competition test set.** Selected model: `ensemble_v2`. Actual data: 55 stations, 2010-01-01 through 2025-12-31; 293,057 training rows and 19,306 later test rows. Model fitting and ensemble selection use training-period validation only. 2025 is a previously inspected public benchmark, not a new untouched independent test.
 
 | Evaluation | Rows | RMSE (cfs) | Extreme RMSE (cfs) | MAE (cfs) | R² |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Training fit (not validation) | 293,057 | 66,601.14 | 151,402.25 | 19,099.37 | 0.8478 |
-| Later-date validation | 58,645 | 56,184.44 | 60,395.60 | 18,705.64 | 0.8315 |
-| Unseen stations + later dates | 12,051 | 79,670.91 | 136,635.25 | 32,592.03 | 0.8797 |
-| 2025 independent public test | 19,306 | 52,695.26 | 113,268.22 | 16,063.87 | 0.8909 |
+| Training fit (not validation) | 293,057 | 35,802.67 | 71,227.04 | 12,837.63 | 0.9560 |
+| Later-date validation | 58,645 | 47,231.75 | 53,138.15 | 16,815.95 | 0.8809 |
+| Unseen stations + later dates | 12,051 | 72,109.45 | 115,119.10 | 27,945.71 | 0.9015 |
+| 2025 public benchmark (reused) | 19,306 | 46,542.88 | 111,776.95 | 14,002.94 | 0.9149 |
 | 2025 station-median baseline | 19,306 | 85,499.67 | 180,500.17 | 25,871.75 | 0.7129 |
 
-Test RMSE is **38.4% lower** than a station-median baseline learned from training data. Test R² **0.8909** measures explained variance; it is **not “89.1% accuracy.”** This is a regression task predicting a continuous discharge value, so no classification accuracy percentage is claimed.
+Test RMSE is **45.6% lower** than a station-median baseline learned from training data. Test R² **0.9149** measures explained variance; it is **not “91.5% accuracy.”** This is a regression task predicting a continuous discharge value, so no classification accuracy percentage is claimed.
 
 ## Files for judges
 
 - `evaluation_report.pdf`: two-page readable report and actual prediction charts.
-- `metrics_matrix.csv`: the numerical evaluation matrix, including training, time validation, geography validation, independent public test, and baseline.
+- `metrics_matrix.csv`: the numerical evaluation matrix, including training, time validation, geography validation, public benchmark, and baseline.
 - `metrics.json`: exact unrounded metrics, definitions, and organizer scoring weights.
 - `evaluation_charts.png`: actual-vs-predicted scatter, monthly test RMSE, and a named Potomac time-series example.
 - `predictions_vs_actual.csv`: every public test station/date, actual discharge, prediction and errors.
-- `per_station_metrics.csv`: all station scores. **11 of 53 evaluated stations have negative R²**; aggregate results must not hide these failures.
+- `per_station_metrics.csv`: all station scores. **20 of 53 evaluated stations have negative R²**; aggregate results must not hide these failures.
 
 Lower RMSE, extreme RMSE, and MAE are better. Higher R² is better. The extreme-event calculation uses the actual top 10% within each evaluated station, including ties at the threshold. Overall cfs metrics are influenced heavily by large rivers. The chart uses symmetric logarithmic axes so low and high flows, including zero, remain visible.
 

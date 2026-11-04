@@ -74,4 +74,14 @@ Open-Meteo's daily quota was reached for one final station on this run. Resume c
 - `model_card.md`: features, dataset limitations and all station scores.
 - Uploaded source: `C:/Users/Dev/Downloads/FLOODCAST_Participant_PS_Updated.pdf`.
 
-**No improved model has been trained under this plan yet.** The next model experiment should start with the raw/log ensemble and peak-weighted fitting on cached training data.
+## Completed implementation and measured result
+
+V2 is trained and promoted:25% baseline log-target boosting +75% regional-weather raw-target boosting. Model/ensemble selection used training-period validation only; both overall and extreme RMSE improved in BOTH splits.
+
+On the reused2025 benchmark: RMSE52,695.26→46,542.88 (11.68% lower), MAE16,063.87→14,002.94 (12.83% lower), extreme RMSE113,268.22→111,776.95 (1.32% lower), R²0.890945→0.914924.
+
+Generic longer-weather/coordinate models did not pass the validation gate. Regional weather-point proxies produced the improvement. A finer continuous ensemble search and a flow-dependent blend search did not improve all required validation metrics, so neither replaced the selected ensemble. Evidence is in `reports/improvement_v2.json` and `reports/experiments/`.
+
+Tradeoff:20/53 test stations now have negativeR² (baseline11/53). Aggregate gains do not imply every river improved. Baseline artifacts are retained in `reports/baseline_v1/` and `evaluation/baseline_v1/`. The historical diagnosis above refers to `evaluation/baseline_v1/error_diagnostics.csv`; current errors are in `evaluation/error_diagnostics.csv`.
+
+Next improvements need better large-basin attributes and basin/upstream meteorology.2025 has been inspected and remains labeled a reused benchmark, not a new independent test.

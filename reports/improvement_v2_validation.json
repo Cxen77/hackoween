@@ -1,0 +1,606 @@
+{
+  "selected_model": "ensemble_v2",
+  "selected_components": [
+    {
+      "kind": "baseline_log",
+      "weight": 0.25
+    },
+    {
+      "kind": "regional_raw",
+      "weight": 0.75
+    }
+  ],
+  "validation_cutoff": "2022-01-01",
+  "held_out_stations": [
+    "01578310",
+    "01638500",
+    "02084000",
+    "03353000",
+    "05114000",
+    "05586100",
+    "07032000",
+    "07289000",
+    "09380000",
+    "11425500",
+    "12113000"
+  ],
+  "validation_score_relative_to_v1": 0.8594401392105271,
+  "passes_both_rmse_gate": true,
+  "validation": {
+    "baseline_log": {
+      "future_dates": {
+        "model": {
+          "rmse": 56184.44340170558,
+          "extreme_rmse": 60395.59890686593,
+          "mae": 18705.642497420125,
+          "r2": 0.8315192222226095,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 79670.91047456674,
+          "extreme_rmse": 136635.2520220088,
+          "mae": 32592.02739476134,
+          "r2": 0.8797023908804855,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "baseline_raw": {
+      "future_dates": {
+        "model": {
+          "rmse": 68411.91106916689,
+          "extreme_rmse": 47147.35549069974,
+          "mae": 23154.28008518213,
+          "r2": 0.7502062096089248,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 91933.14308111278,
+          "extreme_rmse": 102402.77935081726,
+          "mae": 37358.95895474946,
+          "r2": 0.8398224479753162,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "weather_log": {
+      "future_dates": {
+        "model": {
+          "rmse": 56849.557211278676,
+          "extreme_rmse": 55167.148606801675,
+          "mae": 18289.556073852913,
+          "r2": 0.8275066463540579,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 84198.75804850667,
+          "extreme_rmse": 151673.187698218,
+          "mae": 33978.75122713571,
+          "r2": 0.8656403677207012,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "weather_raw": {
+      "future_dates": {
+        "model": {
+          "rmse": 67024.58630019499,
+          "extreme_rmse": 55596.34025120822,
+          "mae": 21681.750165530622,
+          "r2": 0.7602346188133032,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 100801.83931300777,
+          "extreme_rmse": 199283.57371335564,
+          "mae": 41030.80282510523,
+          "r2": 0.8074274644293954,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "weather_peak_raw": {
+      "future_dates": {
+        "model": {
+          "rmse": 72156.41594348541,
+          "extreme_rmse": 56845.44738082303,
+          "mae": 23825.72049549225,
+          "r2": 0.7221130834566218,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 101664.50357732133,
+          "extreme_rmse": 165894.3085848422,
+          "mae": 41294.01960486249,
+          "r2": 0.8041172808377108,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "weather_specific": {
+      "future_dates": {
+        "model": {
+          "rmse": 64389.73592726114,
+          "extreme_rmse": 63499.414648844235,
+          "mae": 21963.838090372577,
+          "r2": 0.778715252137919,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 82879.12570671458,
+          "extreme_rmse": 156868.83063637474,
+          "mae": 32263.67487922892,
+          "r2": 0.8698189537884679,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "weather_poisson": {
+      "future_dates": {
+        "model": {
+          "rmse": 68827.12295358998,
+          "extreme_rmse": 58406.45900555369,
+          "mae": 20977.664412848902,
+          "r2": 0.7471648650752825,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 101004.40329960498,
+          "extreme_rmse": 175766.37118753218,
+          "mae": 38065.62738696422,
+          "r2": 0.8066527274831101,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "no_geo_log": {
+      "future_dates": {
+        "model": {
+          "rmse": 57203.49599290029,
+          "extreme_rmse": 59623.74316186115,
+          "mae": 18431.97923109294,
+          "r2": 0.8253521128077539,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 83708.17135674754,
+          "extreme_rmse": 142308.5963129399,
+          "mae": 33193.63566241867,
+          "r2": 0.8672015075994439,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "regional_log": {
+      "future_dates": {
+        "model": {
+          "rmse": 46504.17349914298,
+          "extreme_rmse": 62338.899232093325,
+          "mae": 15412.571759407218,
+          "r2": 0.8845744231822537,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 73825.6955258097,
+          "extreme_rmse": 137396.1254865444,
+          "mae": 27153.482503221665,
+          "r2": 0.8967066102379433,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "regional_raw": {
+      "future_dates": {
+        "model": {
+          "rmse": 48709.27361107777,
+          "extreme_rmse": 59196.33517165589,
+          "mae": 16903.979664481936,
+          "r2": 0.8733685734851862,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 76055.61482724769,
+          "extreme_rmse": 115951.4967722622,
+          "mae": 28358.03205429006,
+          "r2": 0.890372376817898,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "regional_peak_raw": {
+      "future_dates": {
+        "model": {
+          "rmse": 50456.52698303451,
+          "extreme_rmse": 61196.328037974105,
+          "mae": 17549.935835557888,
+          "r2": 0.8641208251445289,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 78176.04478147972,
+          "extreme_rmse": 118666.18931890397,
+          "mae": 28783.74331938793,
+          "r2": 0.8841743293515276,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "base_poisson": {
+      "future_dates": {
+        "model": {
+          "rmse": 67949.81825716594,
+          "extreme_rmse": 49501.094919586976,
+          "mae": 22047.081511368335,
+          "r2": 0.7535693105792822,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 90362.97544559583,
+          "extreme_rmse": 106577.4696572095,
+          "mae": 36417.15237660006,
+          "r2": 0.845247212339544,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "ensemble_v2": {
+      "future_dates": {
+        "model": {
+          "rmse": 47231.746264231,
+          "extreme_rmse": 53138.152637005966,
+          "mae": 16815.954922093046,
+          "r2": 0.8809344291453675,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 72109.44562029018,
+          "extreme_rmse": 115119.09735301606,
+          "mae": 27945.70609815113,
+          "r2": 0.9014533764702091,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    }
+  },
+  "selection_note": "Candidates and quarter-step two-model ensembles selected using training-period temporal/geographic validation only. Gate requires lower overall AND extreme RMSE in BOTH splits. 2025 labels are not read.",
+  "train_rows": 293057,
+  "test_rows": 19306,
+  "train_dates": [
+    "2010-01-01",
+    "2024-12-31"
+  ],
+  "test_dates": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "seed": 42,
+  "features": [
+    "precipitation_mm",
+    "temp_max_c",
+    "temp_min_c",
+    "soil_moisture",
+    "drainage_area_sqmi",
+    "mean_elevation_ft",
+    "slope_pct",
+    "forest_cover_pct",
+    "impervious_surface_pct",
+    "season_sin",
+    "season_cos",
+    "temperature_range",
+    "temperature_mean",
+    "rain_soil_interaction",
+    "rain_drainage_interaction",
+    "rain_squared",
+    "log_drainage_area",
+    "freezing_precipitation",
+    "rain_previous_3d",
+    "rain_previous_7d",
+    "rain_previous_14d",
+    "rain_previous_30d",
+    "regional_rain",
+    "regional_soil",
+    "regional_temperature",
+    "regional_station_count",
+    "regional_rain_previous_3d",
+    "regional_rain_previous_7d",
+    "regional_rain_previous_14d",
+    "regional_rain_previous_30d",
+    "regional_rain_previous_60d",
+    "regional_rain_previous_90d",
+    "regional_soil_previous_14d",
+    "huc2_02",
+    "huc2_03",
+    "huc2_04",
+    "huc2_05",
+    "huc2_06",
+    "huc2_07",
+    "huc2_08",
+    "huc2_09",
+    "huc2_10",
+    "huc2_12",
+    "huc2_13",
+    "huc2_14",
+    "huc2_15",
+    "huc2_16",
+    "huc2_17",
+    "huc2_18"
+  ],
+  "schema_version": 2,
+  "input_hashes": {
+    "train": "273e1d7e6474932ff3bebe9d4fe4a43db565014a6bef9f501e00b544039b619b",
+    "test": "6df873cfdea5c56b91224f6dd633471dc29c6eb18304bf67a43d184fa8c549a8",
+    "metadata": "f0a5af4442ca89e6d0fd574a558153a2962f61c175a190f83c7c40f67257ed47"
+  },
+  "uses_regional_weather_proxies": true,
+  "benchmark_note": "2025 is a previously inspected public benchmark, not a new untouched independent test.",
+  "training_metrics": {
+    "rmse": 35802.674361944606,
+    "extreme_rmse": 71227.0385669966,
+    "mae": 12837.633915245366,
+    "r2": 0.9560070831979665,
+    "rows": 293057,
+    "extreme_rows": 29498
+  },
+  "elapsed_seconds": 103.45246005058289,
+  "regional_weather_source": "Actual cached NWIS HUC2 metadata and station weather only. Region definitions: https://water.usgs.gov/GIS/huc_name.html . Approximate weather-point averages, not area-weighted basin precipitation."
+}

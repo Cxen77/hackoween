@@ -6,10 +6,14 @@ def main():
     load=lambda name:json.loads((Path('reports')/name).read_text(encoding='utf-8'))
     m=load('metrics.json');h=load('demo_holdout.json');d=load('provenance.json');c=load('catchment_provenance.json')
     selected=m['validation'][m['selected_model']]
+    v2=m.get('schema_version')==2
+    model_description=('Original raw/log baselines; enriched raw/log, peak-weighted, drainage-normalized and Poisson gradient boosting; and validation-selected convex ensembles. Additional experiments remove coordinate predictors and add weather-only hydrologic-region proxies. Peak sample weights use fitting labels only.' if v2 else 'Raw-target and log-target gradient boosting, raw-target ExtraTrees, drainage-normalized gradient boosting, and drainage-normalized ExtraTrees.')
+    selection_description=(m['selection_note']+' The 2025 public benchmark was previously inspected for diagnostics; it is not a newly untouched independent test. No benchmark target is read by training or ensemble selection.' if v2 else 'Model selection averages temporal/geographic weighted error ratios relative to fitting-set median baselines. Final public holdout evaluation follows selection.')
+    components=json.dumps(m.get('selected_components',[]))
     rows=[('Training fit (not validation)',m['training_metrics']),
           ('Later-date validation',selected['future_dates']['model']),
           ('Unseen-station + later-date validation',selected['unseen_station_future_dates']['model']),
-          ('Separate 2025 public holdout',h['overall']),
+          ('2025 reused public benchmark' if v2 else 'Separate 2025 public holdout',h['overall']),
           ('Holdout training-station median baseline',h['training_station_median_baseline'])]
     table='\n'.join(f"| {name} | {v['rows']:,} | {v['rmse']:,.2f} | {v['extreme_rmse']:,.2f} | {v['mae']:,.2f} | {v['r2']:.4f} |" for name,v in rows)
     perstation='\n'.join(f"| {sid} | {v['rows']:,} | {v['rmse']:,.2f} | {v['mae']:,.2f} | {v['r2']:.4f} |" for sid,v in h['by_station'].items())
@@ -19,7 +23,8 @@ def main():
 ## Identity and intended use
 
 - Model: `{m['selected_model']}`; selected and trained during this project session, not imported as an external pretrained model.
-- Implementation: `solution.py`, scikit-learn HistGradientBoosting / ExtraTrees candidates, fixed seed {m['seed']}.
+- Implementation: `solution.py` {'`--improved --regional` and `scripts/improve_model.py`' if v2 else 'baseline pipeline'}, scikit-learn, fixed seed {m['seed']}.
+- Selected components: {components if v2 else 'single selected baseline model'}.
 - Intended use: retrospective daily river-discharge regression experiments and producing the exact competition CSV from supplied train/test features.
 - Not intended for emergency warnings, evacuation decisions, calibrated inundation forecasts, or claims of reliable peak prediction at every unseen basin.
 - Official event data was not supplied. Root `predictions.csv` covers the public experiment only.
@@ -40,7 +45,7 @@ Catchments: actual published USGS StreamStats Gage Statistics basin characterist
 
 Features: {', '.join('`'+f+'`' for f in m['features'])}.
 
-Candidates: raw-target gradient boosting, log-target gradient boosting, raw-target ExtraTrees, drainage-normalized gradient boosting, and drainage-normalized ExtraTrees. Drainage-normalized models learn cfs per square mile and multiply predictions by the known drainage area. Missing/nonpositive drainage uses a median calculated on fitting rows only. Other numeric missing values use training-only median imputation with missingness indicators. Predictions are clipped at zero.
+Candidates: {model_description} Drainage-normalized models learn cfs per square mile and multiply predictions by the known drainage area. Missing/nonpositive drainage uses a median calculated on fitting rows only. Other numeric missing values use training-only median imputation with missingness indicators. Predictions are clipped at zero. Regional rainfall features, when used, are averages of available weather points in a hydrologic region (with upstream-region pooling for the Lower Mississippi); these are approximate proxies, NOT area-weighted basin rainfall.
 
 The pipeline does not use station identity as a predictor, any discharge lag or target encoding, StreamStats discharge statistics/quantiles, actual test labels, or data from another team's model. Station IDs are used only to group prior weather and to construct validation splits. Weather windows are closed on the right at the preceding instant (`closed='left'`); current/future rainfall is excluded from antecedent totals.
 
@@ -48,7 +53,7 @@ The pipeline does not use station identity as a predictor, any discharge lag or 
 
 Validation cutoff: **{m['validation_cutoff']}**. Temporal fit uses earlier dates; geographic fit additionally excludes entire held-out stations. Geographic validation includes only later dates from those stations. Held-out station IDs: {', '.join(m.get('held_out_stations',[]))}.
 
-Model selection uses the mean of the two validation split scores: 40% overall RMSE ratio, 30% extreme RMSE ratio, 20% MAE ratio, 10% (1-R²) ratio, each relative to the fitting-set median baseline. This is a local selection criterion, **not** the organizers' leaderboard normalization. The final public holdout is evaluated only after selection and refitting on all training rows.
+{selection_description} This is a local selection criterion, **not** the organizers' leaderboard normalization.
 
 | Evaluation | Rows | RMSE (cfs) | Extreme RMSE (cfs) | MAE (cfs) | R² |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -84,7 +89,7 @@ python scripts/validate_submission.py --test data/large/test.csv --predictions p
 Official event run:
 
 ```powershell
-python solution.py --train data/event/train.csv --test data/event/test.csv --output predictions.csv --metrics reports/event_metrics.json
+python solution.py {'--improved --regional --metadata data/event/station_metadata.csv' if v2 else ''} --train data/event/train.csv --test data/event/test.csv --output predictions.csv --metrics reports/event_metrics.json
 python scripts/validate_submission.py --test data/event/test.csv --predictions predictions.csv
 ```
 

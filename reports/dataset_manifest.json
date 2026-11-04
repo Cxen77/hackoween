@@ -7,8 +7,8 @@
     "date",
     "discharge_cfs"
   ],
-  "minimum_prediction_cfs": 11.164124,
-  "maximum_prediction_cfs": 1174743.586308,
+  "minimum_prediction_cfs": 3.6747,
+  "maximum_prediction_cfs": 1140201.380618,
   "files": {
     "train/train.csv": {
       "sha256": "273e1d7e6474932ff3bebe9d4fe4a43db565014a6bef9f501e00b544039b619b",
@@ -23,12 +23,12 @@
       "bytes": 541230
     },
     "predictions/predictions.csv": {
-      "sha256": "0367246df180941fe48926544a4a1ceb92bba62d9cd7658aa14e533cf26f06d6",
-      "bytes": 638993
+      "sha256": "975024190d19896ca6041240a54600ef77d7923b3e4a0351c6cd8f7d448687d2",
+      "bytes": 640909
     },
     "evaluation/comparison.csv": {
-      "sha256": "a1262fe3ba8b96540181b5614484ed8a7cf72dd4befaea65d929313b7507a36c",
-      "bytes": 2718812
+      "sha256": "56c9da7e15e53242c7da83f3e9284be86951c31ecad127dd6efafa151b3356e1",
+      "bytes": 2691504
     }
   }
 }

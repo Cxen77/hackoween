@@ -14,8 +14,10 @@ from organize_dataset import main as organize
 if __name__=='__main__':
     download(Namespace(large=True,start='2010-01-01',end='2025-12-31',test_start='2025-01-01',output='data/large'))
     catchments(Namespace(data='data/large'))
-    solution.run(Namespace(train='data/large/train.csv',test='data/large/test.csv',output='predictions.csv',
-                           metrics='reports/metrics.json',model='floodcast.joblib',seed=42))
+    solution.run_improved(Namespace(train='data/large/train.csv',test='data/large/test.csv',output='predictions.csv',
+                           metrics='reports/metrics.json',model='floodcast.joblib',seed=42,
+                           metadata='data/large/station_metadata.csv',experiment='data/experiments/prepared',
+                           regional=True,inventory='data/large/raw/station_inventory.rdb',validation_cache=None))
     evaluate(Namespace(data='data/large',predictions='predictions.csv',output='reports/demo_holdout.json'))
     organize(Namespace(data='data/large',predictions='predictions.csv'))
     for filename in ['provenance.json','catchment_provenance.json']:

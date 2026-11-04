@@ -1,0 +1,253 @@
+{
+  "selected_model": "hist_log",
+  "validation_cutoff": "2022-01-01",
+  "held_out_stations": [
+    "01578310",
+    "01638500",
+    "02084000",
+    "03353000",
+    "05114000",
+    "05586100",
+    "07032000",
+    "07289000",
+    "09380000",
+    "11425500",
+    "12113000"
+  ],
+  "selection_note": "Equal average across time and unseen-station splits; weighted error ratios to a training-median baseline. Not the official leaderboard normalization.",
+  "features": [
+    "precipitation_mm",
+    "temp_max_c",
+    "temp_min_c",
+    "soil_moisture",
+    "drainage_area_sqmi",
+    "mean_elevation_ft",
+    "slope_pct",
+    "forest_cover_pct",
+    "impervious_surface_pct",
+    "season_sin",
+    "season_cos",
+    "temperature_range",
+    "temperature_mean",
+    "rain_soil_interaction",
+    "rain_drainage_interaction",
+    "rain_squared",
+    "log_drainage_area",
+    "freezing_precipitation",
+    "rain_previous_3d",
+    "rain_previous_7d",
+    "rain_previous_14d",
+    "rain_previous_30d"
+  ],
+  "train_rows": 293057,
+  "test_rows": 19306,
+  "train_dates": [
+    "2010-01-01",
+    "2024-12-31"
+  ],
+  "test_dates": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "seed": 42,
+  "training_metrics": {
+    "rmse": 66601.14488153358,
+    "extreme_rmse": 151402.24741467097,
+    "mae": 19099.369146990794,
+    "r2": 0.8477647551580967,
+    "rows": 293057,
+    "extreme_rows": 29498
+  },
+  "validation": {
+    "hist_raw": {
+      "future_dates": {
+        "model": {
+          "rmse": 68411.91106916689,
+          "extreme_rmse": 47147.35549069974,
+          "mae": 23154.28008518213,
+          "r2": 0.7502062096089248,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 91933.14308111278,
+          "extreme_rmse": 102402.77935081726,
+          "mae": 37358.95895474946,
+          "r2": 0.8398224479753162,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "hist_log": {
+      "future_dates": {
+        "model": {
+          "rmse": 56184.44340170558,
+          "extreme_rmse": 60395.59890686593,
+          "mae": 18705.642497420125,
+          "r2": 0.8315192222226095,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 79670.91047456674,
+          "extreme_rmse": 136635.2520220088,
+          "mae": 32592.02739476134,
+          "r2": 0.8797023908804855,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "extra_trees": {
+      "future_dates": {
+        "model": {
+          "rmse": 68070.18327886687,
+          "extreme_rmse": 50186.590505838125,
+          "mae": 21664.300922401442,
+          "r2": 0.7526954920152018,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 82387.60277750832,
+          "extreme_rmse": 133815.308350269,
+          "mae": 34595.61899837613,
+          "r2": 0.8713584784410908,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "hist_specific": {
+      "future_dates": {
+        "model": {
+          "rmse": 66876.42777297359,
+          "extreme_rmse": 66876.45297169957,
+          "mae": 22450.843592547273,
+          "r2": 0.7612934548441532,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 87334.290367629,
+          "extreme_rmse": 165882.07192351556,
+          "mae": 38191.71267436077,
+          "r2": 0.8554470274310026,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    },
+    "extra_trees_specific": {
+      "future_dates": {
+        "model": {
+          "rmse": 67662.9122443719,
+          "extreme_rmse": 49026.18686384511,
+          "mae": 22016.74642231616,
+          "r2": 0.7556459366569828,
+          "rows": 58645,
+          "extreme_rows": 5913
+        },
+        "median_baseline": {
+          "rmse": 143570.50313023053,
+          "extreme_rmse": 265087.2782151305,
+          "mae": 46865.274408730496,
+          "r2": -0.10014172826445833,
+          "rows": 58645,
+          "extreme_rows": 5913
+        }
+      },
+      "unseen_station_future_dates": {
+        "model": {
+          "rmse": 82847.80705472674,
+          "extreme_rmse": 144625.28728615717,
+          "mae": 33147.68742966182,
+          "r2": 0.8699173217312656,
+          "rows": 12051,
+          "extreme_rows": 1219
+        },
+        "median_baseline": {
+          "rmse": 250133.12385608445,
+          "extreme_rmse": 452811.8006141277,
+          "mae": 101170.65669902913,
+          "r2": -0.18576833661521652,
+          "rows": 12051,
+          "extreme_rows": 1219
+        }
+      }
+    }
+  }
+}

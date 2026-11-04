@@ -1,0 +1,37 @@
+{
+  "comparison_note": "2025 is a reused public benchmark, not a new untouched final test. No benchmark targets are used in training or ensemble weight selection.",
+  "selected_components": [
+    {
+      "kind": "baseline_log",
+      "weight": 0.25
+    },
+    {
+      "kind": "regional_raw",
+      "weight": 0.75
+    }
+  ],
+  "validation_gate": true,
+  "validation_score_relative_to_v1": 0.8594401392105271,
+  "baseline": {
+    "rmse": 52695.25874496755,
+    "extreme_rmse": 113268.2216330612,
+    "mae": 16063.873282544597,
+    "r2": 0.8909453989466699,
+    "rows": 19306,
+    "extreme_rows": 1983
+  },
+  "candidate": {
+    "rmse": 46542.883401006955,
+    "extreme_rmse": 111776.95445236984,
+    "mae": 14002.938842002019,
+    "r2": 0.9149239181062689,
+    "rows": 19306,
+    "extreme_rows": 1983
+  },
+  "percentage_error_reduction": {
+    "rmse": 11.675386914288854,
+    "extreme_rmse": 1.3165803781420737,
+    "mae": 12.829623368493825
+  },
+  "promoted": true
+}

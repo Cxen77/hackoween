@@ -20,6 +20,8 @@ const catchments=JSON.parse(await fs.readFile('reports/catchment_provenance.json
 const p=Presentation.create({slideSize:{width:1280,height:720}});
 p.theme.defaultFont='Arial';
 const staging=path.join(root,'.presentation-build');const out=path.join(root,'presentation');
+const revision=process.argv[2]||process.env.FLOODCAST_PRESENTATION_REVISION;
+const stem=revision ? `FLOODCAST-${revision}` : 'FLOODCAST';
 await fs.mkdir(staging,{recursive:true});await fs.mkdir(out,{recursive:true});
 const fmt=(v,d=0)=>new Intl.NumberFormat('en-US',{maximumFractionDigits:d}).format(v);
 function text(slide,value,x,y,w,h,size=27,color='#355763',bold=false){
@@ -46,11 +48,11 @@ note(s,`Sources: https://waterservices.usgs.gov/ ; https://open-meteo.com/en/doc
 
 s=slide('Weather, basin features, and time');
 text(s,'Features',74,173,300,45,29,'#068995',true);
-text(s,'Rainfall and soil moisture, temperatures, physical basin attributes, seasonal terms, and preceding 3/7/14/30-day rainfall.',390,173,810,110,28);
+text(s,metrics.schema_version===2?'Local weather, physical basin descriptors and hydrologic-region rainfall proxies with up to 90 days of weather history.':'Rainfall and soil moisture, temperatures, physical basin attributes, seasonal terms, and preceding 3/7/14/30-day rainfall.',390,173,810,110,28);
 text(s,'Models',74,321,300,45,29,'#068995',true);
-text(s,'Gradient boosting and ExtraTrees on raw, log, and drainage-normalized discharge. Imputation learns from training rows only.',390,321,810,110,28);
+text(s,metrics.schema_version===2?'Raw/log gradient boosting, peak weighting and regional weather proxies. Ensemble weights selected on validation only.':'Gradient boosting and ExtraTrees on raw, log, and drainage-normalized discharge. Imputation learns from training rows only.',390,321,810,110,28);
 text(s,'Validation',74,470,300,45,29,'#068995',true);
-text(s,`Hold out later dates and complete stations. Freeze model selection before the separate ${holdout.period[0].slice(0,4)} holdout. No test discharge inputs.`,390,470,810,125,28);
+text(s,metrics.schema_version===2?'Hold out later dates and complete stations. Freeze ensemble selection on validation. 2025 is a reused public benchmark.':`Hold out later dates and complete stations. Freeze model selection before the separate ${holdout.period[0].slice(0,4)} holdout. No test discharge inputs.`,390,470,810,125,28);
 text(s,`Selected model: ${metrics.selected_model} · ${fmt(metrics.train_rows)} training rows`,74,645,1120,38,20,'#6C858E');
 note(s,'Source: solution.py, reports/metrics.json. Station identity and all target-derived statistics are excluded from model inputs. Rainfall windows use closed-left time windows. Selection is weighted baseline-relative validation error averaged across temporal and geographic splits, not the official leaderboard normalization.');
 
@@ -59,7 +61,7 @@ const selected=metrics.validation[metrics.selected_model];
 const values=[['Evaluation','RMSE (cfs)','Peak RMSE*','MAE (cfs)','R²'],
  ['Later dates',fmt(selected.future_dates.model.rmse),fmt(selected.future_dates.model.extreme_rmse),fmt(selected.future_dates.model.mae),fmt(selected.future_dates.model.r2,3)],
  ['Unseen stations',fmt(selected.unseen_station_future_dates.model.rmse),fmt(selected.unseen_station_future_dates.model.extreme_rmse),fmt(selected.unseen_station_future_dates.model.mae),fmt(selected.unseen_station_future_dates.model.r2,3)],
- [`${holdout.period[0].slice(0,4)} holdout`,fmt(holdout.overall.rmse),fmt(holdout.overall.extreme_rmse),fmt(holdout.overall.mae),fmt(holdout.overall.r2,3)]];
+ [`${holdout.period[0].slice(0,4)} benchmark`,fmt(holdout.overall.rmse),fmt(holdout.overall.extreme_rmse),fmt(holdout.overall.mae),fmt(holdout.overall.r2,3)]];
 const table=s.tables.add({rows:4,columns:5,left:72,top:196,width:1136,height:272,columnWidths:[320,215,215,215,171],values});
 table.borders.assign({fill:'#D9E5E7',width:1,style:'solid'});
 for(let r=0;r<4;r++)for(let c=0;c<5;c++){
@@ -82,20 +84,20 @@ for(const [i,sl] of p.slides.items.entries()){
  const bytes=await p.export({slide:sl,format:'png',scale:1});await fs.writeFile(path.join(staging,`slide-${i+1}.png`),new Uint8Array(await bytes.arrayBuffer()));
 }
 const candidatePath=path.join(staging,'candidate.pptx');await(await PresentationFile.exportPptx(p)).save(candidatePath);
-await finalizePresentation({workspaceDir:root,candidatePath,finalPath:path.join(out,'FLOODCAST.pptx'),
+await finalizePresentation({workspaceDir:root,candidatePath,finalPath:path.join(out,`${stem}.pptx`),
  pythonExecutable:path.join(runtime,'python/python.exe'),
  integrityValidatorPath:path.join(skill,'container_tools/inspect_presentation_package_integrity.py'),
  layoutValidatorPath:path.join(skill,'container_tools/inspect_presentation_layout_geometry.py'),
  layoutArgs:['--expected-slide-size-emu','12192000,6858000','--validate-bullet-geometry','--validate-heading-fit','--require-native-table-slide','4'],
  explicitTotalSlideCount:5,requiredNativeTableOwnerSlides:[4],fontPolicy:{basis:'design',families:['Arial']},
- verifyArtifactToolImport:true,receiptPath:path.join(staging,'validation.json')});
+ verifyArtifactToolImport:true,receiptPath:path.join(staging,`${stem}.validation.json`)});
 try{
- const pdf=await p.export({format:'pdf'});await fs.writeFile(path.join(out,'FLOODCAST.pdf'),new Uint8Array(await pdf.arrayBuffer()));
+ const pdf=await p.export({format:'pdf'});await fs.writeFile(path.join(out,`${stem}.pdf`),new Uint8Array(await pdf.arrayBuffer()));
 }catch(error){
  // The portable artifact runtime may lack pdf-lib's standard-font aliases. Preserve the
  // editable PPTX and assemble already rendered slides as an image-backed presentation PDF.
  const conversion=spawnSync(path.join(runtime,'python/python.exe'),['-c',
-  'from PIL import Image; from pathlib import Path; import sys; src=Path(sys.argv[1]); pages=[Image.open(src/f"slide-{i}.png").convert("RGB") for i in range(1,6)]; pages[0].save(sys.argv[2],save_all=True,append_images=pages[1:],resolution=96)',staging,path.join(out,'FLOODCAST.pdf')],{encoding:'utf8'});
+  'from PIL import Image; from pathlib import Path; import sys; src=Path(sys.argv[1]); pages=[Image.open(src/f"slide-{i}.png").convert("RGB") for i in range(1,6)]; pages[0].save(sys.argv[2],save_all=True,append_images=pages[1:],resolution=96)',staging,path.join(out,`${stem}.pdf`)],{encoding:'utf8'});
  if(conversion.status!==0)throw new Error(`PDF fallback failed: ${conversion.stderr}`,{cause:error});
  console.log('PDF assembled from verified slide renders; PPTX remains editable.');
 }

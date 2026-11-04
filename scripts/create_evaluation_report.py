@@ -17,7 +17,7 @@ def main():
     m=load('metrics.json');h=load('demo_holdout.json');d=load('provenance.json');selected=m['validation'][m['selected_model']]
     cases=[('Training fit (not validation)',m['training_metrics']),('Later-date validation',selected['future_dates']['model']),
            ('Unseen stations + later dates',selected['unseen_station_future_dates']['model']),
-           ('2025 independent public test',h['overall']),('2025 station-median baseline',h['training_station_median_baseline'])]
+           ('2025 public benchmark (reused)' if m.get('schema_version')==2 else '2025 independent public test',h['overall']),('2025 station-median baseline',h['training_station_median_baseline'])]
     matrix=pd.DataFrame([{'evaluation':name,**result} for name,result in cases])
     matrix=matrix[['evaluation','rows','rmse','extreme_rmse','mae','r2','extreme_rows']]
     matrix.to_csv(out/'metrics_matrix.csv',index=False)
@@ -30,6 +30,7 @@ def main():
                            'mae':'Mean absolute error in cfs; lower is better.',
                            'r2':'Proportion of variance explained. Not a percentage of correct predictions; can be negative.'},
             'official_scoring_weights':{'rmse':.4,'extreme_rmse':.3,'mae':.2,'r2':.1},
+            'benchmark_note':m.get('benchmark_note','Original frozen public holdout evaluated after model selection.'),
             'official_score_note':'Leaderboard normalization depends on all teams and hidden event labels; no official composite score can be claimed here.'}
     (out/'metrics.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
     comparison=pd.read_csv('data/large/evaluation/comparison.csv',dtype={'station_id':str})
@@ -58,7 +59,7 @@ def main():
     markdown='\n'.join(f"| {name} | {v['rows']:,} | {v['rmse']:,.2f} | {v['extreme_rmse']:,.2f} | {v['mae']:,.2f} | {v['r2']:.4f} |" for name,v in cases)
     readme=f'''# FLOODCAST evaluation matrix
 
-**Public-data experiment, not the official competition test set.** Selected model: `{m['selected_model']}`. Actual data: {len(d['stations'])} stations, {d['period'][0]} through {d['period'][1]}; {m['train_rows']:,} training rows and {m['test_rows']:,} later test rows. The model was selected using internal validation before the separate 2025 public test answers were evaluated.
+**Public-data experiment, not the official competition test set.** Selected model: `{m['selected_model']}`. Actual data: {len(d['stations'])} stations, {d['period'][0]} through {d['period'][1]}; {m['train_rows']:,} training rows and {m['test_rows']:,} later test rows. Model fitting and ensemble selection use training-period validation only. {report['benchmark_note']}
 
 | Evaluation | Rows | RMSE (cfs) | Extreme RMSE (cfs) | MAE (cfs) | R² |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -69,7 +70,7 @@ Test RMSE is **{report['holdout_rmse_reduction_vs_station_median_percent']:.1f}%
 ## Files for judges
 
 - `evaluation_report.pdf`: two-page readable report and actual prediction charts.
-- `metrics_matrix.csv`: the numerical evaluation matrix, including training, time validation, geography validation, independent public test, and baseline.
+- `metrics_matrix.csv`: the numerical evaluation matrix, including training, time validation, geography validation, public benchmark, and baseline.
 - `metrics.json`: exact unrounded metrics, definitions, and organizer scoring weights.
 - `evaluation_charts.png`: actual-vs-predicted scatter, monthly test RMSE, and a named Potomac time-series example.
 - `predictions_vs_actual.csv`: every public test station/date, actual discharge, prediction and errors.
@@ -107,7 +108,7 @@ Source evidence: `../reports/metrics.json`, `../reports/demo_holdout.json`, and 
     lines=[f"R-squared {h['overall']['r2']:.4f} describes explained variance, not a percentage of correct predictions.",
            'Extreme RMSE uses the actual top 10% discharge days within each station, including threshold ties.',
            f'{negative} of {len(h["by_station"])} evaluated stations have negative R-squared. Per-station results are included.',
-           'Public daily-mean discharge experiment. Official event CSVs and leaderboard scores were not supplied.',
+           'Previously inspected 2025 public benchmark; not a fresh independent test. No test targets enter training.',
            'Sources: USGS discharge; Open-Meteo historical weather; USGS StreamStats and GAGES-II.']
     for i,line in enumerate(lines):pdf.drawString(60,214-i*29,line)
     pdf.setFont('Helvetica',12);pdf.drawString(60,37,'Full definitions, raw values, all predictions and limitations: evaluation/README.md and model_card.md');pdf.showPage()

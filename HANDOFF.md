@@ -2,6 +2,41 @@
 
 Updated: 2026-11-04, Asia/Calcutta. Read this file first when continuing. Keep it current; do not create competing context logs.
 
+## LATEST CHECKPOINT — MODEL IMPROVEMENT COMPLETE
+
+The user explicitly requested actual improvement and further attempts if quality remained weak. Current champion is **ensemble_v2:25% original log-target boosting +75% regional-weather raw-target boosting**, with49 actual input features. It was selected on training-period temporal/geographic validation; no2025 target is read by model fitting or ensemble selection.
+
+Current2025 REUSED PUBLIC BENCHMARK,19306 rows: **RMSE46,542.8834 cfs** (old52,695.2587;11.6754% lower), **extreme RMSE111,776.9545** (old113,268.2216;1.3166% lower), **MAE14,002.9388** (old16,063.8733;12.8296% lower), **R²0.914923918** (old0.890945399). It is NOT a newly untouched independent test. R² is not an accuracy percentage.
+
+Both validation splits improved overall AND extreme RMSE BEFORE benchmark evaluation: temporal RMSE47,231.7463/extreme53,138.1526/MAE16,815.9549/R².880934; unseen-station future RMSE72,109.4456/extreme115,119.0974/MAE27,945.7061/R².901453.
+
+Tradeoff:20/53 benchmark stations have negativeR², versus11/53 in V1. Large-river aggregate gains do not mean every river improved. Full per-station results and baseline retained; current raw ensemble hurts some small-flow stations.
+
+Experiments completed: V2 generic enrichment failed the strict gate; V3 regional-weather ensemble succeeded/promoted; V4 finer constrained optimization did not beat the incumbent; V5 flow-dependent blend search also failed all-four-metric validation constraints. Both extra attempts were rejected. Evidence: reports/improvement_v2.json, reports/improvement_v2_validation.json, reports/experiments/v2–v5. Full ignored caches/models: data/experiments/v2–v5. NO MODEL TRAINING PROCESS REMAINS RUNNING.
+
+New code: scripts/improve_model.py, promote_improved_model.py, regime_ensemble.py; solution.py --improved --regional and prepare_large.py default improved workflow. Models use weather-point proxies in actual NWIS HUC2 regions, with upstream-region pooling for Lower Mississippi; NOT true area-weighted basin rainfall. Region definitions verified: https://water.usgs.gov/GIS/huc_name.html. Original plain solution.py mode remains V1. Cache reuse checks input SHA256 and seed/cutoff/held-station alignment.
+
+Current root predictions.csv, local floodcast.joblib(component bundle), model_card, reports, public/reports and organized dataset prediction/comparison/manifest copies updated.19306 output rows validated again; root equals organized copy and SHA256 manifest.16 Python tests pass, including no-target leakage, causal weather windows, missing regions, peak weights and convex flow gates.
+
+V1 preserved in reports/baseline_v1 and evaluation/baseline_v1; original fitted model at data/experiments/baseline_v1/model.joblib. Current judge evaluation matrix/plots/two-page PDF regenerated and visually checked. Current deck: presentation/FLOODCAST-v2-final.pdf and editable .pptx (5slides, all renders inspected, native-table/font/import checks pass). PDF fallback is image-backed; PPTX editable. Original FLOODCAST.pdf/.pptx are V1 and labeled in presentation/README.md. Finalizer receipts are revision-specific now.
+
+IMPORTANT CONCURRENT WORK: src/App.tsx, src/style.css and src/terrain.ts changed outside this ML turn, and current_view.png appeared untracked. They are left untouched/uncommitted by this ML checkpoint. Do NOT overwrite them or stage them with ML changes. Review/coordinate UI edits and browser-test boundary alerts separately; new UI work is not verified by this ML turn.
+
+Next improvements need actual missing large-basin descriptors and basin/upstream meteorology, then fresh validation. Do not keep tuning against the already inspected2025 benchmark while calling it independent. Official event CSVs and team details remain pending. Final ML commit/push is verified before replying; use git log/status for current hash. All raw data/models/API key stay local/ignored.
+
+Current model reproduction:
+
+```powershell
+python solution.py --improved --regional --train data/large/train/train.csv --test data/large/test/test.csv --metadata data/large/metadata/station_metadata.csv --experiment data/experiments/reproduce --output predictions.csv --metrics reports/metrics.json --model floodcast.joblib
+python scripts/validate_submission.py --test data/large/test/test.csv --predictions predictions.csv
+```
+
+## Historical model experiment progress (superseded by completed checkpoint above)
+
+LATEST RUN STATUS: V2 initial enriched models failed the strict all-four-RMSE gate; root baseline untouched. V2 cached predictions safely reused after SHA256 sealing (train/test/metadata unchanged). Added no-coordinate ablation and **weather-only hydrologic-region proxies** using actual cached NWIS HUC2 codes; Lower Mississippi pools available weather points from HUC05/06/07/08/10/11, other regions local HUC2. Explicitly a point-weather proxy, not true area-weighted basin rainfall. V3 experiment RUNNING session **48047** in data/experiments/v3. Regional raw candidate ALREADY improves all4 validation RMSE measures: temporal48709 vs56184, temporal extreme59196 vs60396, geo76056 vs79671, geo extreme115951 vs136635. Ensemble selection/refit is next; do not claim final benchmark improvement yet. Training script NEVER opens test labels. New tests include regional proxy target-invariance and strictly-past rainfall; all5 new-feature tests pass. scripts/promote_improved_model.py --experiment data/experiments/v3 will separately benchmark and promote only if both validation and benchmark overall/extreme RMSE gates pass. Original baseline archived under reports/baseline_v1, evaluation/baseline_v1, data/experiments/baseline_v1/model.joblib. Model-card generator and solution.py --improved interfaces being updated to support V2 component bundles. Root outputs still old baseline as of this update.
+
+User now said to actually improve the model. `scripts/improve_model.py` implemented and RUNNING in exec session **67647**. It never opens test targets. It fits original raw/log baselines plus enriched log/raw/peak-weighted/drainage-normalized/Poisson boosting. Enrichment: metadata coordinates, strictly past45/60/90-day rainfall, lagged soil/temperature, freeze/melt proxies, interactions. Candidate and quarter-step two-model ensembles selected on temporal/geographic validation only; predeclared eligibility requires lower overall AND extreme RMSE in BOTH validation splits than original hist_log. Selection is locked to data/experiments/v2/selection_locked.json before refitting/predicting. Outputs go ONLY to ignored data/experiments/v2/ (current root baseline remains unchanged). Next: collect training results; evaluate selected locked predictions on previously inspected2025 benchmark using separate evaluation script; promote only if real improvements and document this is a reused benchmark, not a new untouched test. Archive current baseline artifacts before changing any root reports. New feature leakage/lag/weight tests in tests/test_improved_model.py. No model gains claimed yet.
+
 ## User scope and latest priorities
 
 1. Build a 3D river/flood map with actual free APIs; river clicks show data; provide flood simulation inspired by supplied image.
@@ -22,7 +57,7 @@ Updated: 2026-11-04, Asia/Calcutta. Read this file first when continuing. Keep i
 - Official event train.csv/test.csv NOT supplied. Current predictions.csv is PUBLIC-DATA experiment output, not an official hidden-test submission.
 - Brief describes peak daily target but its USGS example is 00060_Mean. Public target is statistic00003 DAILY MEAN cfs. Confirm event target later.
 
-## Data / model — completed and frozen
+## Historical V1 baseline — current V2 is documented above
 
 - Actual joined data:55 stations,312,363 daily records,2010-01-01 through2025-12-31.
 - Train293,057 rows through2024; public test19,306 rows in2025. Two requested station IDs lacked usable discharge (03103000,03612500); final weather station14246900 hit daily Open-Meteo quota. All skips documented, no quota bypass.

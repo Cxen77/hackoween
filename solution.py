@@ -2,6 +2,7 @@
 from __future__ import annotations
 import argparse
 import json
+import shutil
 from pathlib import Path
 import joblib
 import numpy as np
@@ -99,6 +100,15 @@ def validate_output(test, output):
     if not np.isfinite(output.discharge_cfs).all() or (output.discharge_cfs < 0).any():
         raise ValueError('Invalid discharge prediction')
 
+def run_improved(args):
+    from scripts.improve_model import run as improve
+    improve(args)
+    dest=Path(args.output);dest.parent.mkdir(parents=True,exist_ok=True)
+    shutil.copyfile(Path(args.experiment)/'predictions.csv',dest)
+    Path(args.metrics).parent.mkdir(parents=True,exist_ok=True)
+    shutil.copyfile(Path(args.experiment)/'metrics.json',args.metrics)
+    if args.model:shutil.copyfile(Path(args.experiment)/'model.joblib',args.model)
+
 def run(args):
     train, test = read_input(args.train, True), read_input(args.test)
     if 'discharge_cfs' in test:
@@ -176,4 +186,14 @@ if __name__ == '__main__':
     parser.add_argument('--train', default='data/train.csv'); parser.add_argument('--test', default='data/test.csv')
     parser.add_argument('--output', default='predictions.csv'); parser.add_argument('--metrics', default='reports/metrics.json')
     parser.add_argument('--model'); parser.add_argument('--seed', type=int, default=42)
-    run(parser.parse_args())
+    parser.add_argument('--improved',action='store_true',help='Run validation-selected v2 peak-aware/enriched models and ensembles')
+    parser.add_argument('--metadata',default='data/large/metadata/station_metadata.csv')
+    parser.add_argument('--experiment',default='data/experiments/v2')
+    parser.add_argument('--regional',action='store_true',help='Add cached weather-point regional proxies from USGS HUC regions')
+    parser.add_argument('--inventory',default='data/large/raw/station_inventory.rdb')
+    parser.add_argument('--validation-cache')
+    parser.add_argument('--optimize-ensemble',action='store_true')
+    args=parser.parse_args()
+    if args.improved:
+        run_improved(args)
+    else:run(args)

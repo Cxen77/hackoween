@@ -1,0 +1,12 @@
+{
+  "python": "3.11.9",
+  "numpy": "2.4.6",
+  "pandas": "3.1.0",
+  "scikit_learn": "1.9.1",
+  "joblib": "1.6.0",
+  "model_sha256": "8836757833ed8c824cfbaf85d966df65061da5ed13bcb49c632db82270bc9d61",
+  "model_bytes": 713323,
+  "feature_count": 22,
+  "target_log": true,
+  "note": "Serialized model is local and ignored; regenerate using solution.py and the documented data."
+}

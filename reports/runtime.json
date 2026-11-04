@@ -4,9 +4,19 @@
   "pandas": "3.1.0",
   "scikit_learn": "1.9.1",
   "joblib": "1.6.0",
-  "model_sha256": "8836757833ed8c824cfbaf85d966df65061da5ed13bcb49c632db82270bc9d61",
-  "model_bytes": 713323,
-  "feature_count": 22,
-  "target_log": true,
-  "note": "Serialized model is local and ignored; regenerate using solution.py and the documented data."
+  "model_sha256": "63bd682c6acc6d6592afc82b95b459293d7ca62c9ce1d6d01d01f0fe48d32697",
+  "model_bytes": 1917264,
+  "feature_count": 49,
+  "schema_version": 2,
+  "selected_components": [
+    {
+      "kind": "baseline_log",
+      "weight": 0.25
+    },
+    {
+      "kind": "regional_raw",
+      "weight": 0.75
+    }
+  ],
+  "note": "V2 component bundle; use solution.py --improved to regenerate. Serialized model is local/ignored."
 }
