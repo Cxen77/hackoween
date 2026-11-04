@@ -67,7 +67,7 @@ function Hindcast({ h }: { h: Json }) {
   );
 }
 
-export default function ModelForecastCard({ usgs, nwic, river, onSimulate }: { usgs?: string; nwic?: string; river: string; onSimulate: (riseMetres: number, label: string) => void }) {
+export default function ModelForecastCard({ usgs, nwic, river, onSimulate, onData }: { usgs?: string; nwic?: string; river: string; onSimulate: (riseMetres: number, label: string) => void; onData?: (d: Json | null) => void }) {
   const [state, setState] = useState<{ data: Json; error: string | null; offline: boolean; loading: boolean }>({ data: null, error: null, offline: false, loading: false });
   const [tick, setTick] = useState(0);
   const [activeHorizon, setActiveHorizon] = useState<number>(1);
@@ -75,6 +75,7 @@ export default function ModelForecastCard({ usgs, nwic, river, onSimulate }: { u
   const cardRefs = useRef<Record<number, HTMLDivElement | null>>({});
   useEffect(() => {
     const query = usgs ? `station=${encodeURIComponent(usgs)}` : nwic ? `india=${encodeURIComponent(nwic)}` : null;
+    onData?.(null);
     if (!query) { setState({ data: null, error: null, offline: false, loading: false }); return; }
     const ctl = new AbortController();
     setState(s => ({ ...s, loading: true, error: null, offline: false }));
@@ -86,6 +87,7 @@ export default function ModelForecastCard({ usgs, nwic, river, onSimulate }: { u
         if (!body) throw Object.assign(new Error('offline'), { offline: true });
         if (!r.ok || body.error) throw new Error(body.error ?? `HTTP ${r.status}`);
         setState({ data: body, error: null, offline: false, loading: false });
+        onData?.(body);
       })
       .catch((e: Json) => { if (!ctl.signal.aborted) setState({ data: null, error: e.offline ? null : String(e.message ?? e), offline: !!e.offline || e instanceof TypeError, loading: false }); });
     return () => ctl.abort();

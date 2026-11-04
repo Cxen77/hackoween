@@ -120,6 +120,8 @@ export default function App() {
   const [sources, setSources] = useState(false);
   const [modelOpen, setModelOpen] = useState(false);
   const [modelReport, setModelReport] = useState<Record<string, any> | null>(null);
+  // Live data from the local model server (observed flow); used to improve "Sync 3D Map to Live Level" where no stage gauge exists.
+  const [modelLive, setModelLive] = useState<Record<string, any> | null>(null);
 
   const mapNode = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
@@ -639,16 +641,24 @@ export default function App() {
   const discharge = forecast.data?.daily.river_discharge[day];
   const stale = gauge.data?.time ? Date.now() - new Date(gauge.data.time).getTime() > 2 * 3600000 : false;
 
-  const liveStageMetres = useMemo<number | null>(() => {
+  // Best available "live level" for the 3D map, in metres above the channel, with where it came from.
+  //   1. the gauge's own height reading (real stage), 2. live observed flow from the model server (rule of thumb),
+  //   3. GloFAS model flow (rule of thumb, least reliable). Always kept inside the slider's range.
+  const liveLevel = useMemo<{ m: number; source: string } | null>(() => {
+    const clamp = (v: number) => Number(Math.min(profile.maxRise, Math.max(profile.minRise, v)).toFixed(1));
+    const fromFlow = (cfs: number) => Math.max(0.3, Math.min(22, Math.pow(cfs / 35.3146667 / 300, 0.42)));
     if (gauge.data?.height != null && Number.isFinite(gauge.data.height)) {
-      return Number((gauge.data.height * 0.3048).toFixed(1));
+      return { m: clamp(gauge.data.height * 0.3048), source: 'from the live gauge height' };
+    }
+    if (modelLive?.latest_observed_cfs != null && Number.isFinite(modelLive.latest_observed_cfs)) {
+      return { m: clamp(fromFlow(modelLive.latest_observed_cfs)), source: `estimated from the observed flow of ${Math.round(modelLive.latest_observed_cfs).toLocaleString('en-US')} cfs (no stage gauge)` };
     }
     if (forecast.data?.daily.river_discharge[0] != null) {
-      const q = forecast.data.daily.river_discharge[0]!;
-      return Number(Math.max(0.3, Math.min(22, Math.pow(q / 300, 0.42))).toFixed(1));
+      return { m: clamp(fromFlow(forecast.data.daily.river_discharge[0]! * 35.3146667)), source: 'estimated from the GloFAS model flow (least reliable)' };
     }
     return null;
-  }, [gauge.data, forecast.data]);
+  }, [gauge.data, forecast.data, modelLive, profile.minRise, profile.maxRise]);
+  const liveStageMetres = liveLevel?.m ?? null;
 
   const filtered = stations.filter(s => {
     const matchesQuery = `${s.name} ${s.river} ${s.region}`.toLowerCase().includes(query.toLowerCase());
@@ -1103,6 +1113,7 @@ export default function App() {
                 usgs={station.usgs}
                 nwic={station.nwic}
                 river={station.river}
+                onData={setModelLive}
                 onSimulate={(metres) => {
                   setRise(Math.min(profile.maxRise, Math.max(profile.minRise, Number(metres.toFixed(2)))));
                   setPlaying(false);
@@ -1280,6 +1291,9 @@ export default function App() {
                   <Activity size={13} />
                   <span>Sync 3D Map to Live Level (+{liveStageMetres}m)</span>
                 </button>
+              )}
+              {liveLevel != null && (
+                <small className="sync-live-note">Level {liveLevel.source}.</small>
               )}
 
               <div className="observation-note">
