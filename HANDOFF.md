@@ -77,15 +77,19 @@ React19 / TypeScript / Vite / MapLibre6.16 / Lucide. MapLibre5 was upgraded due 
 ## GitHub progress
 
 - d66e265: initial pipeline/UI/baseline push succeeded.
-- 55acad7: evaluation matrix, prediction charts, and verified presentation push succeeded.
-- Geographic boundary monitor alert feature implemented: drawing polygon zones, threshold settings, simulated water-rise and USGS gauge alerts, in-app notifications, and unit test coverage.
-- Cloned and wired `unslop` skill at `~/dev/unslop`, linked to `~/.claude/skills/unslop` and command `~/.claude/commands/unslop.md`.
-- UI copy and styling refined using `unslop` principles: crisp hydrological intelligence terminology, cohesive map control pills, frosted hint alerts, and clean status indicators.
+- 1584022: initial boundary alerts and unslop UI styling push succeeded.
+- Comprehensive UI overhaul completed using unslop principles:
+  - Full design-token architecture in style.css with DM Sans, Manrope, and JetBrains Mono monospace telemetry metrics.
+  - Region filter tabs (All, USGS Gauges, India) and `/` keyboard shortcut for station search.
+  - Smooth cubic Bézier forecast discharge spline with gradient fill, active-day tracking cursor, and daily precipitation indicators.
+  - Flood scenario stage preset chips (+1m Minor, +3m Moderate, +6m Major, +10m Extreme) for instant inundation testing.
+  - Map acrylic HUD with live coordinates, drawing perimeter status banner, layer controls, and floating depth legend.
+  - Telemetry card with operational status beacon, gauge height, water temperature, and USGS approval metadata.
 - 9 Python tests and 9 JS tests pass; production frontend build succeeds.
 
 ## Remaining work
 
-1. Final commit and push of boundary monitoring feature, styling refinement, and updated handoff to origin main.
+1. Push latest UI overhaul commit to GitHub main.
 2. User team details to be filled by the user when required.
 
 ## Commands / runtime
