@@ -43,10 +43,11 @@ Only what is needed to run and test is required. The site and model server need 
 git clone https://github.com/Cxen77/hackoween.git ; cd hackoween
 pip install -r requirements.txt -r requirements-advanced.txt     # Python 3.12 tested
 npm install
-# terminal 1: model server (loads the committed model; port 8765)
-python -m server.model_api
-# terminal 2: website (proxies /api to the model server)
-npm run dev
+# easiest: one command starts the model server (port 8765) AND the website
+npm run dev:all
+# or in two terminals: (1) python -m server.model_api   (2) npm run dev
+# If the site says "Model server is not running", the server did not start: run `python -m server.model_api` and read its error
+# (usually a missing package: pip install -r requirements.txt -r requirements-advanced.txt), and run it from the repo root.
 ```
 Optional, only to re-run experiments: `python -m scripts.basinshift_model --experiment heldout` (retrains the held-out model), `python -m scripts.download_caravan` (US Caravan subset, ~480 MB download into data/external, needs internet) and `python -m scripts.build_plus_dataset` (extra stations). Rebuild page data after new evaluations with `python -m scripts.export_model_page_data` (and `scripts/basinshift_judge_tests.py`, `scripts/india_live_test.py` with the server running).
 The server works with no dataset present (verified in a folder containing only code, the model and model_meta.json). Without the model server the site still runs: forecast panels show a "start the server" message and the Judge tests tab uses saved results.
