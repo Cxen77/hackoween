@@ -61,3 +61,23 @@ test('invalid stages and missing terrain cannot become flooded water',()=>{
   assert.throws(()=>riverFloodAtStage(model,-1));
   assert.throws(()=>prepareRiverFlood([0],2,new Uint8Array([1]),0));
 });
+
+test('a high bridge pixel cannot inject floodwater into neighbouring land',()=>{
+  const n=9,h=Array.from({length:81},(_,i)=>i%n===4?0:6);
+  h[40]=20;
+  const channel=Uint8Array.from(h,(_,i)=>+(i%n===4));
+  const model=prepareRiverFlood(h,n,channel,31);
+  const result=riverFloodAtStage(model,1);
+  assert.equal(result.floodedCells,0);
+  assert.equal(result.depths[40],0);
+  assert.ok(Math.abs(model.base[31])<.05);
+});
+
+test('a dry island is retained inside a mapped water polygon',()=>{
+  const grid={size:9,west:0,south:0,dx:.001,dy:.001,cellArea:10000};
+  const ring=(lo,hi)=>[[lo,lo],[hi,lo],[hi,hi],[lo,hi],[lo,lo]].map(([lon,lat])=>({lon,lat}));
+  const result=channelMaskFromWays([{tags:{natural:'water'},nodes:[1,1],geometry:ring(.0005,.0085),holes:[ring(.0025,.0065)]}],grid);
+  assert.ok(result);
+  assert.equal(result.mask[40],0);
+  assert.equal(result.mask[9],1);
+});
