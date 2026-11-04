@@ -35,6 +35,13 @@ Script: scripts/basinshift_horizon.py. Summary: data/experiments/basinshift_hori
 - scripts/tune_regional.py: 7 HistGB hyperparameter variants of regional_raw in the V2 blend, both validation splits. NONE passed the overall+extreme RMSE gate in both splits; differences were about 1% (noise level; the control re-fit differed from the cached reference by 0.3%). Best-looking: l2_120 lowered unseen extreme to 110,567 but raised temporal RMSE/extreme slightly.
 - Conclusion: FLOODCAST V2 is at a plateau for tuning-level changes. Remaining levers need new information: basin-wide upstream weather, same-source extra stations (scripts/expand_stations.py after Open-Meteo quota reset), complete large-basin attributes.
 
+## Discharge ML Model page (2026-11-04)
+
+The nav-bar button "Discharge ML Model" now opens a full page (src/components/ModelPage.tsx, model-page.css) instead of the old pop-up with stale V1 numbers. The explorer is hidden (not unmounted) so the map state survives. App.tsx edit is 3 lines (import, `{modelOpen && <ModelPage />}`, `hidden={modelOpen}` on .workspace, and the old modal now opens only for Sources).
+Tabs: Results (production FLOODCAST benchmark + BASINSHIFT held-out/Caravan tables by horizon), Test a station (actual vs forecast with 90% band, Q90/Q99 thresholds, alert test, 2025 production series), Score your CSV (in-browser validate + score; reproduces the Python numbers exactly on the 19,306-row sample), Robustness (stress table + efficiency).
+Data: public/reports/model/*.json, regenerate with `python -m scripts.export_model_page_data` after any new evaluation. Scoring logic: src/modelMetrics.mjs, tested in tests/modelMetrics.test.mjs (fixture computed in Python). 20 JS tests pass; build passes.
+Caveat: the Caravan stress run was not done (button disabled in the UI). Caravan result: beats persistence at 1/3/7 days; at 7 days median per-basin NSE (0.081) is slightly below weather-only (0.092); 90% intervals cover 80-84%.
+
 ## Extra-station experiment with NASA POWER weather (2026-11-04) - REJECTED, V2 unchanged
 
 Open-Meteo quota was exhausted, so 36 vetted extra USGS stations used NASA POWER weather (scripts/build_plus_dataset.py), quantile-mapped to the Open-Meteo scale using original-station training rows only (corr after mapping: precip 0.81, tmax 0.98, tmin 0.98, soil 0.71). Dataset data/large_plus (local, ignored): 91 stations, 490,274 train rows.

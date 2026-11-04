@@ -16,6 +16,7 @@ import { loadGrid, floodFeatures } from './terrain';
 import type { Grid } from './terrain';
 import MonitorPanel from './MonitorPanel';
 import HydrographOutlookCard from './components/HydrographOutlookCard';
+import ModelPage from './components/ModelPage';
 import RidgelineDitherFooter from '@/components/ui/ridgeline-dither-footer';
 import RidgeMark from '@/components/ui/RidgeMark';
 import { evaluateMonitor, validBoundary, validMonitor } from './geofence.mjs';
@@ -740,7 +741,8 @@ export default function App() {
         </div>
       </header>
 
-      <div className="workspace">
+      {modelOpen && <ModelPage />}
+      <div className="workspace" hidden={modelOpen}>
         <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} animate={true}>
           <SidebarBody className="floodcast-sidebar-body">
             {sidebarOpen ? (
@@ -1408,7 +1410,7 @@ export default function App() {
         </div>
       )}
 
-      {(sources || modelOpen) && (
+      {sources && (
         <div className="modal-backdrop" onClick={() => { setSources(false); setModelOpen(false); }}>
           <section className="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={e => e.stopPropagation()}>
             <button className="modal-close icon-button" aria-label="Close modal" onClick={() => { setSources(false); setModelOpen(false); }}>
