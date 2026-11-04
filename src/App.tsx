@@ -1130,31 +1130,6 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="preset-chips">
-                {liveStageMetres != null && (
-                  <button
-                    type="button"
-                    className={`preset-chip live-chip ${Math.abs(rise - liveStageMetres) < 0.04 ? 'active-preset' : ''}`}
-                    onClick={() => { setRise(liveStageMetres); setPlaying(false); if (!showSimulation) setShowSimulation(true); }}
-                    title="Set water rise directly to live gauge observation"
-                  >
-                    <strong>⚡ +{liveStageMetres}m</strong>
-                    <small>Live Stage</small>
-                  </button>
-                )}
-                {profile.presets.map(p => (
-                  <button
-                    key={p.val}
-                    type="button"
-                    className={`preset-chip ${Math.abs(rise - p.val) < 0.04 ? 'active-preset' : ''}`}
-                    onClick={() => { setRise(p.val); setPlaying(false); if (!showSimulation) setShowSimulation(true); }}
-                  >
-                    <strong>{p.label}</strong>
-                    <small>{p.sub}</small>
-                  </button>
-                ))}
-              </div>
-
               <div className="slider-group">
                 <div className="slider-label">
                   <span>Water rise above channel</span>

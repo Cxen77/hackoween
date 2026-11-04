@@ -826,7 +826,7 @@ svg {
 .map-card {
   width: 100%;
   height: 100%;
-  min-height: 540px;
+  min-height: 420px;
   position: relative;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -1240,7 +1240,7 @@ svg {
 }
 
 /* Observation & Simulation Cards */
-.observation-card, .simulation-card {
+.observation-card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
@@ -1250,6 +1250,44 @@ svg {
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
+}
+
+.simulation-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 20px 22px;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 12px;
+  height: 100%;
+}
+
+.simulation-card .card-heading {
+  margin-bottom: 0;
+}
+
+.simulation-card .sim-description {
+  margin-bottom: 0;
+}
+
+.simulation-card .flow-direction-badge {
+  margin-bottom: 0;
+}
+
+.simulation-card .reach-selector-row {
+  margin-bottom: 0;
+}
+
+.simulation-card .slider-group {
+  margin-bottom: 0;
+}
+
+.simulation-card .scenario-stats {
+  margin-top: 2px;
+  padding-top: 10px;
 }
 
 .card-heading {
