@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactElement } from 'react';
-import { Activity, AlertTriangle, CheckCircle2, Download, FileCheck2, FlaskConical, Gauge, LineChart, ShieldCheck, Upload, XCircle } from 'lucide-react';
-import { scorePredictions, validateSubmission } from '../modelMetrics.mjs';
+import { Activity, AlertTriangle, CheckCircle2, Download, FileCheck2, FlaskConical, Gauge, LineChart, Play, ShieldCheck, Upload, XCircle } from 'lucide-react';
+import { scorePredictions, validateSubmission, validateBasinshiftOutput, toBasinshiftRecord } from '../modelMetrics.mjs';
 import './model-page.css';
 
-type Tab = 'results' | 'station' | 'score' | 'robust';
+type Tab = 'results' | 'judge' | 'station' | 'score' | 'robust';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Json = any;
 
@@ -330,13 +330,148 @@ function Robust({ summary }: { summary: Json }) {
   );
 }
 
+/* ---------- tab: judge tests ---------- */
+function JudgeTests({ summary }: { summary: Json }) {
+  const judge = useJson('/reports/model/judge_tests.json');
+  const jt = judge.data;
+  const held = summary.basinshift?.heldout, car = summary.basinshift?.caravan;
+  const skill = (m: Json) => (m ? m.blend.rmse / m.persistence.rmse : null);
+  const status: [string, string, string, 'done' | 'partial' | 'no'][] = [
+    ['Test A: temporal', '§7.1, 7.4', 'Later dates, catchments seen in training', jt ? 'done' : 'partial'],
+    ['Test B: geographic', '§7.1, 7.3', 'Catchments completely excluded from training', held && car ? 'done' : 'partial'],
+    ['Test C: stress', '§7.5', 'Missing data, gaps, noise, delayed inputs', summary.stress?.heldout ? 'done' : 'partial'],
+    ['Output contract', '§8.3–8.4', 'Record layout, probabilities, interval order, no NaN or duplicates', 'done'],
+    ['H1: static attributes help transfer', '§4.3', 'Same model with and without catchment attributes', jt?.h1_static_attributes ? 'done' : 'partial'],
+    ['H2: unseen-basin gap', '§4.3', 'Skill on seen vs unseen catchments', jt && held ? 'done' : 'partial'],
+    ['H3: probabilistic forecasts', '§4.3', 'Brier skill, reliability error, interval coverage', 'done'],
+    ['H4: robust training', '§4.3', 'Needs a model trained with corrupted inputs', 'no'],
+    ['H5: hybrid or physics-informed', '§4.3', 'Not attempted', 'no'],
+    ['Baselines', '§9.1', 'Persistence, seasonal climatology and gradient boosting done; sequence model and hybrid missing', 'partial'],
+    ['Efficiency', '§10.1', 'CPU latency, memory, model size', summary.efficiency ? 'done' : 'partial'],
+  ];
+  const badge = { done: 'Run', partial: 'Partly', no: 'Not run' } as const;
+  return (
+    <div className="mp-stack">
+      <section className="mp-card">
+        <div className="mp-eyebrow"><ShieldCheck size={14} /> What the BASINSHIFT document says will be tested</div>
+        <h3>Test checklist and where the evidence is</h3>
+        <table className="mp-table mp-left"><thead><tr><th>Item</th><th>PDF</th><th>What it checks</th><th>Status</th></tr></thead>
+          <tbody>{status.map(([a, b, c, st]) => <tr key={a}><td>{a}</td><td>{b}</td><td>{c}</td><td><span className={`mp-badge ${st}`}>{badge[st]}</span></td></tr>)}</tbody></table>
+        <p className="mp-note"><AlertTriangle size={13} /> The document says the exact horizons, thresholds, scoring formula and hidden stress seeds are not frozen. We use 1, 3 and 7 days, Q90 and Q99 thresholds from each catchment's own earlier reference period, and our own fixed seeds.</p>
+      </section>
+
+      <section className="mp-card">
+        <div className="mp-eyebrow"><Gauge size={14} /> Test A and B side by side</div>
+        <h3>Does the model keep its edge on catchments it never saw?</h3>
+        <p className="mp-muted">Skill ratio = model RMSE divided by persistence RMSE (below 1.00 beats repeating the latest flow). Test A uses stations the model trained on, but only later dates. Test B uses stations it never saw.</p>
+        {jt && held && car ? (
+          <table className="mp-table"><thead><tr><th>Horizon</th><th>A: seen stations, later dates</th><th>B1: unseen gauges (2022–24)</th><th>B2: Caravan basins (2010–20)</th></tr></thead>
+            <tbody>{['1', '3', '7'].map(h => {
+              const a = jt.test_a_temporal.horizons[h], b = held.horizons[h], c = car.horizons[h];
+              const cell = (m: Json) => `${fmt(skill(m), 3)}× · NSE ${fmt(m.blend.median_basin_nse, 2)} vs ${fmt(m.persistence.median_basin_nse, 2)}`;
+              return <tr key={h}><td>{h}-day</td><td>{cell(a)}</td><td>{cell(b)}</td><td>{cell(c)}</td></tr>; })}</tbody></table>
+        ) : <div className="mp-empty">{judge.error ? 'Test A results are not available yet.' : 'Loading…'}</div>}
+        <p className="mp-muted">Each cell: skill ratio, then per-basin median NSE for the model vs persistence.</p>
+      </section>
+
+      <section className="mp-card">
+        <div className="mp-eyebrow"><FlaskConical size={14} /> Hypothesis H1</div>
+        <h3>Do static catchment attributes help on unseen catchments?</h3>
+        {jt?.h1_static_attributes ? (<>
+          <table className="mp-table"><thead><tr><th>Horizon</th><th>RMSE with</th><th>RMSE without</th><th>Median NSE with</th><th>Median NSE without</th></tr></thead>
+            <tbody>{Object.entries(jt.h1_static_attributes.horizons).map(([h, v]: [string, Json]) => (
+              <tr key={h}><td>{h}-day</td><td>{fmt(v.with_attributes.rmse)}</td><td>{fmt(v.without_attributes.rmse)}</td><td>{fmt(v.with_attributes.median_basin_nse, 3)}</td><td>{fmt(v.without_attributes.median_basin_nse, 3)}</td></tr>))}</tbody></table>
+          <p className="mp-muted">Held-out stations: {jt.h1_static_attributes.heldout_stations}. Removed: drainage area, elevation, slope, forest and impervious cover, and the two features derived from area. One split only, so treat differences as indicative.</p>
+        </>) : <div className="mp-empty">Not available yet.</div>}
+      </section>
+
+      <LiveCaravanTest />
+      <ContractCheck />
+    </div>
+  );
+}
+
+function LiveCaravanTest() {
+  const [n, setN] = useState(12);
+  const [seed, setSeed] = useState(7);
+  const [st, setSt] = useState<{ loading: boolean; data: Json; error: string | null }>({ loading: false, data: null, error: null });
+  const run = async () => {
+    setSt({ loading: true, data: null, error: null });
+    try {
+      const r = await fetch(`/api/run_test?dataset=caravan&n=${n}&seed=${seed}`);
+      const text = await r.text();
+      let body: Json = null;
+      try { body = JSON.parse(text); } catch { /* proxy target down */ }
+      if (!body) throw new Error('The model server is not running. Start it with: python -m server.model_api');
+      if (!r.ok || body.error) throw new Error(body.error ?? `HTTP ${r.status}`);
+      setSt({ loading: false, data: body, error: null });
+    } catch (e: Json) { setSt({ loading: false, data: null, error: String(e.message ?? e) }); }
+  };
+  const d = st.data;
+  return (
+    <section className="mp-card">
+      <div className="mp-eyebrow"><Activity size={14} /> Run it yourself</div>
+      <h3>Test the model on random US basins it has never seen</h3>
+      <p className="mp-muted">Picks basins at random from Caravan (an independent dataset with different gauges and weather), converts them to our format, cleans them, then forecasts 2010–2020 with the live model. Needs the model server.</p>
+      <div className="mp-controls">
+        <label>Basins <input type="number" min={3} max={30} value={n} onChange={e => setN(Math.max(3, Math.min(30, +e.target.value || 3)))} className="mp-num" /></label>
+        <label>Random seed <input type="number" value={seed} onChange={e => setSeed(+e.target.value || 0)} className="mp-num" /></label>
+        <button className="mp-btn primary" onClick={run} disabled={st.loading}><Play size={14} /> {st.loading ? 'Running… (about 30 s)' : 'Run test'}</button>
+      </div>
+      {st.error && <div className="mp-error"><XCircle size={14} /> {st.error}</div>}
+      {d && (<>
+        <p className="mp-muted">{d.basins} basins · cleaning removed {fmt(d.cleaning.rows_in - d.cleaning.rows_out)} rows.</p>
+        <table className="mp-table"><thead><tr><th>Horizon</th><th>Rows</th><th>Model RMSE</th><th>Persistence</th><th>Climatology</th><th>Weather-only</th><th>Median NSE (model / persist.)</th><th>90% coverage</th><th>High-flow AUPRC</th></tr></thead>
+          <tbody>{Object.entries(d.horizons).map(([h, v]: [string, Json]) => (
+            <tr key={h}><td>{h}-day</td><td>{fmt(v.rows)}</td><td><b>{fmt(v.blend.rmse, 1)}</b></td><td>{fmt(v.persistence.rmse, 1)}</td><td>{fmt(v.climatology.rmse, 1)}</td><td>{fmt(v.weather_only.rmse, 1)}</td>
+              <td>{fmt(v.blend.median_basin_nse, 3)} / {fmt(v.persistence.median_basin_nse, 3)}</td><td>{v.interval_coverage === null ? '—' : `${fmt(v.interval_coverage * 100, 1)}%`}</td><td>{fmt(v.high_flow_auprc, 3)}</td></tr>))}</tbody></table>
+      </>)}
+    </section>
+  );
+}
+
+function ContractCheck() {
+  const [text, setText] = useState('');
+  const [result, setResult] = useState<Json>(null);
+  const [live, setLive] = useState<string | null>(null);
+  const check = (raw = text) => {
+    try { setResult(validateBasinshiftOutput(JSON.parse(raw))); } catch (e: Json) { setResult({ ok: false, errors: [`Not valid JSON: ${e.message}`], records: 0 }); }
+  };
+  const sample = async () => {
+    setLive(null);
+    try {
+      const r = await fetch('/api/live_forecast?station=01646500');
+      const body = JSON.parse(await r.text());
+      if (body.error) throw new Error(body.error);
+      const rec = JSON.stringify(toBasinshiftRecord(body), null, 2);
+      setText(rec); check(rec);
+    } catch (e: Json) { setLive(`Could not get a live forecast (${String(e.message ?? e)}). Start the model server or paste your own JSON.`); }
+  };
+  return (
+    <section className="mp-card">
+      <div className="mp-eyebrow"><FileCheck2 size={14} /> Output contract</div>
+      <h3>Check a forecast file against the PDF's output rules</h3>
+      <p className="mp-muted">Paste one record, an array of records, or an object with a records array, using the layout in section 8.3. Checks horizons, NaN and infinity, probabilities, interval order, non-negative discharge and duplicates.</p>
+      <textarea className="mp-textarea" value={text} onChange={e => setText(e.target.value)} placeholder="Paste JSON here, or generate one from a live forecast" spellCheck={false} />
+      <div className="mp-actions">
+        <button className="mp-btn primary" onClick={() => check()}><ShieldCheck size={15} /> Check</button>
+        <button className="mp-btn" onClick={sample}>Generate from a live forecast (Potomac)</button>
+      </div>
+      {live && <div className="mp-error"><XCircle size={14} /> {live}</div>}
+      {result && (<div className="mp-result">
+        <div className={`mp-verdict ${result.ok ? 'ok' : 'bad'}`}>{result.ok ? <CheckCircle2 size={16} /> : <XCircle size={16} />}{result.ok ? `Valid: ${result.records} record(s)` : `${result.errors.length} problem(s)`}</div>
+        <ul className="mp-list">{result.errors.map((e: string) => <li key={e} className="bad">{e}</li>)}</ul></div>)}
+    </section>
+  );
+}
+
 /* ---------- page ---------- */
 export default function ModelPage() {
   const { data: summary, error } = useJson('/reports/model/summary.json');
   const [tab, setTab] = useState<Tab>('results');
   const top = useRef<HTMLElement>(null);
   useEffect(() => { window.scrollTo({ top: 0 }); }, []);
-  const tabs: [Tab, string, ReactElement][] = [['results', 'Results', <Gauge size={15} key="r" />], ['station', 'Test a station', <LineChart size={15} key="s" />],
+  const tabs: [Tab, string, ReactElement][] = [['results', 'Results', <Gauge size={15} key="r" />], ['judge', 'Judge tests', <ShieldCheck size={15} key="j" />], ['station', 'Test a station', <LineChart size={15} key="s" />],
     ['score', 'Score your CSV', <FileCheck2 size={15} key="c" />], ['robust', 'Robustness', <Activity size={15} key="b" />]];
   return (
     <main className="model-page" ref={top}>
@@ -352,6 +487,7 @@ export default function ModelPage() {
       {tab === 'station' && <StationTest />}
       {tab === 'score' && <ScoreCsv />}
       {summary && tab === 'results' && <Results summary={summary} />}
+      {summary && tab === 'judge' && <JudgeTests summary={summary} />}
       {summary && tab === 'robust' && <Robust summary={summary} />}
       {!summary && !error && tab !== 'station' && tab !== 'score' && <div className="mp-empty">Loading results…</div>}
       <p className="mp-foot">Research benchmark only. Not a certified flood warning; do not use for evacuation or emergency decisions.</p>

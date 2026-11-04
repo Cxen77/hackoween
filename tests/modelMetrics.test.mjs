@@ -61,3 +61,32 @@ test('validateSubmission flags extra rows not in test.csv', () => {
   assert.equal(v.ok, false);
   assert.match(v.errors.join(' '), /not in test\.csv/);
 });
+
+import { toBasinshiftRecord, validateBasinshiftOutput } from '../src/modelMetrics.mjs';
+const live = { station: '01646500', origin_date: '2026-11-03', horizons: [
+  { horizon_days: 1, point_cfs: 2064.06, lo_cfs: 1900.7, hi_cfs: 2245.4, p_high_flow: 0, p_extreme_flow: 0 },
+  { horizon_days: 3, point_cfs: 2074.66, lo_cfs: 1812.4, hi_cfs: 2625.5, p_high_flow: 0.01, p_extreme_flow: 0 },
+  { horizon_days: 7, point_cfs: 2160.73, lo_cfs: 1641.4, hi_cfs: 3415.9, p_high_flow: 0.02, p_extreme_flow: 0.01 }] };
+
+test('toBasinshiftRecord produces a record that passes the PDF output rules', () => {
+  const rec = toBasinshiftRecord(live);
+  assert.deepEqual(rec.forecast_horizons_days, [1, 3, 7]);
+  assert.equal(rec.forecast_origin, '2026-11-03T00:00:00Z');
+  const v = validateBasinshiftOutput(rec, { knownIds: ['01646500'] });
+  assert.equal(v.ok, true, v.errors.join(' | '));
+});
+
+test('validateBasinshiftOutput rejects each rule violation in section 8.4', () => {
+  const base = toBasinshiftRecord(live);
+  const bad = patch => validateBasinshiftOutput({ ...base, ...patch }, { knownIds: ['01646500'] });
+  assert.match(bad({ catchment_id: 'X' }).errors.join(' '), /unknown catchment/);
+  assert.match(bad({ forecast_horizons_days: [1, 3, 14] }).errors.join(' '), /unexpected horizon/);
+  assert.match(bad({ predicted_discharge: [1, NaN, 3] }).errors.join(' '), /NaN/);
+  assert.match(bad({ predicted_discharge: [-1, 2, 3] }).errors.join(' '), /non-negative/);
+  assert.match(bad({ high_flow_probability: [0, 1.5, 0] }).errors.join(' '), /between 0 and 1/);
+  assert.match(bad({ extreme_flow_probability: [0.5, 0.5, 0.5], high_flow_probability: [0.1, 0.1, 0.1] }).errors.join(' '), /cannot exceed/);
+  assert.match(bad({ prediction_intervals: { lower: [5, 5, 5], upper: [1, 1, 1] } }).errors.join(' '), /lower bound exceeds upper/);
+  assert.match(bad({ predicted_discharge: [1, 2] }).errors.join(' '), /one value per horizon/);
+  assert.match(validateBasinshiftOutput([base, base]).errors.join(' '), /duplicate/);
+  assert.equal(validateBasinshiftOutput(null).ok, false);
+});

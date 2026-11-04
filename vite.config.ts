@@ -8,6 +8,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  // Local model API (python -m server.model_api). Forecasts degrade gracefully when it is not running.
+  server: { proxy: { '/api': 'http://127.0.0.1:8765' } },
+  preview: { proxy: { '/api': 'http://127.0.0.1:8765' } },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

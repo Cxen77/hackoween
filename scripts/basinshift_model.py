@@ -54,11 +54,11 @@ def clim_forecast(frame: pd.DataFrame, ref_mask: np.ndarray) -> np.ndarray:
     return med.reindex(idx).to_numpy()
 
 
-def build(frame, ref_cut, h, hist_frame=None, weather_frame=None, delay=0):
+def build(frame, ref_cut, h, hist_frame=None, weather_frame=None, delay=0, thr_override=None):
     """Features at horizon h. hist_frame/weather_frame may be perturbed copies (stress tests); thresholds always
     come from the unperturbed reference period of `frame`."""
     W = features(weather_frame if weather_frame is not None else frame).reset_index(drop=True)
-    thr = thresholds(frame, (frame.date < ref_cut).to_numpy()).reset_index(drop=True)
+    thr = (thr_override if thr_override is not None else thresholds(frame, (frame.date < ref_cut).to_numpy())).reset_index(drop=True)
     X = W.copy()
     X['L_thr90'], X['L_thr99'] = np.log1p(thr.T90), np.log1p(thr.T99)
     if h is None:
@@ -102,11 +102,11 @@ def fit_bundle(fit_df, fit_ref_cut, cal_start, fit_end):
     return bundle
 
 
-def forecast(bundle, frame, ref_cut, h, hist_frame=None, weather_frame=None, delay=0):
+def forecast(bundle, frame, ref_cut, h, hist_frame=None, weather_frame=None, delay=0, thr_override=None):
     """All outputs for every row of `frame` (sorted by station,date). NaN where thresholds are unavailable."""
     b = bundle['horizons'][h]
-    X, thr, lag = build(frame, ref_cut, h, hist_frame, weather_frame, delay)
-    Xw, _, _ = build(frame, ref_cut, None, weather_frame=weather_frame)
+    X, thr, lag = build(frame, ref_cut, h, hist_frame, weather_frame, delay, thr_override)
+    Xw, _, _ = build(frame, ref_cut, None, weather_frame=weather_frame, thr_override=thr_override)
     wo = np.expm1(bundle['weather_only'].predict(Xw[bundle['weather_cols']]))
     fallback = np.isnan(lag)
     Xp = X[b['cols']]

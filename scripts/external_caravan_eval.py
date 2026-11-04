@@ -35,7 +35,7 @@ def nse(a, p):
     return float(1 - ((a - p) ** 2).sum() / ((a - a.mean()) ** 2).sum())
 
 
-def load_basins(root: Path, exclude: set[str]):
+def load_basins(root: Path, exclude: set[str], only: set[str] | None = None):
     attr = {n: pd.read_csv(root / 'attributes' / 'camels' / f'attributes_{n}_camels.csv').set_index('gauge_id')
             for n in ('other', 'hydroatlas')}
     area = attr['other']['area']
@@ -43,7 +43,7 @@ def load_basins(root: Path, exclude: set[str]):
     for path in sorted((root / 'timeseries' / 'csv' / 'camels').glob('camels_*.csv')):
         gid = path.stem
         sid = gid.split('_', 1)[1]
-        if sid in exclude or gid not in area.index:
+        if sid in exclude or gid not in area.index or (only is not None and sid not in only):
             continue
         d = pd.read_csv(path, parse_dates=['date'])
         d = d[(d.date >= '1981-01-01') & d.streamflow.notna()]

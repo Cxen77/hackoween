@@ -17,6 +17,7 @@ import type { Grid } from './terrain';
 import MonitorPanel from './MonitorPanel';
 import HydrographOutlookCard from './components/HydrographOutlookCard';
 import ModelPage from './components/ModelPage';
+import ModelForecastCard from './components/ModelForecastCard';
 import RidgelineDitherFooter from '@/components/ui/ridgeline-dither-footer';
 import RidgeMark from '@/components/ui/RidgeMark';
 import { LongPressButton } from '@/components/ui/long-press';
@@ -1130,6 +1131,16 @@ export default function App() {
                   ))}
                 </div>
               </div>
+
+              <ModelForecastCard
+                usgs={station.usgs}
+                river={station.river}
+                onSimulate={(metres) => {
+                  setRise(Math.min(profile.maxRise, Math.max(profile.minRise, Number(metres.toFixed(2)))));
+                  setPlaying(false);
+                  if (!showSimulation) setShowSimulation(true);
+                }}
+              />
 
               <div className="slider-group">
                 <div className="slider-label">

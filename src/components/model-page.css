@@ -72,3 +72,12 @@
 
 /* The explorer is hidden (not unmounted) while this page is open so map state survives. */
 .workspace[hidden] { display: none; }
+
+.mp-stack { display: grid; gap: 16px; }
+.mp-table.mp-left td, .mp-table.mp-left th { text-align: left; }
+.mp-badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+.mp-badge.done { background: var(--emerald-light); color: #065f46; }
+.mp-badge.partial { background: var(--amber-light); color: #92400e; }
+.mp-badge.no { background: var(--bg-subtle); color: var(--text-muted); }
+.mp-num { width: 70px; font: inherit; font-size: 13px; padding: 6px 8px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); }
+.mp-textarea { width: 100%; min-height: 140px; font-family: var(--font-mono); font-size: 12px; padding: 10px; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--bg-hover); color: var(--text-main); resize: vertical; }
