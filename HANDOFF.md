@@ -29,6 +29,15 @@ Script: scripts/basinshift_horizon.py. Summary: data/experiments/basinshift_hori
 - Chosen approach for BASINSHIFT-style forecasts: blend_50. Not applicable to FLOODCAST 2025 (no discharge inputs). FLOODCAST V2 champion unchanged.
 - Caveat: gains over persistence are modest (about 1-7%); no exceedance-probability or calibration model yet.
 
+## Extra-station experiment with NASA POWER weather (2026-11-04) - REJECTED, V2 unchanged
+
+Open-Meteo quota was exhausted, so 36 vetted extra USGS stations used NASA POWER weather (scripts/build_plus_dataset.py), quantile-mapped to the Open-Meteo scale using original-station training rows only (corr after mapping: precip 0.81, tmax 0.98, tmin 0.98, soil 0.71). Dataset data/large_plus (local, ignored): 91 stations, 490,274 train rows.
+Controlled test (scripts/plus_experiment.py), same V2 recipe, scored on the ORIGINAL stations' reused 2025 rows:
+- control (55 stations): RMSE 45,942, extreme 108,975, MAE 13,870, R2 0.9171
+- plus (91 stations):    RMSE 47,509, extreme 118,524, MAE 13,181, R2 0.9114  -> overall and extreme RMSE WORSE; not promoted.
+- plus model on the 36 new stations' never-inspected 2025 rows: RMSE 14,205, extreme 33,873, R2 0.863 (no V2 comparison exists).
+Likely cause: mixed weather sources (soil moisture only 0.71 correlated) and new large basins lacking elevation/slope/forest. If Open-Meteo quota resets, scripts/expand_stations.py gives a same-source version worth one more try.
+
 ## Station expansion prepared (2026-11-04) - blocked by Open-Meteo daily quota
 
 Open-Meteo returned 'Daily API request limit exceeded' today, so new weather could not be downloaded. Quota was NOT bypassed.
