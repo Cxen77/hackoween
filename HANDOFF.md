@@ -56,6 +56,7 @@ Script: scripts/basinshift_horizon.py. Summary: data/experiments/basinshift_hori
 - LAYOUT BUG (windows < 768 px): the desktop sidebar was not hidden (unlayered .floodcast-sidebar-body {display:flex} beat Tailwind `hidden`), squeezing the map to 64 px and off screen. Fixed in src/layout-fix.css.
 - BASEMAP: CARTO's keyless dark tiles now return an "API KEY REQUIRED" placeholder; switched to Esri World Dark Gray (keyless).
 - OLD MAP LOOK RESTORED (2026-11-05): terrain relief 3.2x (was 1.5), camera tilt 65 deg (was 55), hillshade strength 1.0 (was 0.35), flat dark base (#262626) with the Esri tiles only faintly (opacity 0.28). Constants RELIEF / PITCH_3D at the top of src/App.tsx. Layout arrangement (map left, flood card right, conditions + hydrograph below) already matched the older version; the removed reach-selector/flow-badge controls belong to the older flood engine and were not brought back.
+- STALE MODEL GUARD (2026-11-05): `npm run dev:all` used to reuse ANY server already on port 8765, so an old server kept serving the old model after a git pull. It now compares the running server's model with the newest file (models_daily.joblib) and restarts it if older. Every live forecast carries `model` and `model_horizons`; the forecast card shows "Model: models_daily.joblib - forecasts +1 to +7 days". If you see models_caravan / +1 to +7 only on a setup, that server is stale: stop it and restart.
 - Server restart needed after pulling: `npm run dev:all` or `python -m server.model_api`.
 
 ## SET UP ON A NEW MACHINE (read this first when pulling)

@@ -131,6 +131,7 @@ export default function ModelForecastCard({ usgs, nwic, river, onSimulate, onDat
       {d && (<>
         {d.new_river && <p className="mf-newriver"><b>New river</b>: not in the model's training data. Live observed flow from India's NWIC portal.</p>}
         <p className="mf-muted">Using real data up to <b>{d.origin_date}</b>: latest flow <b>{fmt(d.latest_observed_cfs)} cfs</b>. High-flow level (Q90) for this gauge is {fmt(d.threshold_q90_cfs)} cfs.</p>
+        {d.model && <p className="mf-foot">Model: <b>{d.model}</b> · forecasts +{Math.min(...(d.model_horizons ?? [1]))} to +{Math.max(...(d.model_horizons ?? [7]))} days</p>}
         <Spark d={d} active={activeHorizon} />
         {Array.isArray(d.rain_forecast) && d.rain_forecast.length > 0 && (() => {
           const mm = d.rain_forecast.map((r: Json) => r.mm ?? 0); const tot = mm.reduce((a: number, b: number) => a + b, 0);

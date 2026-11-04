@@ -451,6 +451,14 @@ def run_caravan_test(n: int, seed: int) -> dict:
 
 
 # ------------------------------------------------------------------ HTTP
+def with_model(result: dict) -> dict:
+    """Label a live forecast with the model file that produced it (so a stale server is obvious in the UI)."""
+    out = dict(result)
+    out['model'] = Path(STATE['model_path']).name
+    out['model_horizons'] = STATE['horizons']
+    return out
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):  # quieter
         pass
@@ -473,11 +481,11 @@ class Handler(BaseHTTPRequestHandler):
                                  'horizons': STATE['horizons'], 'note': 'Research benchmark; not a certified flood warning.'})
             elif url.path == '/api/live_forecast':
                 if 'india' in q:
-                    self._send(200, live_forecast_india(q['india'][0]))
+                    self._send(200, with_model(live_forecast_india(q['india'][0])))
                 elif 'lat' in q and 'lon' in q:
-                    self._send(200, live_forecast_new(float(q['lat'][0]), float(q['lon'][0]), q.get('name', ['New river'])[0][:80]))
+                    self._send(200, with_model(live_forecast_new(float(q['lat'][0]), float(q['lon'][0]), q.get('name', ['New river'])[0][:80])))
                 else:
-                    self._send(200, live_forecast(q.get('station', [''])[0]))
+                    self._send(200, with_model(live_forecast(q.get('station', [''])[0])))
             elif url.path == '/api/run_test':
                 if q.get('dataset', ['caravan'])[0] != 'caravan':
                     self._send(400, {'error': 'Only dataset=caravan runs live; other tests are precomputed.'})
