@@ -1,1 +1,25 @@
-{"compilerOptions":{"target":"ES2022","lib":["ES2022","DOM","DOM.Iterable"],"module":"ESNext","skipLibCheck":true,"moduleResolution":"bundler","allowImportingTsExtensions":true,"resolveJsonModule":true,"isolatedModules":true,"verbatimModuleSyntax":true,"moduleDetection":"force","noEmit":true,"jsx":"react-jsx","strict":true,"allowJs":true},"include":["src"]}
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": false,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "next/link": ["src/lib/next-link.tsx"],
+      "next/image": ["src/lib/next-image.tsx"]
+    }
+  },
+  "include": ["src"]
+}
