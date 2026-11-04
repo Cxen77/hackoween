@@ -1162,17 +1162,6 @@ export default function App() {
                     <span>ML model forecast</span>
                   </button>
                 </div>
-                <button
-                  type="button"
-                  className={`switch ${simTab === 'forecast' ? 'on' : ''}`}
-                  role="switch"
-                  aria-checked={simTab === 'forecast'}
-                  aria-label="Toggle between Flood scenario and ML model forecast"
-                  title={simTab === 'flood' ? "Switch to ML model forecast" : "Switch to Flood scenario"}
-                  onClick={() => setSimTab(t => t === 'flood' ? 'forecast' : 'flood')}
-                >
-                  <span />
-                </button>
               </div>
 
               {/* Pane 1: Flood Scenario */}
