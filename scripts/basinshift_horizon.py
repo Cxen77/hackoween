@@ -30,11 +30,17 @@ HIST = ['lag_h', 'lag_h1', 'mean7', 'mean30', 'max7', 'std7']
 MODEL_KEYS = ['persistence', 'weather_only', 'residual', 'blend_50']
 
 
-def history_frame(train: pd.DataFrame, h: int) -> pd.DataFrame:
-    """Discharge-history features known at origin t-h, aligned to each (station, date) row."""
+def history_frame(train: pd.DataFrame, h: int, ffill_limit: int = 0) -> pd.DataFrame:
+    """Discharge-history features known at origin t-h, aligned to each (station, date) row.
+
+    ffill_limit > 0 fills ONLY gaps of at most that many days with the last observation (explicit short-gap rule);
+    longer gaps stay missing. Default 0 keeps earlier experiments unchanged.
+    """
     parts = []
     for sid, g in train.sort_values('date').groupby('station_id'):
         s = g.set_index(pd.to_datetime(g.date))['discharge_cfs'].asfreq('D')
+        if ffill_limit:
+            s = s.ffill(limit=ffill_limit)
         base = s.shift(h)  # latest value available at origin t-h
         f = pd.DataFrame({
             'lag_h': base,
