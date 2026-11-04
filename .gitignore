@@ -5,7 +5,7 @@ dist/
 !.env.example
 __pycache__/
 .venv/
-data/
+# data/
 *.joblib
 output/
 .presentation-build/

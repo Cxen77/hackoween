@@ -1,0 +1,2186 @@
+[
+  {
+    "score": 0.8628666775739879,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 0,
+      "high": 5000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48103.28210075954,
+        "extreme_rmse": 51194.78218922092,
+        "mae": 16901.370454781143,
+        "r2": 0.8764998139306543,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71405.61795827062,
+        "extreme_rmse": 118574.04351832018,
+        "mae": 28645.673851969874,
+        "r2": 0.9033677260826326,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8580277208724827,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 0,
+      "high": 5000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47223.239923707195,
+        "extreme_rmse": 53137.197242086906,
+        "mae": 16589.101168654004,
+        "r2": 0.8809773122131236,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72108.90947598752,
+        "extreme_rmse": 115121.67820176916,
+        "mae": 27895.13578206828,
+        "r2": 0.9014548418819558,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8969820855885585,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 0,
+      "high": 5000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48694.32649465452,
+        "extreme_rmse": 59190.89984354009,
+        "mae": 16578.03356712465,
+        "r2": 0.8734462787812242,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76053.57525315236,
+        "extreme_rmse": 115951.67909283661,
+        "mae": 28250.186616078598,
+        "r2": 0.8903782564801122,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8627861894421132,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 0,
+      "high": 20000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48098.04917610069,
+        "extreme_rmse": 51207.747374227016,
+        "mae": 16819.321353325013,
+        "r2": 0.8765266824514156,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71412.12412850837,
+        "extreme_rmse": 118583.59626465575,
+        "mae": 28749.44893760848,
+        "r2": 0.9033501158529329,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8575981584996912,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 0,
+      "high": 20000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47209.40810395641,
+        "extreme_rmse": 53151.14811789061,
+        "mae": 16439.163235138178,
+        "r2": 0.8810470261617378,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72110.89965594835,
+        "extreme_rmse": 115133.00301845995,
+        "mae": 28021.459503259848,
+        "r2": 0.9014494021850639,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8960394240876778,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 0,
+      "high": 20000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48668.892807374395,
+        "extreme_rmse": 59201.87043909643,
+        "mae": 16346.145532724213,
+        "r2": 0.8735784456026727,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76046.38920662292,
+        "extreme_rmse": 115962.12506554926,
+        "mae": 28385.34621415844,
+        "r2": 0.8903989710811331,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8630922965367782,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 0,
+      "high": 50000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48095.75796841063,
+        "extreme_rmse": 51234.98556594067,
+        "mae": 16781.306298589825,
+        "r2": 0.876538445767447,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71427.28934845066,
+        "extreme_rmse": 118604.10073678185,
+        "mae": 28871.893667112327,
+        "r2": 0.9033090619730874,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8576803312584429,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 0,
+      "high": 50000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47196.4109387339,
+        "extreme_rmse": 53180.690485538755,
+        "mae": 16355.61733058715,
+        "r2": 0.8811125147453057,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72123.06635303449,
+        "extreme_rmse": 115159.19697064006,
+        "mae": 28167.47659596038,
+        "r2": 0.9014161440665596,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8956797405055559,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 0,
+      "high": 50000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48639.797549628616,
+        "extreme_rmse": 59225.48048437574,
+        "mae": 16201.324522020062,
+        "r2": 0.8737295551934579,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76048.6721233106,
+        "extreme_rmse": 115989.54119663125,
+        "mae": 28537.14023092928,
+        "r2": 0.8903923905248128,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8638802864865308,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 0,
+      "high": 100000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48110.90295210275,
+        "extreme_rmse": 51368.12258169706,
+        "mae": 16788.651761129247,
+        "r2": 0.876460679340597,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71445.03689779766,
+        "extreme_rmse": 118611.62237031282,
+        "mae": 28959.333306709996,
+        "r2": 0.903261006379757,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8584531422843511,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 0,
+      "high": 100000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47205.529601022754,
+        "extreme_rmse": 53339.22419409676,
+        "mae": 16349.60536316388,
+        "r2": 0.881066570592603,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72139.32095118413,
+        "extreme_rmse": 115153.14884660859,
+        "mae": 28269.32082886826,
+        "r2": 0.9013717027631927,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8961052267317613,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 0,
+      "high": 100000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48633.43836793724,
+        "extreme_rmse": 59374.81779041354,
+        "mae": 16169.187864981706,
+        "r2": 0.873762570306617,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76056.44222169051,
+        "extreme_rmse": 115958.14164534438,
+        "mae": 28623.3398188037,
+        "r2": 0.8903699915691616,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8628470719635846,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 1000,
+      "high": 5000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48103.111334867215,
+        "extreme_rmse": 51195.897376937195,
+        "mae": 16890.02987128432,
+        "r2": 0.876500690776521,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71405.90296779232,
+        "extreme_rmse": 118575.25098967357,
+        "mae": 28657.65391551381,
+        "r2": 0.9033669546818963,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8579733592770673,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 1000,
+      "high": 5000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47222.784594994555,
+        "extreme_rmse": 53138.57987512263,
+        "mae": 16569.316407150025,
+        "r2": 0.8809796074468271,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72109.26518758657,
+        "extreme_rmse": 115123.31039559595,
+        "mae": 27910.51482157763,
+        "r2": 0.9014538696375415,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8968806770931228,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 1000,
+      "high": 5000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48693.486350961124,
+        "extreme_rmse": 59192.280710404644,
+        "mae": 16548.649611027475,
+        "r2": 0.8734506457127003,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76053.93943581813,
+        "extreme_rmse": 115953.53089788338,
+        "mae": 28267.50964789508,
+        "r2": 0.890377206629813,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8627944549502045,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 1000,
+      "high": 20000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48097.93081886838,
+        "extreme_rmse": 51208.84349978415,
+        "mae": 16814.385012849256,
+        "r2": 0.8765272901243837,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71412.75521877398,
+        "extreme_rmse": 118584.4813617719,
+        "mae": 28758.988119832862,
+        "r2": 0.9033484075976103,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8575982735801684,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 1000,
+      "high": 20000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47209.02661073922,
+        "extreme_rmse": 53152.561564584816,
+        "mae": 16430.630057512597,
+        "r2": 0.8810489486416482,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72111.58883076717,
+        "extreme_rmse": 115134.23961439905,
+        "mae": 28034.58783077608,
+        "r2": 0.9014475184500037,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8960222803118869,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 1000,
+      "high": 20000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48668.13993530552,
+        "extreme_rmse": 59203.35817846413,
+        "mae": 16333.384213729396,
+        "r2": 0.8735823568698309,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76046.94663563259,
+        "extreme_rmse": 115963.58886702632,
+        "mae": 28400.843593471545,
+        "r2": 0.8903973642982848,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8631100706969932,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 1000,
+      "high": 50000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48095.81284016204,
+        "extreme_rmse": 51236.10468310245,
+        "mae": 16779.375153460507,
+        "r2": 0.8765381640562997,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71428.01932772691,
+        "extreme_rmse": 118604.94909005091,
+        "mae": 28878.886079349348,
+        "r2": 0.9033070856208478,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.857699620671481,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 1000,
+      "high": 50000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47196.335950988585,
+        "extreme_rmse": 53182.14139394568,
+        "mae": 16352.15711011066,
+        "r2": 0.8811128925323961,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72123.97369024057,
+        "extreme_rmse": 115160.41198515927,
+        "mae": 28177.22835230735,
+        "r2": 0.9014136636017768,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8956950916908081,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 1000,
+      "high": 50000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48639.49499947788,
+        "extreme_rmse": 59227.0184254255,
+        "mae": 16195.952170209886,
+        "r2": 0.8737311260479934,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76049.59555517651,
+        "extreme_rmse": 115991.02308933133,
+        "mae": 28549.115796952236,
+        "r2": 0.8903897286565376,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8639007780228443,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 1000,
+      "high": 100000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48111.18200171194,
+        "extreme_rmse": 51370.189807897674,
+        "mae": 16788.040900932636,
+        "r2": 0.876459246247597,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71445.67519610967,
+        "extreme_rmse": 118612.20229275123,
+        "mae": 28963.97666021827,
+        "r2": 0.9032592778170787,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8584790327936254,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 1000,
+      "high": 100000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47205.81148632504,
+        "extreme_rmse": 53341.911180965275,
+        "mae": 16348.418714007466,
+        "r2": 0.8810651501791014,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72140.15212544604,
+        "extreme_rmse": 115153.88402543237,
+        "mae": 28275.93623865673,
+        "r2": 0.9013694300006178,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8961326730633663,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 1000,
+      "high": 100000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48633.615889314,
+        "extreme_rmse": 59377.67781870649,
+        "mae": 16167.219985860347,
+        "r2": 0.8737616487232797,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76057.34533876044,
+        "extreme_rmse": 115958.90212749297,
+        "mae": 28631.740019912482,
+        "r2": 0.8903673879943182,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8628045809518864,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 3000,
+      "high": 5000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48102.837790724,
+        "extreme_rmse": 51197.83905445122,
+        "mae": 16877.030147662674,
+        "r2": 0.8765020953599559,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71406.21688170049,
+        "extreme_rmse": 118576.74939323394,
+        "mae": 28664.428918052745,
+        "r2": 0.9033661050455966,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8578887727670311,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 3000,
+      "high": 5000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47222.07050596951,
+        "extreme_rmse": 53141.057954902,
+        "mae": 16547.23747989448,
+        "r2": 0.8809832070021775,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72109.66917023057,
+        "extreme_rmse": 115125.39284697485,
+        "mae": 27919.361392441166,
+        "r2": 0.9014527654510625,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8967417867995857,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 3000,
+      "high": 5000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48692.18007784984,
+        "extreme_rmse": 59194.854361890015,
+        "mae": 16516.110621743195,
+        "r2": 0.8734574353600979,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76054.37138965899,
+        "extreme_rmse": 115955.97978038235,
+        "mae": 28277.627879025764,
+        "r2": 0.8903759614051352,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8628108833748231,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 3000,
+      "high": 20000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48097.70490042826,
+        "extreme_rmse": 51210.94842129434,
+        "mae": 16806.532517575546,
+        "r2": 0.8765284500369215,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71414.16105906524,
+        "extreme_rmse": 118585.95502152719,
+        "mae": 28774.50183109739,
+        "r2": 0.9033446021698588,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8575993098667667,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 3000,
+      "high": 20000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47208.27685059145,
+        "extreme_rmse": 53155.26438619614,
+        "mae": 16416.81202177887,
+        "r2": 0.8810527269042409,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72113.16377341296,
+        "extreme_rmse": 115136.26046941448,
+        "mae": 28055.454300071677,
+        "r2": 0.9014432135607751,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8959960770783282,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 3000,
+      "high": 20000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48666.647051973494,
+        "extreme_rmse": 59206.18772222909,
+        "mae": 16312.728483693003,
+        "r2": 0.8735901124116692,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76048.28880940146,
+        "extreme_rmse": 115965.92534585137,
+        "mae": 28426.026755775725,
+        "r2": 0.8903934954491777,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8631454993308769,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 3000,
+      "high": 50000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48095.94783078565,
+        "extreme_rmse": 51238.31283867345,
+        "mae": 16776.445081968723,
+        "r2": 0.8765374710141146,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71429.54525921974,
+        "extreme_rmse": 118606.52989450553,
+        "mae": 28891.153438881393,
+        "r2": 0.9033029542354165,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8577390127038493,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 3000,
+      "high": 50000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47196.22813289614,
+        "extreme_rmse": 53184.99997717292,
+        "mae": 16346.748677855758,
+        "r2": 0.881113435717211,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72125.89041165849,
+        "extreme_rmse": 115162.6664713142,
+        "mae": 28194.2694924235,
+        "r2": 0.901408423595058,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.895728446106205,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 3000,
+      "high": 50000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48638.949048708375,
+        "extreme_rmse": 59230.042862755254,
+        "mae": 16187.416058272678,
+        "r2": 0.8737339606252033,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76051.57658153107,
+        "extreme_rmse": 115993.75914776004,
+        "mae": 28569.94573641017,
+        "r2": 0.8903840180761501,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8639416632839994,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 3000,
+      "high": 100000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48111.76464944298,
+        "extreme_rmse": 51374.37176452659,
+        "mae": 16787.32251927056,
+        "r2": 0.8764562539629459,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71446.97530350278,
+        "extreme_rmse": 118613.28960709642,
+        "mae": 28972.27344352321,
+        "r2": 0.9032557569749246,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8585312787546482,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 3000,
+      "high": 100000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47206.41420857714,
+        "extreme_rmse": 53347.34807875076,
+        "mae": 16346.842872363526,
+        "r2": 0.8810621130471926,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72141.85299930505,
+        "extreme_rmse": 115155.24016299745,
+        "mae": 28287.809086603513,
+        "r2": 0.9013647790501854,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8961878603717306,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 3000,
+      "high": 100000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48634.02318580802,
+        "extreme_rmse": 59383.46654977136,
+        "mae": 16164.370584963232,
+        "r2": 0.8737595342741585,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76059.20485410714,
+        "extreme_rmse": 115960.26900422583,
+        "mae": 28646.5918897722,
+        "r2": 0.8903620271441406,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8629523087002513,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 10000,
+      "high": 20000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48097.4547646685,
+        "extreme_rmse": 51218.16947062212,
+        "mae": 16791.9990065712,
+        "r2": 0.8765297342798896,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71420.59031069012,
+        "extreme_rmse": 118593.23970509184,
+        "mae": 28830.262825093763,
+        "r2": 0.9033271980629723,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8577266957346752,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 10000,
+      "high": 20000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47206.40996436672,
+        "extreme_rmse": 53164.39324336124,
+        "mae": 16387.16074282618,
+        "r2": 0.8810621344340065,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72121.05281262998,
+        "extreme_rmse": 115146.46630063494,
+        "mae": 28131.294138281894,
+        "r2": 0.9014216485415156,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8960649045792171,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 10000,
+      "high": 20000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48662.312197135194,
+        "extreme_rmse": 59215.551829084165,
+        "mae": 16264.616392973237,
+        "r2": 0.8736126306717746,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76056.16285416778,
+        "extreme_rmse": 115978.04775733456,
+        "mae": 28518.06062198941,
+        "r2": 0.8903707969449254,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8632951078444112,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 10000,
+      "high": 50000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48096.8278023469,
+        "extreme_rmse": 51246.10648914431,
+        "mae": 16772.308778638977,
+        "r2": 0.8765329531903407,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71435.25600010852,
+        "extreme_rmse": 118612.68406118822,
+        "mae": 28930.385362992376,
+        "r2": 0.9032874918984931,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.857923416710068,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 10000,
+      "high": 50000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47196.518640985814,
+        "extreme_rmse": 53195.08863882169,
+        "mae": 16337.644672823755,
+        "r2": 0.8811119721419916,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72133.23531651864,
+        "extreme_rmse": 115171.53649543635,
+        "mae": 28249.68466348378,
+        "r2": 0.9013883425224753,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8959145149528756,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 10000,
+      "high": 50000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48637.96043934945,
+        "extreme_rmse": 59240.716369389855,
+        "mae": 16171.582584293325,
+        "r2": 0.8737390934054993,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76059.42473896356,
+        "extreme_rmse": 116004.65755546099,
+        "mae": 28637.79521967219,
+        "r2": 0.8903613932231099,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8640935573147397,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 10000,
+      "high": 100000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48114.12278512685,
+        "extreme_rmse": 51389.77553926669,
+        "mae": 16787.83196993646,
+        "r2": 0.8764441429935053,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71451.56491881599,
+        "extreme_rmse": 118617.2100160903,
+        "mae": 28997.67349827932,
+        "r2": 0.9032433272501161,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8587296999686318,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 10000,
+      "high": 100000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47209.025957690224,
+        "extreme_rmse": 53367.41903047365,
+        "mae": 16346.298275668234,
+        "r2": 0.8810489519325808,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72147.91039442597,
+        "extreme_rmse": 115160.13382099457,
+        "mae": 28323.926873872988,
+        "r2": 0.9013482145300158,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8964085285307405,
+    "gating": {
+      "signal": "predicted_flow",
+      "low": 10000,
+      "high": 100000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48636.117810590236,
+        "extreme_rmse": 59404.897383002106,
+        "mae": 16161.591454164012,
+        "r2": 0.8737486599074082,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76065.90343032966,
+        "extreme_rmse": 115965.2079957105,
+        "mae": 28692.661062326853,
+        "r2": 0.8903427145399717,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8632167049757102,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 0,
+      "high": 10000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48103.73079193056,
+        "extreme_rmse": 51187.29772664173,
+        "mae": 16941.566799873086,
+        "r2": 0.8764975099838495,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71408.77341265212,
+        "extreme_rmse": 118578.89162829347,
+        "mae": 28689.5599382346,
+        "r2": 0.9033591854249614,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.858518503228965,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 0,
+      "high": 10000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47224.189436676825,
+        "extreme_rmse": 53124.40696074662,
+        "mae": 16646.86760087458,
+        "r2": 0.8809725258104077,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72112.42161288043,
+        "extreme_rmse": 115127.14719449251,
+        "mae": 27957.099555623015,
+        "r2": 0.901445242166286,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8975849474750126,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 0,
+      "high": 10000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48695.89554008768,
+        "extreme_rmse": 59173.22760458496,
+        "mae": 16650.92665150996,
+        "r2": 0.8734381229342583,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76056.52998710905,
+        "extreme_rmse": 115956.24322057758,
+        "mae": 28326.156701951913,
+        "r2": 0.8903697385536683,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8636327247851742,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 0,
+      "high": 30000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48105.70944706495,
+        "extreme_rmse": 51260.71556994844,
+        "mae": 16866.133587655757,
+        "r2": 0.8764873496965795,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71428.11779288223,
+        "extreme_rmse": 118601.1607725225,
+        "mae": 28862.985312086053,
+        "r2": 0.9033068190338842,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8586290686540309,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 0,
+      "high": 30000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47214.16791068241,
+        "extreme_rmse": 53196.85236511972,
+        "mae": 16499.15044827862,
+        "r2": 0.8810230384978202,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72129.28069473009,
+        "extreme_rmse": 115143.01493174076,
+        "mae": 28182.66844439918,
+        "r2": 0.9013991547678343,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8970687874383259,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 0,
+      "high": 30000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48666.063479978024,
+        "extreme_rmse": 59219.657252500336,
+        "mae": 16412.29462980696,
+        "r2": 0.8735931440085646,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76062.83143024275,
+        "extreme_rmse": 115952.70756670309,
+        "mae": 28579.38343404534,
+        "r2": 0.8903515716066182,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8647179615627383,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 0,
+      "high": 100000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48134.60509727838,
+        "extreme_rmse": 51544.93752280785,
+        "mae": 16828.814392096567,
+        "r2": 0.8763389244776185,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71458.77667676535,
+        "extreme_rmse": 118643.10272912239,
+        "mae": 28952.42419987037,
+        "r2": 0.9032237945521508,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8595095872529173,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 0,
+      "high": 100000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47239.84672509442,
+        "extreme_rmse": 53542.097120708735,
+        "mae": 16415.013989548406,
+        "r2": 0.8808935850614593,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72154.7857134464,
+        "extreme_rmse": 115178.54962778748,
+        "mae": 28251.437976419267,
+        "r2": 0.9013294116343874,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8972223870549378,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 0,
+      "high": 100000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48675.3715343367,
+        "extreme_rmse": 59555.00027874874,
+        "mae": 16262.713263140222,
+        "r2": 0.8735447852828577,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76069.74475623107,
+        "extreme_rmse": 115961.00421958664,
+        "mae": 28591.820390207966,
+        "r2": 0.8903316388808931,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8632315552970565,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 1000,
+      "high": 10000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48103.55199770516,
+        "extreme_rmse": 51186.954358031224,
+        "mae": 16938.147881975154,
+        "r2": 0.8764984280619543,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71409.28268311758,
+        "extreme_rmse": 118579.99551969806,
+        "mae": 28699.93276434782,
+        "r2": 0.9033578069812278,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8585262674986706,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 1000,
+      "high": 10000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47223.743591479506,
+        "extreme_rmse": 53123.59731664169,
+        "mae": 16640.134146393022,
+        "r2": 0.8809747732847568,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72113.06126864969,
+        "extreme_rmse": 115128.69079307931,
+        "mae": 27971.43974248789,
+        "r2": 0.9014434937463155,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8975792674854413,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 1000,
+      "high": 10000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48695.09578980321,
+        "extreme_rmse": 59171.88331039664,
+        "mae": 16640.18646981078,
+        "r2": 0.8734422800429794,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76057.19098202842,
+        "extreme_rmse": 115958.07233685213,
+        "mae": 28343.98348183095,
+        "r2": 0.8903678329878811,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8636624143787185,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 1000,
+      "high": 30000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48105.94449731714,
+        "extreme_rmse": 51263.664527948225,
+        "mae": 16863.64171644496,
+        "r2": 0.8764861426984555,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71429.1046648293,
+        "extreme_rmse": 118602.49881350124,
+        "mae": 28872.57885537943,
+        "r2": 0.9033041471324001,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8586591103154324,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 1000,
+      "high": 30000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47214.19354828253,
+        "extreme_rmse": 53200.23734156082,
+        "mae": 16494.365479661425,
+        "r2": 0.8810229092872579,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72130.4211994963,
+        "extreme_rmse": 115144.5687318801,
+        "mae": 28196.103056288044,
+        "r2": 0.9013960365994034,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.89708926423388,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 1000,
+      "high": 30000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48665.665116874006,
+        "extreme_rmse": 59222.66060639894,
+        "mae": 16404.646243271967,
+        "r2": 0.8735952134433133,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76063.86201928295,
+        "extreme_rmse": 115954.08489841106,
+        "mae": 28595.87622704694,
+        "r2": 0.8903486002937706,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8647468118647688,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 1000,
+      "high": 100000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48135.14899369468,
+        "extreme_rmse": 51549.21211447755,
+        "mae": 16828.326484841204,
+        "r2": 0.8763361298480304,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71459.61415007028,
+        "extreme_rmse": 118644.26386809797,
+        "mae": 28956.9078278818,
+        "r2": 0.903221526168411,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8595466602228445,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 1000,
+      "high": 100000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47240.53377390665,
+        "extreme_rmse": 53547.755192739314,
+        "mae": 16413.96961573901,
+        "r2": 0.880890120506781,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72155.90959136444,
+        "extreme_rmse": 115180.16484759419,
+        "mae": 28257.714447573908,
+        "r2": 0.9013263378380213,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8972627187207842,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 1000,
+      "high": 100000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48676.07392561998,
+        "extreme_rmse": 59561.16586902059,
+        "mae": 16260.92575918898,
+        "r2": 0.8735411357295584,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76071.01410445845,
+        "extreme_rmse": 115962.90642105127,
+        "mae": 28599.706114446668,
+        "r2": 0.8903279788580631,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8632114175324852,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 5000,
+      "high": 10000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48102.23615968544,
+        "extreme_rmse": 51181.51234843157,
+        "mae": 16917.379693559884,
+        "r2": 0.8765051845626475,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71411.87629274384,
+        "extreme_rmse": 118583.68820369066,
+        "mae": 28731.746177443423,
+        "r2": 0.9033507866985815,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8584476826908284,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 5000,
+      "high": 10000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47220.77881862931,
+        "extreme_rmse": 53113.99910167093,
+        "mae": 16602.301255481616,
+        "r2": 0.8809897179569315,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72116.18472030241,
+        "extreme_rmse": 115133.50529992009,
+        "mae": 28018.96588277661,
+        "r2": 0.901434955954586,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8974174715967688,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 5000,
+      "high": 10000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48690.02826346082,
+        "extreme_rmse": 59158.31960161793,
+        "mae": 16581.746919009656,
+        "r2": 0.8734686195007257,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76060.21805308333,
+        "extreme_rmse": 115963.26686836504,
+        "mae": 28406.9626386793,
+        "r2": 0.8903591061085616,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8637761806398012,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 5000,
+      "high": 30000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48107.212483923446,
+        "extreme_rmse": 51277.59557143988,
+        "mae": 16852.846997195193,
+        "r2": 0.8764796314041687,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71433.65148083534,
+        "extreme_rmse": 118608.02130755903,
+        "mae": 28907.72469043979,
+        "r2": 0.9032918364014506,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8587682599712914,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 5000,
+      "high": 30000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47214.704948242106,
+        "extreme_rmse": 53216.5452651153,
+        "mae": 16474.05344197831,
+        "r2": 0.8810203318754954,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72135.7329741498,
+        "extreme_rmse": 115150.81571659548,
+        "mae": 28244.476357698037,
+        "r2": 0.9013815134256838,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8971530847442484,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 5000,
+      "high": 30000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48664.48132986987,
+        "extreme_rmse": 59237.609228773596,
+        "mae": 16372.486291082518,
+        "r2": 0.8736013629338538,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76068.7547908173,
+        "extreme_rmse": 115959.33003389629,
+        "mae": 28654.78798695669,
+        "r2": 0.8903344932924175,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8648600530156533,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 5000,
+      "high": 100000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48137.47167470907,
+        "extreme_rmse": 51567.16744453386,
+        "mae": 16826.41734134399,
+        "r2": 0.8763241951741251,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71463.11141593996,
+        "extreme_rmse": 118648.94685217648,
+        "mae": 28972.938395033852,
+        "r2": 0.9032120531719592,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8596930983313289,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 5000,
+      "high": 100000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47243.51923866435,
+        "extreme_rmse": 53571.62956056184,
+        "mae": 16409.963275355643,
+        "r2": 0.880875065233036,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72160.64591009737,
+        "extreme_rmse": 115186.71841276213,
+        "mae": 28280.201988006862,
+        "r2": 0.9013133835213026,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8974218220890404,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 5000,
+      "high": 100000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48679.20666770475,
+        "extreme_rmse": 59587.32462528133,
+        "mae": 16254.263394764082,
+        "r2": 0.8735248576807157,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76076.42377167793,
+        "extreme_rmse": 115970.68214271787,
+        "mae": 28627.46457273869,
+        "r2": 0.8903123800063836,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8639915760122847,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 10000,
+      "high": 30000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48110.3556000331,
+        "extreme_rmse": 51306.48028187817,
+        "mae": 16843.897295035065,
+        "r2": 0.8764634903091737,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71440.48436170096,
+        "extreme_rmse": 118616.13779946147,
+        "mae": 28953.930274247585,
+        "r2": 0.9032733345623143,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.859004778008409,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 10000,
+      "high": 30000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47217.54027961733,
+        "extreme_rmse": 53252.75626241704,
+        "mae": 16455.741520036456,
+        "r2": 0.8810060415430421,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72143.71652990286,
+        "extreme_rmse": 115159.85681478101,
+        "mae": 28306.761225555092,
+        "r2": 0.9013596831975379,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8973509696172695,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 10000,
+      "high": 30000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48665.602722552474,
+        "extreme_rmse": 59274.35434819368,
+        "mae": 16342.248870607431,
+        "r2": 0.8735955375706347,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76076.11061477759,
+        "extreme_rmse": 115966.66789665581,
+        "mae": 28728.841949055342,
+        "r2": 0.8903132830289676,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8650156397722253,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 10000,
+      "high": 100000,
+      "raw_cap": 0.5
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48140.81363452138,
+        "extreme_rmse": 51592.624635163826,
+        "mae": 16825.55299041478,
+        "r2": 0.8763070221111234,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 71467.63725657116,
+        "extreme_rmse": 118655.01564325232,
+        "mae": 28991.473246570513,
+        "r2": 0.9031997934008776,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.8599001492258506,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 10000,
+      "high": 100000,
+      "raw_cap": 0.75
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 47247.95790356142,
+        "extreme_rmse": 53605.85343666567,
+        "mae": 16407.540690053072,
+        "r2": 0.8808526799190756,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 72166.85976470215,
+        "extreme_rmse": 115195.33905043022,
+        "mae": 28306.416395922664,
+        "r2": 0.9012963867031255,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  },
+  {
+    "score": 0.897653467180958,
+    "gating": {
+      "signal": "drainage_area",
+      "low": 10000,
+      "high": 100000,
+      "raw_cap": 1.0
+    },
+    "passes_gate": false,
+    "validation": {
+      "future_dates": {
+        "rmse": 48684.084546700484,
+        "extreme_rmse": 59625.31634643063,
+        "mae": 16249.747808124092,
+        "r2": 0.8734995096361579,
+        "rows": 58645,
+        "extreme_rows": 5913
+      },
+      "unseen_station_future_dates": {
+        "rmse": 76083.63843387726,
+        "extreme_rmse": 115981.09728581313,
+        "mae": 28659.518617272097,
+        "r2": 0.8902915747000745,
+        "rows": 12051,
+        "extreme_rows": 1219
+      }
+    }
+  }
+]

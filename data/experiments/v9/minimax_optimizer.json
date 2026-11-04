@@ -1,0 +1,6 @@
+{
+  "success": true,
+  "message": "Optimization terminated successfully",
+  "worst_relative_mse": 0.9732936023434063,
+  "iterations": 20
+}

@@ -1,0 +1,34 @@
+{
+  "purpose": "Public-data experiment artifact checksums; these are not official event test rows.",
+  "test_rows": 19306,
+  "prediction_rows": 19306,
+  "schema": [
+    "station_id",
+    "date",
+    "discharge_cfs"
+  ],
+  "minimum_prediction_cfs": 3.6747,
+  "maximum_prediction_cfs": 1140201.380618,
+  "files": {
+    "train/train.csv": {
+      "sha256": "273e1d7e6474932ff3bebe9d4fe4a43db565014a6bef9f501e00b544039b619b",
+      "bytes": 26231296
+    },
+    "test/test.csv": {
+      "sha256": "6df873cfdea5c56b91224f6dd633471dc29c6eb18304bf67a43d184fa8c549a8",
+      "bytes": 1584787
+    },
+    "evaluation/actuals.csv": {
+      "sha256": "a77d9fbc01305e23c5296e97fb550a930445156e20d33e5a0da7a356d00b01ef",
+      "bytes": 541230
+    },
+    "predictions/predictions.csv": {
+      "sha256": "975024190d19896ca6041240a54600ef77d7923b3e4a0351c6cd8f7d448687d2",
+      "bytes": 640909
+    },
+    "evaluation/comparison.csv": {
+      "sha256": "56c9da7e15e53242c7da83f3e9284be86951c31ecad127dd6efafa151b3356e1",
+      "bytes": 2691504
+    }
+  }
+}

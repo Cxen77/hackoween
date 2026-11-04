@@ -1,0 +1,107 @@
+{
+  "purpose": "Public-data demo only. Not official event train/test data.",
+  "target": "USGS 00060, statistic 00003: DAILY MEAN discharge in cfs, not instantaneous daily peak.",
+  "period": [
+    "2010-01-01",
+    "2025-12-31"
+  ],
+  "test_start": "2025-01-01",
+  "stations": [
+    "01463500",
+    "01470500",
+    "01491000",
+    "01570500",
+    "01578310",
+    "01638500",
+    "01646500",
+    "01651000",
+    "02035000",
+    "02037500",
+    "02084000",
+    "02087500",
+    "02138500",
+    "02197000",
+    "02231000",
+    "02323500",
+    "02428400",
+    "02479000",
+    "03086000",
+    "03303280",
+    "03339000",
+    "03353000",
+    "03451500",
+    "03611500",
+    "04024000",
+    "04193500",
+    "04213500",
+    "05054000",
+    "05114000",
+    "05464500",
+    "05586100",
+    "06813500",
+    "06934500",
+    "07010000",
+    "07022000",
+    "07032000",
+    "07289000",
+    "07374000",
+    "08067000",
+    "08158000",
+    "08170500",
+    "08313000",
+    "09380000",
+    "09402500",
+    "10109000",
+    "10311000",
+    "11251000",
+    "11370500",
+    "11425500",
+    "12020000",
+    "12113000",
+    "12353000",
+    "12422500",
+    "14105700",
+    "14211720"
+  ],
+  "requested_station_count": 58,
+  "skipped_stations": [
+    {
+      "station_id": "03103000",
+      "error": "Insufficient actual USGS observations: 03103000"
+    },
+    {
+      "station_id": "03612500",
+      "error": "Insufficient actual USGS observations: 03612500"
+    },
+    {
+      "station_id": "14246900",
+      "error": "Daily provider quota reached: {\"error\":true,\"reason\":\"Daily API request limit exceeded. Please try again tomorrow.\"}"
+    }
+  ],
+  "train_rows": 293057,
+  "test_rows": 19306,
+  "missing_features": [
+    "mean_elevation_ft",
+    "slope_pct",
+    "forest_cover_pct",
+    "impervious_surface_pct"
+  ],
+  "weather": "Open-Meteo Best Match historical archive (seamless ERA5/ERA5-Land/IFS); daily weather and hourly soil moisture averaged by local day. Same-day reanalysis is retrospective, not operational forecast data.",
+  "timezone": "Station-local time zone derived from NWIS tz_cd for large downloads; local zones for the five-station demo. DST boundaries may differ from USGS fixed standard-time reporting.",
+  "station_substitution": "11447650 (Freeport) had no daily 00060 observations in the requested period; using 11425500 (Sacramento at Verona) instead.",
+  "sources": [
+    "https://waterservices.usgs.gov/",
+    "https://open-meteo.com/en/docs/historical-weather-api",
+    "https://streamstats.usgs.gov/gagestatsservices/",
+    "https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip"
+  ],
+  "note": "Raw USGS quality flags are retained; provisional observations may be present. Basin features come from published StreamStats/GAGES-II records, with explicit unit conversions and no discharge-derived summaries. Missing or ambiguous values remain missing and are imputed on fitting rows only.",
+  "catchment_attributes": "Published USGS StreamStats Gage Statistics characteristics; missing static fields supplemented with GAGES-II.",
+  "missing_test_feature_cells": {
+    "drainage_area_sqmi": 0,
+    "mean_elevation_ft": 7300,
+    "slope_pct": 7300,
+    "forest_cover_pct": 7300,
+    "impervious_surface_pct": 7300
+  }
+}
