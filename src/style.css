@@ -3125,8 +3125,17 @@ svg {
   flex-direction: column;
   gap: 3px;
   overflow-y: auto;
+  overflow-x: hidden !important;
   max-height: calc(100vh - 210px);
-  padding-right: 2px;
+  padding-right: 0;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.acet-river-list::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* River item with the exact clean Aceternity typography & aesthetics */
@@ -3683,4 +3692,150 @@ svg {
   color: #09090b;
   letter-spacing: -0.02em;
   line-height: 1;
+}
+
+
+/* Restored Nav in Floating Pill Navbar */
+.pill-navbar-center {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pill-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid transparent;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #52525b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.pill-nav-btn:hover {
+  background: #f4f4f5;
+  color: #09090b;
+}
+
+.pill-nav-btn.active {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+  color: #0284c7;
+  font-weight: 600;
+}
+
+.pill-nav-btn.active svg {
+  color: #0284c7;
+}
+
+/* Right Actions in Pill Navbar */
+.pill-navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pill-navbar .telemetry-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 9999px;
+}
+
+.pill-navbar .icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  color: #64748b;
+  border: 1px solid #e4e4e7;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pill-navbar .icon-button:hover {
+  background: #f4f4f5;
+  color: #09090b;
+  border-color: #d4d4d8;
+}
+
+.pill-navbar .github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: #09090b;
+  border: 1px solid #e4e4e7;
+  padding: 7px 15px;
+  border-radius: 9999px;
+  background: #ffffff;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.pill-navbar .github-link:hover {
+  background: #f4f4f5;
+  border-color: #d4d4d8;
+  color: #000000;
+  transform: translateY(-0.5px);
+}
+
+
+/* =========================================================================
+   SCROLLBAR REMOVAL (KEEPING SCROLL FUNCTIONALITY, HIDING BOTH SLIDING BARS)
+   ========================================================================= */
+
+.floodcast-sidebar-body,
+.floodcast-sidebar-body *,
+.acet-river-list,
+.acet-river-list *,
+.river-list,
+.river-list *,
+.collapsed-river-list,
+.collapsed-river-list * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.floodcast-sidebar-body::-webkit-scrollbar,
+.floodcast-sidebar-body *::-webkit-scrollbar,
+.acet-river-list::-webkit-scrollbar,
+.acet-river-list *::-webkit-scrollbar,
+.river-list::-webkit-scrollbar,
+.river-list *::-webkit-scrollbar,
+.collapsed-river-list::-webkit-scrollbar,
+.collapsed-river-list *::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+}
+
+.floodcast-sidebar-body {
+  overflow-x: hidden !important;
+}
+
+.sidebar-expanded-content {
+  overflow-x: hidden !important;
+  width: 100%;
 }

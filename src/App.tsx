@@ -662,10 +662,10 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      {/* Floating Pill Navbar matching reference image aesthetics */}
+      {/* Floating Pill Navbar with restored navigation & controls */}
       <header className="pill-navbar-wrapper">
         <div className="pill-navbar">
-          {/* Brand with footer RidgeMark logo */}
+          {/* Brand with official RidgeMark logo */}
           <a
             href="/"
             className="pill-navbar-brand"
@@ -678,85 +678,63 @@ export default function App() {
             title="FloodCast Hydrological Intelligence"
           >
             <RidgeMark width={28} height={20} />
-            <span className="pill-brand-text">FloodCast</span>
+            <span className="pill-brand-text">FLOODCAST</span>
           </a>
 
-          {/* Clean navigation matching reference layout */}
+          {/* Restored Main Navigation */}
           <nav className="pill-navbar-center" aria-label="Main Navigation">
             <button
               type="button"
-              className={`pill-nav-link ${!modelOpen && !sources ? 'active' : ''}`}
+              className={`pill-nav-btn ${!modelOpen ? 'active' : ''}`}
               onClick={() => {
                 setModelOpen(false);
                 setSources(false);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             >
+              <Compass size={16} />
               <span>River Explorer</span>
-              <ChevronDown size={14} className="pill-chevron" />
             </button>
 
             <button
               type="button"
-              className={`pill-nav-link ${modelOpen ? 'active' : ''}`}
+              className={`pill-nav-btn ${modelOpen ? 'active' : ''}`}
               onClick={() => {
                 setModelOpen(true);
                 setSources(false);
               }}
             >
-              <span>Hydrology Model</span>
-              <ChevronDown size={14} className="pill-chevron" />
-            </button>
-
-            <button
-              type="button"
-              className={`pill-nav-link ${sources ? 'active' : ''}`}
-              onClick={() => {
-                setSources(true);
-                setModelOpen(false);
-              }}
-            >
-              <span>Methodology</span>
-              <ChevronDown size={14} className="pill-chevron" />
-            </button>
-
-            <button
-              type="button"
-              className="pill-nav-link"
-              onClick={() => {
-                const el = document.querySelector('.monitored-zones-section') || document.querySelector('.acet-river-list');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              <span>Basins</span>
+              <Activity size={16} />
+              <span>Discharge ML Model</span>
+              <span className="nav-badge">293k rows</span>
             </button>
           </nav>
 
-          {/* Right actions: Language pill, Sign in outline pill, Request a demo solid pill */}
+          {/* Restored Right Actions: Telemetry status, Help/About, GitHub */}
           <div className="pill-navbar-right">
-            <div className="pill-lang-selector" title="Active Regional Coverage: United States & India">
-              <span className="pill-lang-glyph">文A</span>
-              <span className="pill-lang-code">EN</span>
-              <ChevronDown size={13} className="pill-chevron" />
+            <div className="telemetry-status-pill" title="Live USGS water gauges & GloFAS forecast pipeline">
+              <span className="pulse-beacon" />
+              <span>USGS & GloFAS Active</span>
             </div>
 
             <button
               type="button"
-              className="pill-btn-outline"
+              className="icon-button"
+              aria-label="About data and methods"
               onClick={() => setSources(true)}
-              title="Data Provenance, Citations & Methodology"
+              title="About data and methods"
             >
-              Sign in
+              <CircleHelp size={18} />
             </button>
 
             <a
+              className="github-link"
               href="https://github.com/Cxen77/hackoween"
               target="_blank"
               rel="noreferrer"
-              className="pill-btn-solid"
-              title="GitHub Repository & Interactive Demonstration"
+              title="View repository on GitHub"
             >
-              Request a demo
+              <span>GitHub</span>
+              <ArrowUpRight size={14} />
             </a>
           </div>
         </div>
