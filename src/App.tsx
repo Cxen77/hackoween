@@ -714,11 +714,6 @@ export default function App() {
 
           {/* Restored Right Actions: Telemetry status, Help/About, GitHub */}
           <div className="pill-navbar-right">
-            <div className="telemetry-status-pill" title="Live USGS water gauges & GloFAS forecast pipeline">
-              <span className="pulse-beacon" />
-              <span>USGS & GloFAS Active</span>
-            </div>
-
             <button
               type="button"
               className="icon-button"
