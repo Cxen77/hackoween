@@ -119,9 +119,9 @@ export default function ModelForecastCard({ usgs, nwic, river, onSimulate, onDat
         {d.new_river && <p className="mf-newriver"><b>New river</b>: not in the model's training data. Live observed flow from India's NWIC portal.</p>}
         <p className="mf-muted">Using real data up to <b>{d.origin_date}</b>: latest flow <b>{fmt(d.latest_observed_cfs)} cfs</b>. High-flow level (Q90) for this gauge is {fmt(d.threshold_q90_cfs)} cfs.</p>
         <Spark d={d} />
-        {/* Days Pills Menu (takes minimal space) */}
+        {/* Days Pills Menu (clicking a pill simulates that horizon directly) */}
         <div className="mf-days-pills-row">
-          <span className="mf-days-label">Forecast Day:</span>
+          <span className="mf-days-label">Forecast:</span>
           <div className="mf-days-pills" role="tablist" aria-label="Forecast horizons">
             {d.horizons.map((h: Json) => (
               <button
@@ -130,39 +130,34 @@ export default function ModelForecastCard({ usgs, nwic, river, onSimulate, onDat
                 role="tab"
                 aria-selected={activeHorizon === h.horizon_days}
                 className={`mf-day-pill ${activeHorizon === h.horizon_days ? 'active' : ''}`}
-                onClick={() => setActiveHorizon(h.horizon_days)}
+                onClick={() => {
+                  setActiveHorizon(h.horizon_days);
+                  if (h.rise_point_m !== undefined) {
+                    onSimulate(h.rise_point_m, `Assumed rise +${h.horizon_days}d`);
+                  }
+                }}
+                title={`+${h.horizon_days}d: ${fmt(h.point_cfs)} cfs${h.rise_point_m !== undefined ? ` · Explore +${h.rise_point_m.toFixed(1)}m` : ''}`}
               >
                 +{h.horizon_days}d
               </button>
             ))}
           </div>
+          {(() => {
+            const activeH = d.horizons.find((h: Json) => h.horizon_days === activeHorizon) || d.horizons[0];
+            if (!activeH) return null;
+            return (
+              <span className="mf-pill-stat">
+                <strong>{fmt(activeH.point_cfs)}</strong> cfs
+                {activeH.rise_point_m !== undefined && <small> (+{activeH.rise_point_m.toFixed(1)}m)</small>}
+              </span>
+            );
+          })()}
         </div>
-
-        {/* Single Compact Active Day Card */}
-        {(() => {
-          const activeH = d.horizons.find((h: Json) => h.horizon_days === activeHorizon) || d.horizons[0];
-          if (!activeH) return null;
-          return (
-            <div className="mf-row mf-single-card">
-              <div className="mf-row-main">
-                <span className="mf-day">+{activeH.horizon_days}d</span>
-                <span><b>{fmt(activeH.point_cfs)}</b> cfs <small>({activeH.lo_cfs === null ? 'no band' : `${fmt(activeH.lo_cfs)}–${fmt(activeH.hi_cfs)}`})</small></span>
-              </div>
-              <div className="mf-row-sub">
-                <span title="Probability flow exceeds this gauge's 90th-percentile level">High flow {pct(activeH.p_high_flow)}</span>
-                <span title="Probability flow exceeds this gauge's 99th-percentile level">Extreme {pct(activeH.p_extreme_flow)}</span>
-                {activeH.rise_point_m !== undefined && (
-                  <button type="button" className="mf-sim" onClick={() => onSimulate(activeH.rise_point_m, `Model +${activeH.horizon_days}d`)} title={`Set the 3D water rise to +${activeH.rise_point_m} m (${fmt(activeH.stage_point_ft, 1)} ft gauge height)`}>
-                    <Play size={11} /> Simulate {activeH.rise_point_m.toFixed(1)} m{activeH.extrapolated ? '*' : ''}
-                  </button>)}
-              </div>
-            </div>
-          );
-        })()}
 
         {/* Scrollable details for ratings, warnings, and hindcast */}
         <div className="mf-details-scroll">
           <p className="mf-foot">
+            Map rises are exploratory assumptions, not calibrated inundation depths. {' '}
             {d.rating
               ? <>Flow → water level uses this gauge's own last 30 days ({fmt(d.rating.n)} readings, fit R² {d.rating.r2.toFixed(3)}, observed {fmt(d.rating.q_min)}–{fmt(d.rating.q_max)} cfs). {d.horizons.some((h: Json) => h.extrapolated) && '* = outside the observed range, so extrapolated.'}</>
               : 'No stage rating available for this gauge; showing discharge only.'}
