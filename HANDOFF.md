@@ -55,6 +55,7 @@ Script: scripts/basinshift_horizon.py. Summary: data/experiments/basinshift_hori
 - LIVE LEVEL: simulation opens at the river's live rise = how far above its own 30-day median level it is (server fields live_rise_m, live_rise_basis; forecast buttons use rise_point_m on the same basis). Stays at 0 on a normal/low day. Follows live data until the slider is moved; "Use live level" restores it. (The other side's redesign had removed the earlier Sync button/follow logic; this replaces it.)
 - LAYOUT BUG (windows < 768 px): the desktop sidebar was not hidden (unlayered .floodcast-sidebar-body {display:flex} beat Tailwind `hidden`), squeezing the map to 64 px and off screen. Fixed in src/layout-fix.css.
 - BASEMAP: CARTO's keyless dark tiles now return an "API KEY REQUIRED" placeholder; switched to Esri World Dark Gray (keyless).
+- OLD MAP LOOK RESTORED (2026-11-05): terrain relief 3.2x (was 1.5), camera tilt 65 deg (was 55), hillshade strength 1.0 (was 0.35), flat dark base (#262626) with the Esri tiles only faintly (opacity 0.28). Constants RELIEF / PITCH_3D at the top of src/App.tsx. Layout arrangement (map left, flood card right, conditions + hydrograph below) already matched the older version; the removed reach-selector/flow-badge controls belong to the older flood engine and were not brought back.
 - Server restart needed after pulling: `npm run dev:all` or `python -m server.model_api`.
 
 ## SET UP ON A NEW MACHINE (read this first when pulling)

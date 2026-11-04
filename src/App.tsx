@@ -42,6 +42,10 @@ const key = (import.meta as unknown as { env: Record<string, string> }).env.VITE
 maplibregl.setWorkerUrl(workerUrl);
 const empty: FeatureCollection<Polygon | LineString> = { type: 'FeatureCollection', features: [] };
 
+// Map look: strong terrain relief and a steep camera (the original design), over a flat dark base.
+const RELIEF = 3.2;
+const PITCH_3D = 65;
+
 const rasterStyle = (satellite: boolean): StyleSpecification => ({
   version: 8,
   sources: {
@@ -58,7 +62,10 @@ const rasterStyle = (satellite: boolean): StyleSpecification => ({
         : 'Tiles © Esri — Esri, HERE, Garmin, FAO, NOAA, USGS'
     }
   },
-  layers: [{ id: 'base', type: 'raster', source: 'base' }]
+  // Dark mode: flat dark background with the Esri tiles only faintly (the original look had no busy base map).
+  layers: satellite
+    ? [{ id: 'base', type: 'raster', source: 'base' }]
+    : [{ id: 'bg', type: 'background', paint: { 'background-color': '#262626' } }, { id: 'base', type: 'raster', source: 'base', paint: { 'raster-opacity': 0.28 } }]
 });
 
 const initial = <T,>(): Remote<T> => ({ data: null, error: null, loading: true });
@@ -229,13 +236,13 @@ export default function App() {
     setIs3d(next);
     const m = map.current;
     if (!m) return;
-    m.setTerrain(next ? { source: 'terrain-dem', exaggeration: 1.5 } : null);
-    if (waterSurface.current) waterSurface.current.exaggeration = next ? 1.5 : 0;
+    m.setTerrain(next ? { source: 'terrain-dem', exaggeration: RELIEF } : null);
+    if (waterSurface.current) waterSurface.current.exaggeration = next ? RELIEF : 0;
     if (m.getLayer('terrain-hills')) {
       m.setLayoutProperty('terrain-hills', 'visibility', next ? 'visible' : 'none');
     }
     m.easeTo({
-      pitch: next ? 55 : 0,
+      pitch: next ? PITCH_3D : 0,
       bearing: next ? -24 : 0,
       duration: 900
     });
@@ -247,8 +254,8 @@ export default function App() {
     const current = m.getPitch();
     const next = current < 15 ? 48 : current < 55 ? 65 : current < 72 ? 80 : 0;
     setIs3d(next > 0);
-    if (waterSurface.current) waterSurface.current.exaggeration = next > 0 ? 1.5 : 0;
-    m.setTerrain(next > 0 ? { source: 'terrain-dem', exaggeration: 1.5 } : null);
+    if (waterSurface.current) waterSurface.current.exaggeration = next > 0 ? RELIEF : 0;
+    m.setTerrain(next > 0 ? { source: 'terrain-dem', exaggeration: RELIEF } : null);
     if (m.getLayer('terrain-hills')) {
       m.setLayoutProperty('terrain-hills', 'visibility', next > 0 ? 'visible' : 'none');
     }
@@ -275,7 +282,7 @@ export default function App() {
         style: satellite ? rasterStyle(true) : key ? `https://maps.geoapify.com/v1/styles/dark-matter/style.json?apiKey=${key}` : rasterStyle(false),
         center: [station.lon, station.lat],
         zoom: 12.2,
-        pitch: 55,
+        pitch: PITCH_3D,
         bearing: -24,
         maxPitch: 85,
         attributionControl: { compact: true },
@@ -314,14 +321,14 @@ export default function App() {
         maxzoom: 15,
         attribution: 'Elevation: AWS Terrain Tiles'
       });
-      m.setTerrain(terrainMode.current ? { source: 'terrain-dem', exaggeration: 1.5 } : null);
+      m.setTerrain(terrainMode.current ? { source: 'terrain-dem', exaggeration: RELIEF } : null);
       m.addLayer({
         id: 'terrain-hills',
         type: 'hillshade',
         source: 'terrain-dem',
         layout: { visibility: 'visible' },
         paint: {
-          'hillshade-exaggeration': 0.35,
+          'hillshade-exaggeration': 1.0,
           'hillshade-shadow-color': '#020617',
           'hillshade-highlight-color': '#e0f2fe',
           'hillshade-accent-color': '#38bdf8',
@@ -389,7 +396,7 @@ export default function App() {
       // Keep elevated water after all terrain-draped layers, which otherwise
       // repaint the opaque ground over a transparent custom surface.
       waterSurface.current = new WaterSurface();
-      waterSurface.current.exaggeration = terrainMode.current ? 1.5 : 0;
+      waterSurface.current.exaggeration = terrainMode.current ? RELIEF : 0;
       m.addLayer(waterSurface.current);
       setReady(true);
       setRefresh(n => n + 1);
@@ -438,7 +445,7 @@ export default function App() {
     map.current.flyTo({
       center: [station.lon, station.lat],
       zoom: 12.2,
-      pitch: is3d ? 58 : 0,
+      pitch: is3d ? PITCH_3D : 0,
       bearing: is3d ? -22 : 0,
       duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1200
     });
@@ -1029,7 +1036,7 @@ export default function App() {
                     type="button"
                     className={`view-mode-btn ${is3d ? 'active' : ''}`}
                     onClick={() => toggle3D(true)}
-                    title="3D Lit Terrain (sun illumination & 1.5× elevation relief)"
+                    title={`3D Lit Terrain (sun illumination & ${RELIEF}× elevation relief)`}
                   >
                     <span className="hud-dot" />
                     3D Lit Height
@@ -1120,7 +1127,7 @@ export default function App() {
                         checked={is3d}
                         onChange={e => toggle3D(e.target.checked)}
                       />
-                      <span>3D Lit Height (2.4× relief)</span>
+                      <span>3D Lit Height ({RELIEF}× relief)</span>
                     </label>
                     <label>
                       <input type="checkbox" checked={showSimulation} onChange={e => setShowSimulation(e.target.checked)} />
@@ -1145,7 +1152,7 @@ export default function App() {
                 <div className="depth-legend">
                   <div className="legend-header">
                     <span>{is3d ? 'Simulated depth' : 'Flood extent'}</span>
-                    <small>{(corridorSpan / 1000).toFixed(0)} km window{is3d ? ' · 1.5× relief' : ''}</small>
+                    <small>{(corridorSpan / 1000).toFixed(0)} km window{is3d ? ` · ${RELIEF}× relief` : ''}</small>
                   </div>
                   {is3d && <div className="legend-bar" />}
                   {is3d && <div className="legend-ticks">
