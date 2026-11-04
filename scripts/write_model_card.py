@@ -13,7 +13,7 @@ def main():
           ('Holdout training-station median baseline',h['training_station_median_baseline'])]
     table='\n'.join(f"| {name} | {v['rows']:,} | {v['rmse']:,.2f} | {v['extreme_rmse']:,.2f} | {v['mae']:,.2f} | {v['r2']:.4f} |" for name,v in rows)
     perstation='\n'.join(f"| {sid} | {v['rows']:,} | {v['rmse']:,.2f} | {v['mae']:,.2f} | {v['r2']:.4f} |" for sid,v in h['by_station'].items())
-    coverage='\n'.join(f'- `{name}`: {count}/{c["total_stations"]} stations have a mapped StreamStats value.' for name,count in c['coverage_stations'].items())
+    coverage='\n'.join(f'- `{name}`: {count}/{c["total_stations"]} stations have a mapped static value from StreamStats or GAGES-II.' for name,count in c['coverage_stations'].items())
     text=f'''# FLOODCAST model card
 
 ## Identity and intended use
@@ -32,7 +32,7 @@ Target: actual **USGS daily mean discharge in cfs**, parameter 00060, statistic 
 
 Weather: Open-Meteo historical reanalysis at actual NWIS gauge coordinates: daily precipitation, min/max temperature, and mean hourly 0–7 cm soil moisture. These are retrospective features, not weather known before the target day. Fixed historical climate model versions were not pinned; cached raw responses are retained to reproduce this run.
 
-Catchments: actual published USGS StreamStats Gage Statistics basin characteristics; NWIS drainage area is retained where StreamStats lacks it. Fields with unknown, incompatible, or ambiguous units remain missing. Source records, variable codes, original units, converted values, and citations are in `reports/catchment_provenance.json`.
+Catchments: actual published USGS StreamStats Gage Statistics basin characteristics, supplemented with static USGS GAGES-II watershed descriptors where StreamStats is missing. GAGES-II contributes basin mean elevation (metres converted to feet), slope percent, NLCD06 forest cover and imperviousness, and drainage area (km² converted to square miles); no flow-summary files are used. NWIS drainage area remains available as a further fallback. Fields with unknown, incompatible, or ambiguous units remain missing. Source records, variable codes, original units, converted values, and citations are in `reports/catchment_provenance.json`.
 
 {coverage}
 

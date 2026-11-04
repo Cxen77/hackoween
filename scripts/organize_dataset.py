@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import shutil
 import sys
+import hashlib
 import numpy as np
 import pandas as pd
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
@@ -28,9 +29,22 @@ def main(args):
     if len(comparison)!=len(actual) or len(actual)!=len(test):raise ValueError('Incomplete evaluation key coverage')
     comparison['error_cfs']=comparison.discharge_cfs_predicted-comparison.discharge_cfs_actual
     comparison['absolute_error_cfs']=comparison.error_cfs.abs()
+    stations=pd.read_csv(root/'metadata/station_metadata.csv',dtype={'station_id':str}).set_index('station_id')
+    comparison['station_name']=comparison.station_id.map(stations.station_name)
+    comparison['river_name']=comparison.station_id.map(stations.river_name)
     comparison.to_csv(root/'evaluation/comparison.csv',index=False,encoding='utf-8')
     scored=metrics(comparison.discharge_cfs_actual,comparison.discharge_cfs_predicted.to_numpy(),comparison.station_id)
     (root/'evaluation/metrics.json').write_text(json.dumps(scored,indent=2),encoding='utf-8')
+    by_station=[{'station_id':sid,**metrics(g.discharge_cfs_actual,g.discharge_cfs_predicted.to_numpy(),g.station_id)} for sid,g in comparison.groupby('station_id')]
+    pd.DataFrame(by_station).to_csv(root/'evaluation/per_station_metrics.csv',index=False)
+    manifest={'purpose':'Public-data experiment artifact checksums; these are not official event test rows.',
+              'test_rows':len(test),'prediction_rows':len(predictions),'schema':['station_id','date','discharge_cfs'],
+              'minimum_prediction_cfs':float(predictions.discharge_cfs.min()),'maximum_prediction_cfs':float(predictions.discharge_cfs.max()),
+              'files':{f:{'sha256':hashlib.sha256((root/f).read_bytes()).hexdigest(),'bytes':(root/f).stat().st_size}
+                       for f in ['train/train.csv','test/test.csv','evaluation/actuals.csv','predictions/predictions.csv','evaluation/comparison.csv']}}
+    (root/'metadata/dataset_manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
+    Path('reports').mkdir(exist_ok=True)
+    Path('reports/dataset_manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
     readme=f'''# Public FLOODCAST dataset
 
 This is downloaded real public data, NOT the official event test set.

@@ -114,6 +114,15 @@ def main(args):
             previous=frame[field] if field in frame else pd.Series(np.nan,index=frame.index)
             frame[field]=actual.combine_first(previous)
         frame.to_csv(root/filename,index=False)
+    original_provenance=root/'provenance.json'
+    if original_provenance.exists():
+        acquisition=json.loads(original_provenance.read_text(encoding='utf-8'))
+        acquisition['catchment_attributes']='Published USGS StreamStats Gage Statistics characteristics; missing static fields supplemented with GAGES-II.'
+        acquisition['missing_features']=[field for field in FIELDS if frame[field].isna().any()]
+        acquisition['missing_test_feature_cells']={field:int(frame[field].isna().sum()) for field in FIELDS}
+        acquisition['sources']=list(dict.fromkeys(acquisition['sources']+['https://streamstats.usgs.gov/gagestatsservices/','https://water.usgs.gov/GIS/dsdl/basinchar_and_report_sept_2011.zip']))
+        acquisition['note']='Raw USGS quality flags are retained; provisional observations may be present. Basin features come from published StreamStats/GAGES-II records, with explicit unit conversions and no discharge-derived summaries. Missing or ambiguous values remain missing and are imputed on fitting rows only.'
+        original_provenance.write_text(json.dumps(acquisition,indent=2),encoding='utf-8')
     provenance={'source':'USGS StreamStats Gage Statistics Services, supplemented with actual static USGS GAGES-II basin attributes',
                 'endpoint':'https://streamstats.usgs.gov/gagestatsservices/stations/{station_id}?include=characteristics',
                 'policy':'Explicit static-characteristic allowlist; no streamflow statistics or target-derived quantiles are used. Conflicting units/definitions remain missing.',
