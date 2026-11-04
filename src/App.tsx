@@ -1099,34 +1099,6 @@ export default function App() {
               </div>
               <p className="sim-description">Hydraulic reach inundation across {(corridorSpan / 1000).toFixed(0)} km river corridor.</p>
 
-              <div className="flow-direction-badge">
-                <Compass size={13} />
-                <span>
-                  Flow: <strong>{floodStats.flowDirection || 'Upstream → Downstream'}</strong>
-                  {floodStats.gradient > 0 ? ` · Gradient: ${floodStats.gradient.toFixed(2)} m/km` : ''}
-                </span>
-              </div>
-
-              <div className="reach-selector-row">
-                <span className="reach-title">River Length (Reach):</span>
-                <div className="reach-button-group" role="group" aria-label="River reach span">
-                  {[
-                    { label: '14 km', val: 14000 },
-                    { label: '28 km', val: 28000 },
-                    { label: '45 km', val: 45000 }
-                  ].map(r => (
-                    <button
-                      key={r.val}
-                      type="button"
-                      className={`reach-pill ${corridorSpan === r.val ? 'active-reach' : ''}`}
-                      onClick={() => { setCorridorSpan(r.val); if (!showSimulation) setShowSimulation(true); }}
-                    >
-                      {r.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <ModelForecastCard
                 usgs={station.usgs}
                 nwic={station.nwic}
