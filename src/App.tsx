@@ -3,10 +3,10 @@ import * as maplibregl from 'maplibre-gl';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import type { GeoJSONSource, StyleSpecification } from 'maplibre-gl';
 import {
-  Activity, ArrowDownToLine, ArrowUpRight, Check, ChevronDown, ChevronRight,
+  Activity, Anchor, ArrowDownToLine, ArrowUpRight, Check, ChevronDown, ChevronRight,
   CircleHelp, CloudRain, Compass, Database, Droplets, Expand, Layers, MapPin,
-  Minus, Mountain, PanelLeftClose, PanelLeftOpen, Pause, Play, Plus, Radio, RefreshCw, Search, ShieldAlert,
-  Waves, X
+  Minus, Mountain, PanelLeftClose, PanelLeftOpen, Pause, Play, Plus, Radio, RefreshCw, Search, Shield, ShieldAlert,
+  Sun, Sunrise, Trees, Waves, X
 } from 'lucide-react';
 import { Sidebar, SidebarBody } from '@/components/ui/sidebar';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,6 +19,17 @@ import RidgelineDitherFooter from '@/components/ui/ridgeline-dither-footer';
 import { evaluateMonitor, validBoundary, validMonitor } from './geofence.mjs';
 import type { AreaMonitor, MonitorResult } from './monitorTypes';
 import type { FeatureCollection, Polygon, LineString } from 'geojson';
+
+const riverIconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  potomac: Compass,
+  mississippi: Anchor,
+  colorado: Sun,
+  neuse: Trees,
+  sacramento: Mountain,
+  ganga: Sunrise,
+  brahmaputra: CloudRain,
+  yamuna: Shield,
+};
 
 const key = (import.meta as unknown as { env: Record<string, string> }).env.VITE_GEOAPIFY_API_KEY;
 maplibregl.setWorkerUrl(workerUrl);
@@ -748,27 +759,35 @@ export default function App() {
       <div className="workspace">
         <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} animate={true}>
           <SidebarBody className="floodcast-sidebar-body">
-            <div className="sidebar-header-row">
-              {sidebarOpen ? (
+            {sidebarOpen ? (
+              <div className="sidebar-header-row">
                 <div className="sidebar-brand-mini">
                   <div className="section-eyebrow">River telemetry</div>
                   <h1>Studio</h1>
                 </div>
-              ) : (
-                <div className="sidebar-collapsed-brand" title="FloodCast Studio">
-                  <Waves size={20} className="text-primary" />
-                </div>
-              )}
-              <button
-                type="button"
-                className="sidebar-collapse-toggle"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
-                aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
-              >
-                {sidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
-              </button>
-            </div>
+                <button
+                  type="button"
+                  className="sidebar-collapse-toggle"
+                  onClick={() => setSidebarOpen(false)}
+                  title="Collapse sidebar"
+                  aria-label="Collapse sidebar"
+                >
+                  <PanelLeftClose size={18} />
+                </button>
+              </div>
+            ) : (
+              <div className="sidebar-collapsed-header">
+                <button
+                  type="button"
+                  className="sidebar-collapse-toggle collapsed-toggle"
+                  onClick={() => setSidebarOpen(true)}
+                  title="Expand sidebar"
+                  aria-label="Expand sidebar"
+                >
+                  <PanelLeftOpen size={18} />
+                </button>
+              </div>
+            )}
 
             {sidebarOpen ? (
               <div className="sidebar-expanded-content">
@@ -817,26 +836,29 @@ export default function App() {
                 </div>
 
                 <div className="river-list">
-                  {filtered.map(s => (
-                    <button
-                      className={`river-item ${station.id === s.id ? 'selected' : ''}`}
-                      key={s.id}
-                      onClick={() => pick(s)}
-                    >
-                      <span className="river-icon">
-                        <Waves size={16} />
-                      </span>
-                      <span className="river-info">
-                        <strong>{s.river}</strong>
-                        <small>
-                          {s.name}
-                          <span className="country-tag">{s.region.includes('India') ? 'IN' : 'US'}</span>
-                          {s.usgs && <span className="live-dot" title="USGS Real-time Telemetry" />}
-                        </small>
-                      </span>
-                      <ChevronRight size={14} className="chevron" />
-                    </button>
-                  ))}
+                  {filtered.map(s => {
+                    const RiverIcon = riverIconMap[s.id] || Waves;
+                    return (
+                      <button
+                        className={`river-item ${station.id === s.id ? 'selected' : ''}`}
+                        key={s.id}
+                        onClick={() => pick(s)}
+                      >
+                        <span className="river-icon">
+                          <RiverIcon size={16} />
+                        </span>
+                        <span className="river-info">
+                          <strong>{s.river}</strong>
+                          <small>
+                            {s.name}
+                            <span className="country-tag">{s.region.includes('India') ? 'IN' : 'US'}</span>
+                            {s.usgs && <span className="live-dot" title="USGS Real-time Telemetry" />}
+                          </small>
+                        </span>
+                        <ChevronRight size={14} className="chevron" />
+                      </button>
+                    );
+                  })}
 
                   {places.map(s => (
                     <button className="river-item" key={s.id} onClick={() => pick(s)}>
@@ -883,17 +905,20 @@ export default function App() {
                 <div className="collapsed-divider" />
 
                 <div className="collapsed-river-list">
-                  {filtered.map(s => (
-                    <button
-                      key={s.id}
-                      className={`collapsed-station-pill ${station.id === s.id ? 'active' : ''}`}
-                      title={`${s.river} (${s.name}) — ${s.usgs ? 'USGS Live' : 'GloFAS'}`}
-                      onClick={() => pick(s)}
-                    >
-                      <Waves size={18} />
-                      {s.usgs && <span className="collapsed-live-dot" />}
-                    </button>
-                  ))}
+                  {filtered.map(s => {
+                    const RiverIcon = riverIconMap[s.id] || Waves;
+                    return (
+                      <button
+                        key={s.id}
+                        className={`collapsed-station-pill ${station.id === s.id ? 'active' : ''}`}
+                        title={`${s.river} (${s.name}) — ${s.usgs ? 'USGS Live' : 'GloFAS'}`}
+                        onClick={() => pick(s)}
+                      >
+                        <RiverIcon size={18} />
+                        {s.usgs && <span className="collapsed-live-dot" />}
+                      </button>
+                    );
+                  })}
                 </div>
 
                 <div className="collapsed-bottom">
@@ -1367,6 +1392,7 @@ export default function App() {
       <div className="floodcast-footer-wrapper">
         <RidgelineDitherFooter
           preset="glacier"
+          maxWidth="100%"
           name="FloodCast"
           tagline="Hydrological intelligence platform connecting real-time USGS telemetry, ECMWF GloFAS forecasts, and high-resolution 3D hydraulic terrain inundation modeling."
           brandHref="#"

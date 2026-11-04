@@ -313,15 +313,14 @@ svg {
   margin: 0;
 }
 
-.sidebar-collapsed-brand {
+.sidebar-collapsed-header {
   display: flex;
-  align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  background: rgba(2, 132, 199, 0.08);
-  color: var(--primary);
+  align-items: center;
+  width: 100%;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light, #f1f5f9);
+  margin-bottom: 10px;
 }
 
 .sidebar-collapse-toggle {
@@ -337,6 +336,13 @@ svg {
   transition: all 0.15s ease;
   cursor: pointer;
   flex-shrink: 0;
+}
+
+.sidebar-collapse-toggle.collapsed-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  margin: 0 auto;
 }
 
 .sidebar-collapse-toggle:hover {
@@ -409,14 +415,15 @@ svg {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-md);
   color: var(--text-body);
   background: var(--bg-surface);
   border: 1px solid var(--border);
   transition: all 0.15s ease;
   cursor: pointer;
+  margin: 0 auto;
 }
 
 .collapsed-station-pill:hover {
