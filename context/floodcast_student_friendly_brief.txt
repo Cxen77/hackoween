@@ -1,0 +1,195 @@
+FLOODCAST · STUDENT-FRIENDLY GUIDE
+PAGE 1
+DISASTER RISK & EARLY WARNING SYSTEMS · 24-HOUR HACKATHON
+ FLOODCAST
+Predict the Surge Before It Strikes
+THE CHALLENGE IN ONE LINE
+Build a machine-learning model that predicts the amount of water flowing through a river each day,
+using weather information and the river area's physical features.
+1. What is this challenge about?
+Floods can kill people and force families to leave their homes. If we can estimate how much water will flow through a
+river, communities may get more time to prepare.
+You are given historical river-flow measurements, rainfall and temperature information, plus details about the land
+around each river. Use these to train a regression model that predicts river discharge for dates in the test data.
+What does “discharge” mean?
+Discharge is the amount of water flowing past a point in a river every second. It is measured in cubic feet per second
+(cfs). Your model must predict a number, not just say “safe” or “flood”. Higher discharge can mean greater flood
+danger.
+2. What exactly must your model predict?
+For every station_id + date combination in test.csv, predict one value:
+discharge_cfs — the river's daily discharge in cubic feet per second. The prediction must be a
+non-negative number.
+Example: If test.csv contains station 01646500 on 2023-08-10, your model must predict the discharge for that station
+on that date.
+3. What data can you use?
+The challenge uses three free public data sources. The organizers will also provide a pre-processed starter dataset
+with five stations already joined together.
+DATA SOURCE
+IN SIMPLE WORDS
+WHAT IT ADDS
+USGS river data
+Past measurements from river monitoring
+stations.
+The river discharge you are trying to predict (the
+target).
+Open-Meteo weather
+Historical weather for the location of each
+station.
+Rainfall, maximum/minimum temperature and
+soil moisture.
+USGS StreamStats
+Information about the land area that drains into
+a river station.
+Drainage area, elevation, slope and forest
+cover.
+How do the datasets connect?
+ Match river measurements with catchment details using station_id.
+ Match weather to the river station using its latitude, longitude and date.
+ Combine them into one dataset containing weather + land features + historical discharge.
+The challenge brief says a pre-joined starter CSV with five stations will be provided. Teams may add
+more stations from the same sources.
+
+
+--- page ---
+FLOODCAST · STUDENT-FRIENDLY GUIDE
+PAGE 2
+4. What files will you receive?
+ FILE
+WHAT IT CONTAINS
+train.csv
+Past examples: station, date, weather, land features and the actual discharge. Use this to train
+your model.
+test.csv
+Station, date, weather and land features — but no discharge. This is what your model must
+predict.
+sample_submission.csv
+An example output file with discharge values filled with zeros. Replace them with your
+predictions.
+station_metadata.csv
+Station name, location, state and river name.
+5. What should you submit?
+Create a file named predictions.csv with exactly three columns, in this exact order:
+station_id, date, discharge_cfs
+There must be exactly one prediction for every row in test.csv. Every discharge value must be a non-negative number.
+Your file will be rejected if:
+ A station/date pair from test.csv is missing.
+ A prediction is negative or blank/NaN.
+ Your file has more or fewer rows than test.csv.
+ The column names or their order are wrong.
+ The file is not a UTF-8 encoded CSV.
+6. How will your team be judged?
+Your predictions are automatically compared with the hidden actual river-discharge values. There is no manual
+component in the auto-score.
+METRIC
+WEIGHT
+WHAT IT MEANS
+BETTER
+SCORE
+Overall RMSE
+40%
+How close predictions are across all test records.
+Lower
+Extreme-event RMSE
+30%
+How well you predict the highest-discharge days (top 10% per station).
+Lower
+MAE
+20%
+Average size of prediction errors.
+Lower
+R-squared (R²)
+10%
+How well your model captures patterns in the data.
+Higher
+The big takeaway: Flood peaks matter a lot. RMSE penalizes large mistakes, and 30% of the score
+focuses specifically on extreme high-discharge days. A model that misses major peaks can perform
+badly even if its ordinary-day predictions look good.
+The leaderboard initially ranks by raw RMSE. The final score is a weighted combination of the four metrics after they are normalized.
+
+
+--- page ---
+FLOODCAST · STUDENT-FRIENDLY GUIDE
+PAGE 3
+7. Important rules — avoid disqualification
+Never use the actual test discharge values as model input. The test targets are hidden; trying to use
+them is data leakage and can disqualify the submission.
+Also, do not:
+ Submit negative discharge predictions.
+ Leave out any test rows.
+ Manually edit predictions.csv instead of generating it by running your model.
+ Submit a pre-built model from before the event.
+ Share predictions or code with other teams.
+What is allowed?
+ Any ML framework, such as scikit-learn, XGBoost, LightGBM, PyTorch or TensorFlow.
+ Pre-trained models as a starting point, if declared in model_card.md.
+ Adding more stations from USGS.
+ Feature engineering using the provided columns.
+ Teams of 1–4 members.
+8. A practical way to approach the challenge
+STEP 1 — Inspect the files
+Understand the columns in train.csv, test.csv and station_metadata.csv.
+STEP 2 — Prepare the data
+Check missing values, dates, station IDs and data quality. Keep the test target out of training inputs.
+STEP 3 — Explore patterns
+Study how rainfall, temperature, soil moisture and catchment features relate to river discharge.
+STEP 4 — Train and validate
+Train regression models and evaluate them on a validation split that helps test whether the model generalizes to
+unseen stations.
+STEP 5 — Focus on flood peaks
+Check performance on high-discharge days, not only ordinary river-flow days.
+STEP 6 — Predict the test set
+Generate one non-negative discharge prediction for every row in test.csv.
+STEP 7 — Validate the CSV
+Check exact columns, order, row count, station/date coverage and non-negative values.
+STEP 8 — Package and submit
+Push the required files to your public GitHub repository and submit the repo link plus predictions.csv.
+9. What must be submitted?
+ ITEM
+WHAT TO INCLUDE
+Public GitHub repository
+All code, README and requirements.txt or environment.yml.
+predictions.csv
+Your model's predictions for every row in test.csv.
+README.md
+Team name, team members, a 3–5 sentence approach summary and instructions to run the
+code.
+
+
+--- page ---
+FLOODCAST · STUDENT-FRIENDLY GUIDE
+PAGE 4
+ITEM
+WHAT TO INCLUDE
+model_card.md
+Features used, model type, train/validation RMSE and known limitations.
+Presentation
+3–5 slides covering Problem → Data → Model → Results → Limitations. Submit as PDF or link.
+Minimum GitHub repository structure
+floodcast-team-name/
+■■■ README.md
+■■■ requirements.txt
+■■■ solution.ipynb or solution.py
+■■■ predictions.csv
+■■■ model_card.md
+10. Event timeline
+ TIME
+WHAT HAPPENS
+Hour 0
+Problem statement, datasets and starter CSV are released.
+Hour 1
+Starter notebook walkthrough by organizers.
+Hour 6
+Optional organizer check-in.
+Hour 20
+Submission deadline: GitHub link + predictions.csv. No late submissions.
+Hour 22
+3-minute team presentations begin.
+Hour 24
+Winners announced.
+The simplest way to remember FLOODCAST
+Use past river data + weather + land features → train a regression model → predict river discharge →
+submit accurate predictions.
+This is a simplified guide to the supplied FLOODCAST Participant Problem Statement (Version 1.0, November 2026). For exact dataset
+fields, scoring rules, file formats and submission instructions, follow the original challenge brief.
+Source links listed in the original brief: USGS National Water Information System — waterdata.usgs.gov/nwis/dv · Open-Meteo Historical
+Weather API — open-meteo.com/en/docs/historical-weather-api · USGS StreamStats — streamstats.usgs.gov/ss/

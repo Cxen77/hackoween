@@ -2,6 +2,8 @@
 
 Serves the BASINSHIFT-style forecasting system (models trained on all 55 USGS gauges) to the web app:
   GET /api/health
+  GET /api/live_forecast?lat=..&lon=..&name=..   same for a NEW river with no gauge (GloFAS modelled flow as history)
+  GET /api/live_forecast?india=<registry key>   Indian gauge with a live NWIC feed (observed flow as history; model-vs-observed hindcast)
   GET /api/live_forecast?station=<USGS id>   live 1/3/7-day forecast + 90% interval + exceedance probabilities,
                                               plus a discharge->stage rating fitted from the gauge's own recent readings
   GET /api/run_test?dataset=caravan&n=12     live test on N random Caravan basins the model never saw (<= 30)
@@ -197,6 +199,182 @@ def live_forecast(sid: str) -> dict:
     return out
 
 
+
+# ------------------------------------------------------------------ new rivers (not in training data)
+SNAP_CACHE: dict = {}
+CFS_PER_M3S = 35.3146667
+
+
+def snap_to_river(lat: float, lon: float) -> dict:
+    """GloFAS uses a ~0.05 degree grid, so a map point can land beside the river. Look at a 7x7 neighbourhood
+    (about +/-0.15 degrees) and use the cell with the largest recent discharge, i.e. the main channel."""
+    key = (round(lat, 3), round(lon, 3))
+    if key in SNAP_CACHE:
+        return SNAP_CACHE[key]
+    offs = [round(i * 0.05, 2) for i in range(-3, 4)]
+    pts = [(round(lat + a, 3), round(lon + b, 3)) for a in offs for b in offs]
+    d = http_json('https://flood-api.open-meteo.com/v1/flood?' + urllib.parse.urlencode({
+        'latitude': ','.join(str(p[0]) for p in pts), 'longitude': ','.join(str(p[1]) for p in pts),
+        'daily': 'river_discharge', 'past_days': 14, 'forecast_days': 1}))
+    d = d if isinstance(d, list) else [d]
+    means = []
+    for r in d:
+        vals = [v for v in r['daily']['river_discharge'] if v is not None]
+        means.append(float(np.mean(vals)) if vals else 0.0)
+    best = int(np.argmax(means))
+    centre = means[len(means) // 2]  # the middle point of the 7x7 grid is the requested location
+    out = {'lat': pts[best][0], 'lon': pts[best][1], 'mean_m3s': means[best], 'original_mean_m3s': centre}
+    SNAP_CACHE[key] = out
+    return out
+
+
+def live_forecast_new(lat: float, lon: float, name: str) -> dict:
+    """Forecast for a river the model was NOT trained on. There is no gauge record here, so the flow history is GloFAS
+    modelled discharge (Open-Meteo flood API). This is a transfer test, not a verified forecast."""
+    ck = ('new', round(lat, 3), round(lon, 3))
+    hit = CACHE.get(ck)
+    if hit and time.time() - hit[0] < CACHE_SECONDS:
+        return hit[1]
+    snap = snap_to_river(lat, lon)
+    slat, slon = snap['lat'], snap['lon']
+    recent = http_json('https://flood-api.open-meteo.com/v1/flood?' + urllib.parse.urlencode({
+        'latitude': slat, 'longitude': slon, 'daily': 'river_discharge', 'past_days': 60, 'forecast_days': 8}))
+    hist = http_json('https://flood-api.open-meteo.com/v1/flood?' + urllib.parse.urlencode({
+        'latitude': slat, 'longitude': slon, 'daily': 'river_discharge', 'start_date': '2015-01-01', 'end_date': '2024-12-31'}))
+    gl = pd.Series(recent['daily']['river_discharge'], index=pd.to_datetime(recent['daily']['time'])).dropna()
+    hq = np.array([v for v in hist['daily']['river_discharge'] if v is not None], float) * CFS_PER_M3S
+    if len(hq) < 1000 or gl.empty:
+        raise ValueError('GloFAS returned too little data for this location.')
+    last = pd.Timestamp(date.today() - timedelta(days=1))
+    obs = gl[gl.index <= last] * CFS_PER_M3S
+    last = obs.index.max()
+    glofas_fc = gl[gl.index > last] * CFS_PER_M3S
+    w = recent_weather(lat, lon)
+    first_wx = pd.to_datetime(w.dropna(subset=['precipitation_mm']).date.min())
+    start = max(last - pd.Timedelta(days=59), first_wx)
+    days = pd.date_range(start, last + pd.Timedelta(days=max(HORIZONS)))
+    frame = pd.DataFrame({'station_id': 'NEW', 'date': days.strftime('%Y-%m-%d')}).merge(w, on='date', how='left')
+    frame['discharge_cfs'] = obs.reindex(days).to_numpy()
+    for c in ('drainage_area_sqmi', 'mean_elevation_ft', 'slope_pct', 'forest_cover_pct', 'impervious_surface_pct'):
+        frame[c] = np.nan  # no catchment attributes supplied for a new river; the model handles missing values
+    thr = pd.DataFrame({'T90': float(np.quantile(hq, 0.9)), 'T99': float(np.quantile(hq, 0.99))}, index=range(len(frame)))
+    warnings = ['New river: not in the training data. Flow history is GloFAS modelled discharge (no gauge record), so this is a transfer test and the numbers are unverified.']
+    if snap['mean_m3s'] > 2 * max(snap['original_mean_m3s'], 1e-6):
+        warnings.append(f"The map point was moved to the main river channel in GloFAS's grid ({slat}, {slon}); the original cell carried only {snap['original_mean_m3s']:.1f} m3/s.")
+    if len(days) - max(HORIZONS) < 30:
+        warnings.append(f'Only {len(days) - max(HORIZONS)} days of input history are available; accuracy may be reduced.')
+    out = {'station': name, 'name': name, 'new_river': True, 'origin_date': last.strftime('%Y-%m-%d'), 'latest_observed_cfs': float(obs.iloc[-1]),
+           'threshold_q90_cfs': float(thr.T90.iloc[0]), 'threshold_q99_cfs': float(thr.T99.iloc[0]), 'snapped_to': [slat, slon],
+           'recent': [{'date': d.strftime('%Y-%m-%d'), 'cfs': float(v)} for d, v in obs.iloc[-30:].items()], 'horizons': [], 'warnings': warnings, 'rating': None,
+           'sources': ['GloFAS modelled river discharge via Open-Meteo flood API', 'Open-Meteo forecast API (weather)', 'FLOODCAST BASINSHIFT-style model trained on 55 US USGS gauges']}
+    with LOCK:
+        for h in HORIZONS:
+            o = forecast(STATE['bundle'], frame, '2000-01-01', h, thr_override=thr)
+            tgt = last + pd.Timedelta(days=h)
+            i = int(np.flatnonzero(frame.date.to_numpy() == tgt.strftime('%Y-%m-%d'))[0])
+            q_m3s = float(o['point'][i]) / CFS_PER_M3S
+            entry = {'horizon_days': h, 'target_date': frame.date.iloc[i], 'point_cfs': float(o['point'][i]),
+                     'lo_cfs': float(o['lo'][i]) if not o['fallback'][i] else None, 'hi_cfs': float(o['hi'][i]) if not o['fallback'][i] else None,
+                     'p_high_flow': float(o['p90'][i]), 'p_extreme_flow': float(o['p99'][i]), 'persistence_cfs': float(o['persistence'][i]),
+                     'used_fallback': bool(o['fallback'][i]), 'glofas_forecast_cfs': float(glofas_fc.get(tgt, np.nan)),
+                     # Same rough flow->water-rise rule the map already uses for ungauged rivers.
+                     'rise_point_m': round(float(min(22.0, max(0.3, (q_m3s / 300.0) ** 0.42))), 2), 'rise_is_rule_of_thumb': True, 'extrapolated': False}
+            out['horizons'].append(entry)
+    out = clean(out)
+    CACHE[ck] = (time.time(), out)
+    return out
+
+
+
+# ------------------------------------------------------------------ Indian rivers with a live NWIC feed (new rivers)
+NWIC_BASE = 'https://nwdp.nwic.gov.in/api/3/action/'
+
+
+def india_registry() -> dict:
+    if 'india' not in STATE:
+        path = ROOT / 'server' / 'india_stations.json'
+        data = json.loads(path.read_text(encoding='utf-8')) if path.exists() else {'stations': []}
+        STATE['india'] = {s['key']: s for s in data['stations']}
+    return STATE['india']
+
+
+def nwic_recent_daily(station: dict) -> pd.Series:
+    """Daily mean discharge (cfs) for the station from the portal's live 2026 table. Portal units are m3/sec."""
+    flt = json.dumps({'Station': station['station']})
+    url = NWIC_BASE + 'datastore_search?' + urllib.parse.urlencode({'resource_id': station['resource_id'], 'filters': flt, 'limit': 32000})
+    rows = http_json(url, timeout=120)['result']['records']
+    if not rows:
+        raise ValueError('The portal returned no recent rows for this station.')
+    d = pd.DataFrame(rows)
+    col = next(c for c in d.columns if 'discharge' in c.lower())
+    tim = next(c for c in d.columns if 'time' in c.lower() or 'date' in c.lower())
+    s = pd.Series(pd.to_numeric(d[col], errors='coerce').to_numpy(), index=pd.to_datetime(d[tim], format='%d-%m-%Y %H:%M', errors='coerce'))
+    s = s[s.index.notna() & s.notna() & (s >= 0)]
+    s = s.groupby(s.index.floor('D')).mean() * CFS_PER_M3S
+    if len(s) < 30:
+        raise ValueError(f'Only {len(s)} recent daily values for this station.')
+    return s.sort_index()
+
+
+def live_forecast_india(key: str) -> dict:
+    reg = india_registry()
+    if key not in reg:
+        raise KeyError(f'Station {key} is not in the Indian live-feed registry.')
+    hit = CACHE.get(('in', key))
+    if hit and time.time() - hit[0] < CACHE_SECONDS:
+        return hit[1]
+    st = reg[key]
+    obs = nwic_recent_daily(st)
+    last = obs.index.max()
+    w = recent_weather(st['lat'], st['lon'])
+    first_wx = pd.to_datetime(w.dropna(subset=['precipitation_mm']).date.min())
+    start = max(last - pd.Timedelta(days=59), first_wx)
+    days = pd.date_range(start, last + pd.Timedelta(days=max(HORIZONS)))
+    frame = pd.DataFrame({'station_id': st['key'], 'date': days.strftime('%Y-%m-%d')}).merge(w, on='date', how='left')
+    frame['discharge_cfs'] = obs.reindex(days).to_numpy()
+    for c in ('drainage_area_sqmi', 'mean_elevation_ft', 'slope_pct', 'forest_cover_pct', 'impervious_surface_pct'):
+        frame[c] = np.nan  # catchment attributes are not supplied for these gauges
+    thr = pd.DataFrame({'T90': st['threshold_q90_cfs'], 'T99': st['threshold_q99_cfs']}, index=range(len(frame)))
+    warnings = ['New river: this gauge is not in the training data (the model was trained on 55 US gauges). Treat results as a transfer test.']
+    stale = (pd.Timestamp.today().normalize() - last).days
+    if stale > 3:
+        warnings.append(f'The latest NWIC value is {stale} days old (last reading {last.strftime("%Y-%m-%d")}); forecasts start from that date.')
+    if len(days) - max(HORIZONS) < 30:
+        warnings.append(f'Only {len(days) - max(HORIZONS)} days of input history are available.')
+    out = {'station': key, 'name': f"{st['station']} ({st['river']})", 'new_river': True, 'origin_date': last.strftime('%Y-%m-%d'),
+           'latest_observed_cfs': float(obs.iloc[-1]), 'threshold_q90_cfs': st['threshold_q90_cfs'], 'threshold_q99_cfs': st['threshold_q99_cfs'],
+           'recent': [{'date': d.strftime('%Y-%m-%d'), 'cfs': float(v)} for d, v in obs.iloc[-30:].items()], 'horizons': [], 'warnings': warnings,
+           'rating': None, 'sources': ['NWIC National Water Data Portal: CWC manual daily discharge (m3/sec, converted to cfs)', 'Open-Meteo forecast API (weather)',
+                                       'FLOODCAST BASINSHIFT-style model trained on 55 US USGS gauges'],
+           'hindcast': {'window_days': 30, 'horizons': {}, 'series': {}}}
+    with LOCK:
+        for h in HORIZONS:
+            o = forecast(STATE['bundle'], frame, '2000-01-01', h, thr_override=thr)
+            tgt = last + pd.Timedelta(days=h)
+            i = int(np.flatnonzero(frame.date.to_numpy() == tgt.strftime('%Y-%m-%d'))[0])
+            q_m3s = float(o['point'][i]) / CFS_PER_M3S
+            out['horizons'].append({'horizon_days': h, 'target_date': frame.date.iloc[i], 'point_cfs': float(o['point'][i]),
+                                    'lo_cfs': float(o['lo'][i]) if not o['fallback'][i] else None, 'hi_cfs': float(o['hi'][i]) if not o['fallback'][i] else None,
+                                    'p_high_flow': float(o['p90'][i]), 'p_extreme_flow': float(o['p99'][i]), 'persistence_cfs': float(o['persistence'][i]),
+                                    'used_fallback': bool(o['fallback'][i]),
+                                    'rise_point_m': round(float(min(22.0, max(0.3, (q_m3s / 300.0) ** 0.42))), 2), 'rise_is_rule_of_thumb': True, 'extrapolated': False})
+            # Hindcast: forecasts the model would have made for each of the last 30 observed days, scored against NWIC.
+            ts = pd.to_datetime(frame.date)
+            win = (ts > last - pd.Timedelta(days=30)) & (ts <= last)
+            actual = frame.discharge_cfs.to_numpy()
+            ok = win.to_numpy() & ~np.isnan(actual) & ~np.isnan(o['persistence']) & ~np.isnan(o['point'])
+            if ok.sum() >= 8:
+                a, m, p = actual[ok], o['point'][ok], o['persistence'][ok]
+                rm = lambda x: float(np.sqrt(np.mean((a - x) ** 2)))
+                mae = lambda x: float(np.mean(np.abs(a - x)))
+                out['hindcast']['horizons'][str(h)] = {'n': int(ok.sum()), 'rmse_model': rm(m), 'rmse_persistence': rm(p), 'mae_model': mae(m), 'mae_persistence': mae(p),
+                                                       'rmse_ratio': rm(m) / max(rm(p), 1e-9)}
+                out['hindcast']['series'][str(h)] = {'dates': frame.date[ok].tolist(), 'observed': a.tolist(), 'model': m.tolist(), 'persistence': p.tolist()}
+    out = clean(out)
+    CACHE[('in', key)] = (time.time(), out)
+    return out
+
+
 # ------------------------------------------------------------------ live dataset test
 def run_caravan_test(n: int, seed: int) -> dict:
     root = ROOT / 'data' / 'external' / 'caravan' / 'Caravan'
@@ -247,7 +425,12 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(200, {'ok': True, 'model': Path(STATE['model_path']).name, 'stations': STATE['stations'], 'train_rows': STATE['train_rows'],
                                  'horizons': HORIZONS, 'note': 'Research benchmark; not a certified flood warning.'})
             elif url.path == '/api/live_forecast':
-                self._send(200, live_forecast(q.get('station', [''])[0]))
+                if 'india' in q:
+                    self._send(200, live_forecast_india(q['india'][0]))
+                elif 'lat' in q and 'lon' in q:
+                    self._send(200, live_forecast_new(float(q['lat'][0]), float(q['lon'][0]), q.get('name', ['New river'])[0][:80]))
+                else:
+                    self._send(200, live_forecast(q.get('station', [''])[0]))
             elif url.path == '/api/run_test':
                 if q.get('dataset', ['caravan'])[0] != 'caravan':
                     self._send(400, {'error': 'Only dataset=caravan runs live; other tests are precomputed.'})

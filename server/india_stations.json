@@ -1,0 +1,806 @@
+{
+ "source": "NWIC National Water Data Portal, CWC manual daily discharge (m3/sec)",
+ "built": "2026-11-04",
+ "stations": [
+  {
+   "station": "Boudh",
+   "river": "Mahanadi",
+   "state": "Odisha",
+   "lat": 20.865,
+   "lon": 84.31555556,
+   "last_date": "2026-10-31",
+   "recent_mean_m3s": 4777.6045909722225,
+   "days_last_75": 72,
+   "table": "River Discharge CWC Odisha (2026 - 2030) Manual Daily",
+   "resource_id": "1e501a44-ff95-42db-81e1-efa2be8be4dd",
+   "history_days": 3758,
+   "history_span": [
+    "2015-06-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 155425.85164003912,
+   "threshold_q99_cfs": 531686.7166661228,
+   "key": "boudh-mahanadi-odisha"
+  },
+  {
+   "station": "KALMA",
+   "river": "Mahanadi",
+   "state": "Chhattisgarh",
+   "lat": 21.69472222,
+   "lon": 83.27777778,
+   "last_date": "2026-11-03",
+   "recent_mean_m3s": 2376.8616440540545,
+   "days_last_75": 74,
+   "table": "River Discharge CWC Chhattisgarh (2026 - 2030) Manual Daily",
+   "resource_id": "06a59e6c-8ebc-4dcc-a5de-894d078b5cbb",
+   "history_days": 3264,
+   "history_span": [
+    "2016-10-17",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 81688.68631177222,
+   "threshold_q99_cfs": 296427.5901139296,
+   "key": "kalma-mahanadi-chhattisgarh"
+  },
+  {
+   "station": "Handia",
+   "river": "Narmada",
+   "state": "Madhya Pradesh",
+   "lat": 22.49611111,
+   "lon": 76.99333333,
+   "last_date": "2026-11-03",
+   "recent_mean_m3s": 1542.92,
+   "days_last_75": 75,
+   "table": "River Discharge CWC Madhya Pradesh (2026 - 2030) Manual Daily",
+   "resource_id": "dbb429ad-6030-46d8-931a-cd3b1c1dedbd",
+   "history_days": 9004,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 65579.33606189993,
+   "threshold_q99_cfs": 277844.562234389,
+   "key": "handia-narmada-madhya-pradesh"
+  },
+  {
+   "station": "Narmadapuram",
+   "river": "Narmada",
+   "state": "Madhya Pradesh",
+   "lat": 22.75666667,
+   "lon": 77.73166667,
+   "last_date": "2026-11-03",
+   "recent_mean_m3s": 1363.6733333333334,
+   "days_last_75": 75,
+   "table": "River Discharge CWC Madhya Pradesh (2026 - 2030) Manual Daily",
+   "resource_id": "dbb429ad-6030-46d8-931a-cd3b1c1dedbd",
+   "history_days": 9011,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 47180.394711199995,
+   "threshold_q99_cfs": 269913.5290547679,
+   "key": "narmadapuram-narmada-madhya-pradesh"
+  },
+  {
+   "station": "Simga",
+   "river": "Mahanadi",
+   "state": "Chhattisgarh",
+   "lat": 21.63277778,
+   "lon": 81.68472222,
+   "last_date": "2026-10-20",
+   "recent_mean_m3s": 1351.214426229508,
+   "days_last_75": 61,
+   "table": "River Discharge CWC Chhattisgarh (2026 - 2030) Manual Daily",
+   "resource_id": "06a59e6c-8ebc-4dcc-a5de-894d078b5cbb",
+   "history_days": 8995,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 16957.55133424615,
+   "threshold_q99_cfs": 93905.1454667699,
+   "key": "simga-mahanadi-chhattisgarh"
+  },
+  {
+   "station": "Sandia",
+   "river": "Narmada",
+   "state": "Madhya Pradesh",
+   "lat": 22.91611111,
+   "lon": 78.34777778,
+   "last_date": "2026-10-31",
+   "recent_mean_m3s": 1305.0555555555557,
+   "days_last_75": 72,
+   "table": "River Discharge CWC Madhya Pradesh (2026 - 2030) Manual Daily",
+   "resource_id": "dbb429ad-6030-46d8-931a-cd3b1c1dedbd",
+   "history_days": 8967,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 34958.800803664126,
+   "threshold_q99_cfs": 185168.56048126513,
+   "key": "sandia-narmada-madhya-pradesh"
+  },
+  {
+   "station": "Mandleshwar",
+   "river": "Narmada",
+   "state": "Madhya Pradesh",
+   "lat": 22.17222222,
+   "lon": 75.65972222,
+   "last_date": "2026-10-31",
+   "recent_mean_m3s": 1266.3055555555557,
+   "days_last_75": 72,
+   "table": "River Discharge CWC Madhya Pradesh (2026 - 2030) Manual Daily",
+   "resource_id": "dbb429ad-6030-46d8-931a-cd3b1c1dedbd",
+   "history_days": 8826,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 71502.48853415748,
+   "threshold_q99_cfs": 317125.70696599997,
+   "key": "mandleshwar-narmada-madhya-pradesh"
+  },
+  {
+   "station": "Kantamal",
+   "river": "Mahanadi",
+   "state": "Odisha",
+   "lat": 20.655,
+   "lon": 83.7275,
+   "last_date": "2026-10-31",
+   "recent_mean_m3s": 1241.5555555555557,
+   "days_last_75": 72,
+   "table": "River Discharge CWC Odisha (2026 - 2030) Manual Daily",
+   "resource_id": "1e501a44-ff95-42db-81e1-efa2be8be4dd",
+   "history_days": 8967,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 32795.95616050261,
+   "threshold_q99_cfs": 155193.41050381964,
+   "key": "kantamal-mahanadi-odisha"
+  },
+  {
+   "station": "Barmanghat",
+   "river": "Narmada",
+   "state": "Madhya Pradesh",
+   "lat": 23.02277778,
+   "lon": 79.03194444,
+   "last_date": "2026-11-03",
+   "recent_mean_m3s": 1219.8,
+   "days_last_75": 75,
+   "table": "River Discharge CWC Madhya Pradesh (2026 - 2030) Manual Daily",
+   "resource_id": "dbb429ad-6030-46d8-931a-cd3b1c1dedbd",
+   "history_days": 8944,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 24725.210743337997,
+   "threshold_q99_cfs": 144790.13346999997,
+   "key": "barmanghat-narmada-madhya-pradesh"
+  },
+  {
+   "station": "Mandla",
+   "river": "Narmada",
+   "state": "Madhya Pradesh",
+   "lat": 22.59833333,
+   "lon": 80.36527778,
+   "last_date": "2026-10-21",
+   "recent_mean_m3s": 897.1139314516129,
+   "days_last_75": 62,
+   "table": "River Discharge CWC Madhya Pradesh (2026 - 2030) Manual Daily",
+   "resource_id": "dbb429ad-6030-46d8-931a-cd3b1c1dedbd",
+   "history_days": 1918,
+   "history_span": [
+    "2020-10-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 25797.127416083105,
+   "threshold_q99_cfs": 88299.6233480654,
+   "key": "mandla-narmada-madhya-pradesh"
+  },
+  {
+   "station": "RAJIM",
+   "river": "Mahanadi",
+   "state": "Chhattisgarh",
+   "lat": 20.975,
+   "lon": 81.88055556,
+   "last_date": "2026-10-20",
+   "recent_mean_m3s": 884.3226475409837,
+   "days_last_75": 61,
+   "table": "River Discharge CWC Chhattisgarh (2026 - 2030) Manual Daily",
+   "resource_id": "06a59e6c-8ebc-4dcc-a5de-894d078b5cbb",
+   "history_days": 7746,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 14087.534904750486,
+   "threshold_q99_cfs": 56773.67265449513,
+   "key": "rajim-mahanadi-chhattisgarh"
+  },
+  {
+   "station": "Kesinga",
+   "river": "Mahanadi",
+   "state": "Odisha",
+   "lat": 20.19861111,
+   "lon": 83.21944444,
+   "last_date": "2026-10-31",
+   "recent_mean_m3s": 766.3931944444444,
+   "days_last_75": 72,
+   "table": "River Discharge CWC Odisha (2026 - 2030) Manual Daily",
+   "resource_id": "1e501a44-ff95-42db-81e1-efa2be8be4dd",
+   "history_days": 8884,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 21188.80002,
+   "threshold_q99_cfs": 92638.61658751586,
+   "key": "kesinga-mahanadi-odisha"
+  },
+  {
+   "station": "Kotni",
+   "river": "Mahanadi",
+   "state": "Chhattisgarh",
+   "lat": 21.22083333,
+   "lon": 81.24111111,
+   "last_date": "2026-10-20",
+   "recent_mean_m3s": 756.8902131147541,
+   "days_last_75": 61,
+   "table": "River Discharge CWC Chhattisgarh (2026 - 2030) Manual Daily",
+   "resource_id": "06a59e6c-8ebc-4dcc-a5de-894d078b5cbb",
+   "history_days": 8937,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 7769.226674,
+   "threshold_q99_cfs": 47765.48613146418,
+   "key": "kotni-mahanadi-chhattisgarh"
+  },
+  {
+   "station": "Parmanpur",
+   "river": "Mahanadi",
+   "state": "Odisha",
+   "lat": 21.78944444,
+   "lon": 84.10611111,
+   "last_date": "2026-10-31",
+   "recent_mean_m3s": 546.9911014492751,
+   "days_last_75": 69,
+   "table": "River Discharge CWC Odisha (2026 - 2030) Manual Daily",
+   "resource_id": "1e501a44-ff95-42db-81e1-efa2be8be4dd",
+   "history_days": 3462,
+   "history_span": [
+    "2001-07-01",
+    "2025-11-21"
+   ],
+   "threshold_q90_cfs": 8883.452083185046,
+   "threshold_q99_cfs": 35636.42589959351,
+   "key": "parmanpur-mahanadi-odisha"
+  },
+  {
+   "station": "Saradaput",
+   "river": "Godavari",
+   "state": "Odisha",
+   "lat": 18.6125,
+   "lon": 82.14277778,
+   "last_date": "2026-11-03",
+   "recent_mean_m3s": 459.7413106533334,
+   "days_last_75": 75,
+   "table": "River Discharge CWC Odisha (2026 - 2030) Manual Daily",
+   "resource_id": "1e501a44-ff95-42db-81e1-efa2be8be4dd",
+   "history_days": 7693,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 14383.292519133653,
+   "threshold_q99_cfs": 52119.41570919523,
+   "key": "saradaput-godavari-odisha"
+  },
+  {
+   "station": "Manot",
+   "river": "Narmada",
+   "state": "Madhya Pradesh",
+   "lat": 22.73583333,
+   "lon": 80.51311111,
+   "last_date": "2026-10-20",
+   "recent_mean_m3s": 318.6283114754099,
+   "days_last_75": 61,
+   "table": "River Discharge CWC Madhya Pradesh (2026 - 2030) Manual Daily",
+   "resource_id": "dbb429ad-6030-46d8-931a-cd3b1c1dedbd",
+   "history_days": 8787,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 8548.516271620902,
+   "threshold_q99_cfs": 35191.12249155465,
+   "key": "manot-narmada-madhya-pradesh"
+  },
+  {
+   "station": "Tlabung",
+   "river": "Karnaphuli",
+   "state": "Mizoram",
+   "lat": 22.89833333,
+   "lon": 92.47388889,
+   "last_date": "2026-11-03",
+   "recent_mean_m3s": 277.45748000000003,
+   "days_last_75": 75,
+   "table": "River Discharge CWC Mizoram (2026 - 2030) Manual Daily",
+   "resource_id": "737171da-ed31-4afb-91c4-7d5166bc755c",
+   "history_days": 3381,
+   "history_span": [
+    "2014-03-12",
+    "2025-11-30"
+   ],
+   "threshold_q90_cfs": 17828.3622808281,
+   "threshold_q99_cfs": 41271.368105622496,
+   "key": "tlabung-karnaphuli-mizoram"
+  },
+  {
+   "station": "HRUITEZAWL",
+   "river": "Duplicate-Kolodyne",
+   "state": "Mizoram",
+   "lat": 22.25055556,
+   "lon": 92.83222222,
+   "last_date": "2026-10-29",
+   "recent_mean_m3s": 269.9722857142857,
+   "days_last_75": 70,
+   "table": "River Discharge CWC Mizoram (2026 - 2030) Manual Daily",
+   "resource_id": "737171da-ed31-4afb-91c4-7d5166bc755c",
+   "history_days": 2249,
+   "history_span": [
+    "2019-01-01",
+    "2025-11-30"
+   ],
+   "threshold_q90_cfs": 9087.10646884394,
+   "threshold_q99_cfs": 32450.27995809629,
+   "key": "hruitezawl-duplicate-kolodyne-mizoram"
+  },
+  {
+   "station": "Mohgaon",
+   "river": "Narmada",
+   "state": "Madhya Pradesh",
+   "lat": 22.76580556,
+   "lon": 80.62330556,
+   "last_date": "2026-10-20",
+   "recent_mean_m3s": 265.432131147541,
+   "days_last_75": 61,
+   "table": "River Discharge CWC Madhya Pradesh (2026 - 2030) Manual Daily",
+   "resource_id": "dbb429ad-6030-46d8-931a-cd3b1c1dedbd",
+   "history_days": 8959,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 7028.324966633999,
+   "threshold_q99_cfs": 32833.53866446876,
+   "key": "mohgaon-narmada-madhya-pradesh"
+  },
+  {
+   "station": "Sihthangpui",
+   "river": "Duplicate-Kolodyne",
+   "state": "Mizoram",
+   "lat": 22.42361111,
+   "lon": 92.94269444,
+   "last_date": "2026-11-03",
+   "recent_mean_m3s": 262.7424933333333,
+   "days_last_75": 75,
+   "table": "River Discharge CWC Mizoram (2026 - 2030) Manual Daily",
+   "resource_id": "737171da-ed31-4afb-91c4-7d5166bc755c",
+   "history_days": 2301,
+   "history_span": [
+    "2018-03-06",
+    "2025-11-10"
+   ],
+   "threshold_q90_cfs": 23368.174046057098,
+   "threshold_q99_cfs": 50622.232757115395,
+   "key": "sihthangpui-duplicate-kolodyne-mizoram"
+  },
+  {
+   "station": "TUIPUI D",
+   "river": "Duplicate-Kolodyne",
+   "state": "Mizoram",
+   "lat": 22.91833333,
+   "lon": 92.94138889,
+   "last_date": "2026-11-03",
+   "recent_mean_m3s": 227.58718666666667,
+   "days_last_75": 75,
+   "table": "River Discharge CWC Mizoram (2026 - 2030) Manual Daily",
+   "resource_id": "737171da-ed31-4afb-91c4-7d5166bc755c",
+   "history_days": 4169,
+   "history_span": [
+    "2014-06-01",
+    "2025-11-30"
+   ],
+   "threshold_q90_cfs": 21265.256273405495,
+   "threshold_q99_cfs": 56783.83692186448,
+   "key": "tuipui-d-duplicate-kolodyne-mizoram"
+  },
+  {
+   "station": "KODUMUDI",
+   "river": "Cauvery",
+   "state": "Tamil Nadu",
+   "lat": 11.08,
+   "lon": 77.89,
+   "last_date": "2026-11-02",
+   "recent_mean_m3s": 216.26607106756757,
+   "days_last_75": 74,
+   "table": "River Discharge CWC Tamil Nadu (2026 - 2030) Manual Daily",
+   "resource_id": "38543447-b022-4061-b246-d9c00d134639",
+   "history_days": 8587,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 19316.268776259203,
+   "threshold_q99_cfs": 168145.50100532352,
+   "key": "kodumudi-cauvery-tamil-nadu"
+  },
+  {
+   "station": "MUSIRI",
+   "river": "Cauvery",
+   "state": "Tamil Nadu",
+   "lat": 10.93805556,
+   "lon": 78.44027778,
+   "last_date": "2026-11-02",
+   "recent_mean_m3s": 196.79146287323945,
+   "days_last_75": 71,
+   "table": "River Discharge CWC Tamil Nadu (2026 - 2030) Manual Daily",
+   "resource_id": "38543447-b022-4061-b246-d9c00d134639",
+   "history_days": 8784,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 18807.368184365507,
+   "threshold_q99_cfs": 63194.08257897925,
+   "key": "musiri-cauvery-tamil-nadu"
+  },
+  {
+   "station": "KURUNDWAD",
+   "river": "Krishna",
+   "state": "Maharashtra",
+   "lat": 16.68444444,
+   "lon": 74.60222222,
+   "last_date": "2026-11-03",
+   "recent_mean_m3s": 191.72493333333333,
+   "days_last_75": 75,
+   "table": "River Discharge CWC Maharashtra (2026 - 2030) Manual Daily",
+   "resource_id": "65e0ff3a-2b79-4e0b-b1ad-c2977cda9d09",
+   "history_days": 8967,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 38996.5364165953,
+   "threshold_q99_cfs": 175665.18153114288,
+   "key": "kurundwad-krishna-maharashtra"
+  },
+  {
+   "station": "Rampur",
+   "river": "Mahanadi",
+   "state": "Chhattisgarh",
+   "lat": 21.64722222,
+   "lon": 82.51611111,
+   "last_date": "2026-10-20",
+   "recent_mean_m3s": 176.74754098360654,
+   "days_last_75": 61,
+   "table": "River Discharge CWC Chhattisgarh (2026 - 2030) Manual Daily",
+   "resource_id": "06a59e6c-8ebc-4dcc-a5de-894d078b5cbb",
+   "history_days": 8358,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 4169.190274933945,
+   "threshold_q99_cfs": 21679.68741264743,
+   "key": "rampur-mahanadi-chhattisgarh"
+  },
+  {
+   "station": "Patan",
+   "river": "Narmada",
+   "state": "Madhya Pradesh",
+   "lat": 23.31166667,
+   "lon": 79.66277778,
+   "last_date": "2026-10-20",
+   "recent_mean_m3s": 171.09180327868853,
+   "days_last_75": 61,
+   "table": "River Discharge CWC Madhya Pradesh (2026 - 2030) Manual Daily",
+   "resource_id": "dbb429ad-6030-46d8-931a-cd3b1c1dedbd",
+   "history_days": 8375,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 4379.522964240476,
+   "threshold_q99_cfs": 26303.311476681458,
+   "key": "patan-narmada-madhya-pradesh"
+  },
+  {
+   "station": "Dindori",
+   "river": "Narmada",
+   "state": "Madhya Pradesh",
+   "lat": 22.94777778,
+   "lon": 81.07611111,
+   "last_date": "2026-10-20",
+   "recent_mean_m3s": 169.04622950819672,
+   "days_last_75": 61,
+   "table": "River Discharge CWC Madhya Pradesh (2026 - 2030) Manual Daily",
+   "resource_id": "dbb429ad-6030-46d8-931a-cd3b1c1dedbd",
+   "history_days": 8411,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 3925.3820008251473,
+   "threshold_q99_cfs": 16852.41897113089,
+   "key": "dindori-narmada-madhya-pradesh"
+  },
+  {
+   "station": "Rajegaon",
+   "river": "Godavari",
+   "state": "Madhya Pradesh",
+   "lat": 21.62388889,
+   "lon": 80.25333333,
+   "last_date": "2026-11-02",
+   "recent_mean_m3s": 168.70225675675675,
+   "days_last_75": 74,
+   "table": "River Discharge CWC Madhya Pradesh (2026 - 2030) Manual Daily",
+   "resource_id": "dbb429ad-6030-46d8-931a-cd3b1c1dedbd",
+   "history_days": 7956,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 7333.663344148874,
+   "threshold_q99_cfs": 48950.54255611074,
+   "key": "rajegaon-godavari-madhya-pradesh"
+  },
+  {
+   "station": "Padampur",
+   "river": "Mahanadi",
+   "state": "Odisha",
+   "lat": 21.01583333,
+   "lon": 83.10305556,
+   "last_date": "2026-10-31",
+   "recent_mean_m3s": 163.08130985915494,
+   "days_last_75": 71,
+   "table": "River Discharge CWC Odisha (2026 - 2030) Manual Daily",
+   "resource_id": "1e501a44-ff95-42db-81e1-efa2be8be4dd",
+   "history_days": 2819,
+   "history_span": [
+    "2015-07-01",
+    "2025-11-30"
+   ],
+   "threshold_q90_cfs": 4278.725017372,
+   "threshold_q99_cfs": 21844.734639285805,
+   "key": "padampur-mahanadi-odisha"
+  },
+  {
+   "station": "Salebhata",
+   "river": "Mahanadi",
+   "state": "Odisha",
+   "lat": 20.98305556,
+   "lon": 83.53694444,
+   "last_date": "2026-10-31",
+   "recent_mean_m3s": 157.0942057746479,
+   "days_last_75": 71,
+   "table": "River Discharge CWC Odisha (2026 - 2030) Manual Daily",
+   "resource_id": "1e501a44-ff95-42db-81e1-efa2be8be4dd",
+   "history_days": 8310,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 5580.0704852670015,
+   "threshold_q99_cfs": 36168.51606866936,
+   "key": "salebhata-mahanadi-odisha"
+  },
+  {
+   "station": "BILIGUNDULU",
+   "river": "Cauvery",
+   "state": "Tamil Nadu",
+   "lat": 12.18222222,
+   "lon": 77.72388889,
+   "last_date": "2026-10-31",
+   "recent_mean_m3s": 150.82222222222222,
+   "days_last_75": 72,
+   "table": "River Discharge CWC Tamil Nadu (2026 - 2030) Manual Daily",
+   "resource_id": "38543447-b022-4061-b246-d9c00d134639",
+   "history_days": 8948,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 16500.65406109488,
+   "threshold_q99_cfs": 76758.79839287896,
+   "key": "biligundulu-cauvery-tamil-nadu"
+  },
+  {
+   "station": "Kurubhata",
+   "river": "Mahanadi",
+   "state": "Chhattisgarh",
+   "lat": 21.98111111,
+   "lon": 83.21055556,
+   "last_date": "2026-11-03",
+   "recent_mean_m3s": 138.56400918918916,
+   "days_last_75": 74,
+   "table": "River Discharge CWC Chhattisgarh (2026 - 2030) Manual Daily",
+   "resource_id": "06a59e6c-8ebc-4dcc-a5de-894d078b5cbb",
+   "history_days": 7881,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 6999.366939939999,
+   "threshold_q99_cfs": 32342.92972796816,
+   "key": "kurubhata-mahanadi-chhattisgarh"
+  },
+  {
+   "station": "Huvinhedigi",
+   "river": "Krishna",
+   "state": "Karnataka",
+   "lat": 16.49027778,
+   "lon": 76.92305556,
+   "last_date": "2026-11-02",
+   "recent_mean_m3s": 134.76698648648647,
+   "days_last_75": 74,
+   "table": "River Discharge CWC Karnataka (2026 - 2030) Manual Daily",
+   "resource_id": "8116803c-3edf-4c53-9840-19446ce857e7",
+   "history_days": 8647,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 41135.720233067805,
+   "threshold_q99_cfs": 252544.53501432177,
+   "key": "huvinhedigi-krishna-karnataka"
+  },
+  {
+   "station": "Dhanora (Wardha)",
+   "river": "Godavari",
+   "state": "Maharashtra",
+   "lat": 19.90444444,
+   "lon": 79.18361111,
+   "last_date": "2026-10-20",
+   "recent_mean_m3s": 134.24045901639346,
+   "days_last_75": 61,
+   "table": "River Discharge CWC Maharashtra (2026 - 2030) Manual Daily",
+   "resource_id": "65e0ff3a-2b79-4e0b-b1ad-c2977cda9d09",
+   "history_days": 1947,
+   "history_span": [
+    "2020-02-15",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 41160.2328495176,
+   "threshold_q99_cfs": 280932.19664533006,
+   "key": "dhanora-wardha-godavari-maharashtra"
+  },
+  {
+   "station": "Potteru (Potteruvagu)",
+   "river": "Godavari",
+   "state": "Odisha",
+   "lat": 18.18944444,
+   "lon": 81.79805556,
+   "last_date": "2026-11-03",
+   "recent_mean_m3s": 128.08588272,
+   "days_last_75": 75,
+   "table": "River Discharge CWC Odisha (2026 - 2030) Manual Daily",
+   "resource_id": "1e501a44-ff95-42db-81e1-efa2be8be4dd",
+   "history_days": 6211,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 6077.437660163128,
+   "threshold_q99_cfs": 12167.658523378288,
+   "key": "potteru-potteruvagu-godavari-odisha"
+  },
+  {
+   "station": "Bamni",
+   "river": "Narmada",
+   "state": "Madhya Pradesh",
+   "lat": 22.485,
+   "lon": 80.37638889,
+   "last_date": "2026-10-20",
+   "recent_mean_m3s": 124.22352459016392,
+   "days_last_75": 61,
+   "table": "River Discharge CWC Madhya Pradesh (2026 - 2030) Manual Daily",
+   "resource_id": "dbb429ad-6030-46d8-931a-cd3b1c1dedbd",
+   "history_days": 8119,
+   "history_span": [
+    "2002-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 2941.923624110199,
+   "threshold_q99_cfs": 12870.197202014771,
+   "key": "bamni-narmada-madhya-pradesh"
+  },
+  {
+   "station": "Tumnar (Dantewara)",
+   "river": "Godavari",
+   "state": "Chhattisgarh",
+   "lat": 19.01222222,
+   "lon": 81.2325,
+   "last_date": "2026-11-03",
+   "recent_mean_m3s": 123.73769110937499,
+   "days_last_75": 64,
+   "table": "River Discharge CWC Chhattisgarh (2026 - 2030) Manual Daily",
+   "resource_id": "06a59e6c-8ebc-4dcc-a5de-894d078b5cbb",
+   "history_days": 7662,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 4108.017379381537,
+   "threshold_q99_cfs": 21258.286147009647,
+   "key": "tumnar-dantewara-godavari-chhattisgarh"
+  },
+  {
+   "station": "Jeeraguda",
+   "river": "Sabari",
+   "state": "Odisha",
+   "lat": 18.94916667,
+   "lon": 82.40611111,
+   "last_date": "2026-11-03",
+   "recent_mean_m3s": 120.16974448444444,
+   "days_last_75": 75,
+   "table": "River Discharge CWC Odisha (2026 - 2030) Manual Daily",
+   "resource_id": "1e501a44-ff95-42db-81e1-efa2be8be4dd",
+   "history_days": 2160,
+   "history_span": [
+    "2019-09-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 3940.7149581276212,
+   "threshold_q99_cfs": 12425.590845461646,
+   "key": "jeeraguda-sabari-odisha"
+  },
+  {
+   "station": "Nowrangpur",
+   "river": "Godavari",
+   "state": "Odisha",
+   "lat": 19.1975,
+   "lon": 82.51194444,
+   "last_date": "2026-11-02",
+   "recent_mean_m3s": 115.70348257377049,
+   "days_last_75": 61,
+   "table": "River Discharge CWC Odisha (2026 - 2030) Manual Daily",
+   "resource_id": "1e501a44-ff95-42db-81e1-efa2be8be4dd",
+   "history_days": 7934,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 2329.0746109597344,
+   "threshold_q99_cfs": 18895.122828598775,
+   "key": "nowrangpur-godavari-odisha"
+  },
+  {
+   "station": "Baronda",
+   "river": "Mahanadi",
+   "state": "Chhattisgarh",
+   "lat": 20.91055556,
+   "lon": 81.88722222,
+   "last_date": "2026-10-20",
+   "recent_mean_m3s": 103.79816422950819,
+   "days_last_75": 61,
+   "table": "River Discharge CWC Chhattisgarh (2026 - 2030) Manual Daily",
+   "resource_id": "06a59e6c-8ebc-4dcc-a5de-894d078b5cbb",
+   "history_days": 8743,
+   "history_span": [
+    "2001-01-01",
+    "2025-12-31"
+   ],
+   "threshold_q90_cfs": 3735.087407844464,
+   "threshold_q99_cfs": 21028.80967705963,
+   "key": "baronda-mahanadi-chhattisgarh"
+  }
+ ]
+}

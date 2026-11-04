@@ -41,14 +41,41 @@ function Spark({ d }: { d: Json }) {
   );
 }
 
-export default function ModelForecastCard({ usgs, river, onSimulate }: { usgs?: string; river: string; onSimulate: (riseMetres: number, label: string) => void }) {
+/** Model forecasts replayed over the last 30 observed days and scored against what NWIC actually recorded. */
+function Hindcast({ h }: { h: Json }) {
+  const [hz, setHz] = useState('1');
+  const ser = h.series[hz];
+  const W = 360, H = 90, L = 4, R = 4, T = 6, B = 4;
+  const all: number[] = ser ? [...ser.observed, ...ser.model] : [1];
+  const max = Math.max(...all) * 1.05, min = Math.min(...all) * 0.95;
+  const x = (i: number) => L + (i / Math.max(1, ser.observed.length - 1)) * (W - L - R);
+  const y = (v: number) => T + (1 - (v - min) / (max - min || 1)) * (H - T - B);
+  const path = (a: number[]) => a.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
+  return (
+    <div className="mf-hind">
+      <div className="mf-hind-head"><strong>Model vs what NWIC recorded</strong>
+        <span className="mf-seg">{Object.keys(h.horizons).map(k => <button key={k} className={hz === k ? 'on' : ''} onClick={() => setHz(k)}>{k}d</button>)}</span></div>
+      {ser && (<svg viewBox={`0 0 ${W} ${H}`} className="mf-spark" role="img" aria-label="Observed vs model over the last 30 days">
+        <path d={path(ser.persistence)} className="mf-pers" fill="none" />
+        <path d={path(ser.observed)} className="mf-obs" fill="none" />
+        <path d={path(ser.model)} className="mf-fc" fill="none" />
+      </svg>)}
+      <div className="mf-legend"><i className="o" /> observed <i className="m" /> model <i className="p" /> persistence</div>
+      <p className="mf-muted">{h.window_days}-day replay, forecasts made {hz} day{hz === '1' ? '' : 's'} ahead using only data available at the time. Error (RMSE): model <b>{fmt(h.horizons[hz].rmse_model)}</b> cfs vs persistence <b>{fmt(h.horizons[hz].rmse_persistence)}</b> cfs
+        ({fmt(h.horizons[hz].rmse_ratio, 2)}×, below 1 is better). One short window, so treat it as indicative.</p>
+    </div>
+  );
+}
+
+export default function ModelForecastCard({ usgs, nwic, river, onSimulate }: { usgs?: string; nwic?: string; river: string; onSimulate: (riseMetres: number, label: string) => void }) {
   const [state, setState] = useState<{ data: Json; error: string | null; offline: boolean; loading: boolean }>({ data: null, error: null, offline: false, loading: false });
   const [tick, setTick] = useState(0);
   useEffect(() => {
-    if (!usgs) { setState({ data: null, error: null, offline: false, loading: false }); return; }
+    const query = usgs ? `station=${encodeURIComponent(usgs)}` : nwic ? `india=${encodeURIComponent(nwic)}` : null;
+    if (!query) { setState({ data: null, error: null, offline: false, loading: false }); return; }
     const ctl = new AbortController();
     setState(s => ({ ...s, loading: true, error: null, offline: false }));
-    fetch(`/api/live_forecast?station=${encodeURIComponent(usgs)}`, { signal: ctl.signal })
+    fetch(`/api/live_forecast?${query}`, { signal: ctl.signal })
       .then(async r => {
         const text = await r.text();
         let body: Json = null;
@@ -59,7 +86,7 @@ export default function ModelForecastCard({ usgs, river, onSimulate }: { usgs?: 
       })
       .catch((e: Json) => { if (!ctl.signal.aborted) setState({ data: null, error: e.offline ? null : String(e.message ?? e), offline: !!e.offline || e instanceof TypeError, loading: false }); });
     return () => ctl.abort();
-  }, [usgs, tick]);
+  }, [usgs, nwic, tick]);
 
   const exportJson = useCallback(() => {
     if (!state.data) return;
@@ -72,18 +99,19 @@ export default function ModelForecastCard({ usgs, river, onSimulate }: { usgs?: 
     <section className="mf-card" aria-label="Model forecast for the simulation">
       <div className="mf-head">
         <span className="mf-title"><Bot size={15} /> ML model forecast</span>
-        {usgs && <button className="mf-icon" onClick={() => setTick(t => t + 1)} title="Refresh with the latest data" aria-label="Refresh forecast"><RefreshCw size={13} /></button>}
+        {(usgs || nwic) && <button className="mf-icon" onClick={() => setTick(t => t + 1)} title="Refresh with the latest data" aria-label="Refresh forecast"><RefreshCw size={13} /></button>}
       </div>
-      {!usgs && <p className="mf-muted">The discharge model was trained only on US USGS gauges, so it does not cover {river}. It needs that river's own discharge history before it can forecast.</p>}
-      {usgs && state.loading && !d && <p className="mf-muted">Fetching live USGS discharge and weather, then running the model…</p>}
-      {usgs && state.offline && (
+      {!usgs && !nwic && <p className="mf-muted">No live discharge feed is connected for {river}, so the model cannot forecast it. It needs that river's own recent discharge as input.</p>}
+      {(usgs || nwic) && state.loading && !d && <p className="mf-muted">Fetching live USGS discharge and weather, then running the model…</p>}
+      {(usgs || nwic) && state.offline && (
         <div className="mf-offline">
           <AlertTriangle size={14} />
           <div><strong>Model server is not running.</strong> Start it in a second terminal, then press refresh:
             <code>python -m server.model_api</code></div>
         </div>)}
-      {usgs && state.error && <div className="mf-offline"><AlertTriangle size={14} /><div><strong>Forecast unavailable.</strong> {state.error}</div></div>}
+      {(usgs || nwic) && state.error && <div className="mf-offline"><AlertTriangle size={14} /><div><strong>Forecast unavailable.</strong> {state.error}</div></div>}
       {d && (<>
+        {d.new_river && <p className="mf-newriver"><b>New river</b>: not in the model's training data. Live observed flow from India's NWIC portal.</p>}
         <p className="mf-muted">Using real data up to <b>{d.origin_date}</b>: latest flow <b>{fmt(d.latest_observed_cfs)} cfs</b>. High-flow level (Q90) for this gauge is {fmt(d.threshold_q90_cfs)} cfs.</p>
         <Spark d={d} />
         <div className="mf-rows">
@@ -109,6 +137,7 @@ export default function ModelForecastCard({ usgs, river, onSimulate }: { usgs?: 
             : 'No stage rating available for this gauge; showing discharge only.'}
         </p>
         {d.warnings?.map((w: string) => <p key={w} className="mf-warn"><AlertTriangle size={12} /> {w}</p>)}
+        {d.hindcast && Object.keys(d.hindcast.horizons).length > 0 && <Hindcast h={d.hindcast} />}
         <div className="mf-actions">
           <button className="mf-btn" onClick={exportJson}><Download size={13} /> Export in BASINSHIFT format</button>
         </div>

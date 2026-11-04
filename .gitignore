@@ -10,3 +10,12 @@ __pycache__/
 output/
 .presentation-build/
 .codex-finalizer/
+
+# Large or re-creatable data kept out of Git (see HANDOFF.md "Set up on a new machine")
+data/external/
+data/large_plus/
+data/large/train/train_clean.csv
+.claude/
+# ...but the production BASINSHIFT-style model IS committed so a new machine can run the model server directly.
+# (models_heldout.joblib is only for judge-test exports; retrain it with: python -m scripts.basinshift_model --experiment heldout)
+!data/experiments/basinshift_model/models_caravan.joblib

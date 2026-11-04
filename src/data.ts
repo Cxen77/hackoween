@@ -1,14 +1,9 @@
-export type Station = { id: string; name: string; river: string; region: string; lat: number; lon: number; usgs?: string };
-export const stations: Station[] = [
-  { id:'potomac', name:'Little Falls', river:'Potomac River', region:'Maryland, United States', lat:38.9498, lon:-77.1276, usgs:'01646500' },
-  { id:'mississippi', name:'St. Louis', river:'Mississippi River', region:'Missouri, United States', lat:38.6289, lon:-90.1797, usgs:'07010000' },
-  { id:'colorado', name:'Austin', river:'Colorado River', region:'Texas, United States', lat:30.2447, lon:-97.6947, usgs:'08158000' },
-  { id:'neuse', name:'Near Clayton', river:'Neuse River', region:'North Carolina, United States', lat:35.6472, lon:-78.4056, usgs:'02087500' },
-  { id:'sacramento', name:'Verona', river:'Sacramento River', region:'California, United States', lat:38.774, lon:-121.598, usgs:'11425500' },
-  { id:'ganga', name:'Varanasi', river:'Ganges River', region:'Uttar Pradesh, India', lat:25.306, lon:83.006 },
-  { id:'brahmaputra', name:'Guwahati', river:'Brahmaputra River', region:'Assam, India', lat:26.195, lon:91.744 },
-  { id:'yamuna', name:'New Delhi', river:'Yamuna River', region:'Delhi, India', lat:28.667, lon:77.244 },
-];
+import { datasetStations } from './datasetStations';
+import { indiaStations } from './indiaStations';
+export type Station = { id: string; name: string; river: string; region: string; lat: number; lon: number; usgs?: string; nwic?: string; newRiver?: boolean };
+// Monitored basins = the 55 US gauges the model was trained on (scripts/export_dataset_stations.py) plus Indian gauges with a LIVE NWIC
+// discharge feed (scripts/export_india_stations.py). The Indian ones are new rivers: not in the training data.
+export const stations: Station[] = [...datasetStations, ...indiaStations];
 
 export type RiverHydraulicProfile = {
   minRise: number;

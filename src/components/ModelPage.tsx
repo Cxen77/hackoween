@@ -341,6 +341,7 @@ function JudgeTests({ summary }: { summary: Json }) {
     ['Test B: geographic', '§7.1, 7.3', 'Catchments completely excluded from training', held && car ? 'done' : 'partial'],
     ['Test C: stress', '§7.5', 'Missing data, gaps, noise, delayed inputs', summary.stress?.heldout ? 'done' : 'partial'],
     ['Output contract', '§8.3–8.4', 'Record layout, probabilities, interval order, no NaN or duplicates', 'done'],
+    ['Live new-river test (India)', 'NWIC', 'Model vs live NWIC observations at gauges outside the training data', 'done'],
     ['H1: static attributes help transfer', '§4.3', 'Same model with and without catchment attributes', jt?.h1_static_attributes ? 'done' : 'partial'],
     ['H2: unseen-basin gap', '§4.3', 'Skill on seen vs unseen catchments', jt && held ? 'done' : 'partial'],
     ['H3: probabilistic forecasts', '§4.3', 'Brier skill, reliability error, interval coverage', 'done'],
@@ -385,9 +386,38 @@ function JudgeTests({ summary }: { summary: Json }) {
         </>) : <div className="mp-empty">Not available yet.</div>}
       </section>
 
+      <IndiaLiveTest />
       <LiveCaravanTest />
       <ContractCheck />
     </div>
+  );
+}
+
+function IndiaLiveTest() {
+  const t = useJson('/reports/model/india_live_test.json');
+  const d = t.data;
+  const [sort, setSort] = useState<'ratio' | 'name'>('ratio');
+  if (t.error) return null;
+  const rows: Json[] = d ? [...d.stations].sort((a, b) => (sort === 'name' ? a.station.localeCompare(b.station) : (a.horizons['1']?.rmse_ratio ?? 9) - (b.horizons['1']?.rmse_ratio ?? 9))) : [];
+  return (
+    <section className="mp-card">
+      <div className="mp-eyebrow"><Activity size={14} /> New rivers · India · live NWIC data</div>
+      <h3>How does the model compare with what India's portal actually recorded?</h3>
+      <p className="mp-muted">None of these gauges was in the training data. For each one, the model replays 1-, 3- and 7-day forecasts over the last 30 observed days using only data available at the time, and the result is scored against the NWIC reading. Units on the portal are m³/s; they are converted to cfs.</p>
+      {!d && <div className="mp-empty">Loading…</div>}
+      {d && (<>
+        <table className="mp-table"><thead><tr><th>Horizon</th><th>Gauges</th><th>Median RMSE ratio (model ÷ persistence)</th><th>Gauges where model beats persistence</th><th>Middle half of gauges</th></tr></thead>
+          <tbody>{Object.entries(d.summary).map(([h, s]: [string, Json]) => (
+            <tr key={h}><td>{h}-day</td><td>{s.stations}</td><td><b>{fmt(s.median_rmse_ratio, 2)}×</b></td><td>{fmt(s.share_model_better_than_persistence * 100, 0)}%</td><td>{fmt(s.p25, 2)}–{fmt(s.p75, 2)}×</td></tr>))}</tbody></table>
+        <p className="mp-note"><AlertTriangle size={13} /> Short window (30 days) at the end of the monsoon, when flows are mostly falling. Many of these rivers are dam-regulated, which the model knows nothing about. A ratio below 1.00 means better than repeating the latest reading; this is a transfer test, not a proof of skill.</p>
+        <div className="mp-controls"><div className="mp-seg"><button className={sort === 'ratio' ? 'on' : ''} onClick={() => setSort('ratio')}>Best first</button><button className={sort === 'name' ? 'on' : ''} onClick={() => setSort('name')}>By name</button></div></div>
+        <table className="mp-table mp-left"><thead><tr><th>Gauge</th><th>River</th><th>State</th><th>Last reading</th><th>1-day ratio</th><th>3-day</th><th>7-day</th></tr></thead>
+          <tbody>{rows.map(r => (
+            <tr key={r.key}><td>{r.station}</td><td>{r.river}</td><td>{r.state}</td><td>{r.last_obs}</td>
+              {['1', '3', '7'].map(h => <td key={h} style={{ color: (r.horizons[h]?.rmse_ratio ?? 1) < 1 ? 'var(--emerald)' : 'var(--rose)' }}>{r.horizons[h] ? `${fmt(r.horizons[h].rmse_ratio, 2)}×` : '—'}</td>)}</tr>))}</tbody></table>
+        {d.failed?.length > 0 && <p className="mp-muted">{d.failed.length} gauge(s) could not be scored (no overlapping weather or too few readings).</p>}
+      </>)}
+    </section>
   );
 }
 

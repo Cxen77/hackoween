@@ -1,0 +1,1111 @@
+BASINSHIFT
+ THE GLOBAL FLOOD INTELLIGENCE CHALLENGE
+ Full Challenge Documentation
+ Research rationale  Official problem statement  Dataset strategy  ML benchmark
+  Evaluation  Competition operations
+Working title: BASINSHIFT
+Challenge theme: Generalizable machine learning for extreme river-discharge prediction in unseen
+catchments
+Document type: Organizer master specification with participant-facing statement
+Version: 1.0 — Draft for technical review
+Date: 3 November 2026
+CONFIDENTIALITY NOTE
+This document contains both proposed public challenge content and organizer-only benchmark design recommendations.
+Hidden-test construction, exact test catchments, evaluation labels, thresholds and anti-cheating controls must not be
+disclosed to participants before the competition closes.
+ Prepared as a design specification. It does not claim that the dataset package, hidden evaluator, baseline models or operational flood-warning system
+ have already been built or independently validated.
+
+
+--- page ---
+Document map
+●
+ 1. Executive summary
+●
+ 2. Challenge identity and scope
+●
+ 3. Problem background and motivation
+●
+ 4. Research gap and ML justification
+●
+ 5. Official participant-facing problem statement
+●
+ 6. Dataset and data governance strategy
+●
+ 7. Benchmark and split design
+●
+ 8. ML task and input/output contract
+●
+ 9. Modeling approaches and baselines
+●
+ 10. Evaluation methodology
+●
+ 11. Competition rules and constraints
+●
+ 12. Submission deliverables
+●
+ 13. Judging rubric
+●
+ 14. Hidden evaluation and competition integrity
+●
+ 15. Organizer implementation plan
+●
+ 16. Risks, limitations and responsible use
+●
+ 17. Acceptance criteria and launch checklist
+●
+ 18. References and source notes
+How to read this document: Sections 1–5 explain the competition concept and public challenge. Sections 6–14
+specify the technical benchmark and competition rules. Sections 15–18 are intended primarily for organizers
+and reviewers.
+BASINSHIFT | Organizer & Technical Documentation
+Page 2 of 22
+
+
+--- page ---
+1. Executive summary
+BASINSHIFT is a proposed international machine-learning challenge focused on forecasting river discharge and detecting
+high-flow events in geographically unfamiliar catchments. The central research question is whether an ML system can learn
+transferable hydrological relationships rather than relying on patterns specific to catchments observed during training.
+Participants will receive approved historical hydrological observations, meteorological inputs and catchment attributes. They
+will build systems that produce future discharge forecasts, probabilities of crossing high-flow thresholds and uncertainty
+estimates. Evaluation will include ordinary forecasting, rare-event detection, geographic generalization, calibration,
+robustness and computational efficiency.
+The challenge is deliberately framed as a benchmark for generalization under environmental and geographic shift. It is not a
+request to build a complete flood-warning service, estimate street-level inundation, or replace official hydrological agencies.
+Recommended direction
+Proceed to benchmark engineering, not immediate public launch. The concept is promising, but launch
+readiness depends on dataset licensing and quality checks, aligned target/input definitions, leakage-resistant
+splits, baseline reproduction, hidden-evaluator testing and an independent pilot.
+Key design principles
+●
+ Use genuine, documented hydrological observations for evaluation.
+●
+ Separate catchment identities and time periods to test distinct forms of generalization.
+●
+ Treat discharge forecasting, high-flow exceedance and inundation mapping as different tasks.
+●
+ Reward calibrated uncertainty and robust performance, not only average prediction error.
+●
+ Make the benchmark architecture-neutral and computationally accessible.
+●
+ Keep hidden labels, exact test partitions and test-generation details confidential.
+Status of claims
+ Status label
+Meaning in this document
+Established resource
+A named dataset or research resource that exists; exact coverage and permitted use still require verification.
+Design proposal
+A recommended competition choice that the organizing committee must implement and validate.
+Unverified assumption
+A point that must not be represented as fact until checked against the actual downloaded data or official
+documentation.
+Out of scope
+A capability the challenge does not claim to establish.
+BASINSHIFT | Organizer & Technical Documentation
+Page 3 of 22
+
+
+--- page ---
+2. Challenge identity and scope
+Working title: BASINSHIFT — The Global Flood Intelligence Challenge.
+The name refers to the core technical challenge: learning across basin boundaries and operating under distribution shift. The
+title is provisional and should undergo trademark, domain and event-brand checks before publication.
+2.1 Challenge category
+Primary category: Machine Learning / Environmental Intelligence / Hydrological Forecasting. Secondary themes include
+time-series modeling, domain generalization, probabilistic prediction, transfer learning and robust ML.
+2.2 Core objective
+Develop a reproducible ML system that predicts river discharge at specified future horizons and estimates the probability of
+high-flow and extreme high-flow threshold exceedances, including for catchments excluded from model training.
+2.3 In scope
+●
+ Time-series prediction of river discharge.
+●
+ High-flow threshold exceedance probability estimation.
+●
+ Generalization to catchments not seen during training.
+●
+ Uncertainty estimation and calibration.
+●
+ Robustness to missing, noisy or degraded input observations.
+●
+ Efficient and reproducible model inference.
+2.4 Out of scope
+●
+ Certified public flood-warning decisions.
+●
+ Street-level flood depth or building-level inundation prediction in the core track.
+●
+ Claims of causal climate attribution.
+●
+ Autonomous emergency response or evacuation recommendations.
+●
+ Replacement of official hydrological forecasts or local expert judgment.
+2.5 Intended participants
+The challenge is intended for university teams, independent researchers, ML engineers, data scientists and multidisciplinary
+teams. The benchmark should be usable by teams with CPU-only or modest GPU resources; compute-intensive extensions
+may be optional rather than mandatory.
+BASINSHIFT | Organizer & Technical Documentation
+Page 4 of 22
+
+
+--- page ---
+3. Problem background and motivation
+River discharge is the volume of water flowing through a river cross-section per unit time. Forecasting discharge is a key
+component of hydrological monitoring and can support decisions in flood preparedness, reservoir operations, agriculture,
+infrastructure management and water-resource planning.
+Catchments differ in climate, topography, soil, vegetation, land use, geology, river network structure and human intervention.
+A model trained on one set of basins may not transfer reliably to another. Temporal changes, rare extreme events and gaps
+in observation records further complicate learning.
+A benchmark that evaluates only random samples from familiar catchments can overestimate real-world generalization.
+Overlapping time windows, shared catchment characteristics and temporally adjacent records may allow a model to perform
+well without learning transferable relationships.
+3.1 Why this matters internationally
+Flood hazards cross national and administrative boundaries, while hydrological data availability and monitoring quality vary
+widely. A generalizable approach could be useful in data-sparse basins, but that possibility must be demonstrated rather than
+assumed. A global benchmark can expose where models transfer, where they fail and how uncertainty changes under
+unfamiliar conditions.
+3.2 The precise problem
+Given a permitted history of hydrological and meteorological observations plus static or slowly varying catchment attributes,
+estimate river discharge at one or more future forecast horizons. For each horizon, also estimate the probability that
+discharge exceeds a pre-defined catchment-specific high-flow threshold.
+3.3 Why the challenge is difficult
+●
+ Hydrological response is nonlinear and depends on interactions among rainfall, soil, terrain and catchment storage.
+●
+ Catchments have different response times and physical characteristics.
+●
+ Extreme events are relatively rare and may be underrepresented in training data.
+●
+ Observation records can be incomplete, noisy or inconsistent.
+●
+ Geographic and temporal shifts can invalidate learned correlations.
+●
+ Point forecasts alone do not communicate the risk of extreme outcomes.
+3.4 Intended impact pathway
+A successful research result may inform future decision-support systems, especially where model transfer and uncertainty
+are important. Before operational use, the system would require local validation, expert oversight, reliable data feeds,
+monitoring, and formal evaluation against relevant agency standards.
+BASINSHIFT | Organizer & Technical Documentation
+Page 5 of 22
+
+
+--- page ---
+4. Research gap and ML justification
+The competition is not based on the claim that hydrological forecasting is unsolved. Existing hydrological models, operational
+forecasting systems and ML methods already provide important capabilities. The proposed opportunity is to evaluate and
+improve reliability when models are transferred to unseen catchments and unusual conditions.
+4.1 Research questions
+1
+How well can a model forecast discharge in catchments excluded from training?
+2
+Which static catchment attributes and dynamic forcing variables support transfer?
+3
+How does performance change between familiar and unfamiliar geographic regions?
+4
+Can probabilistic forecasts remain calibrated during high-flow events?
+5
+How sensitive are models to missing, noisy or delayed observations?
+6
+Do hybrid or physics-informed approaches improve generalization enough to justify their complexity?
+4.2 Why machine learning is justified
+The task involves learning nonlinear relationships across multiple input variables and catchments, handling heterogeneous
+time series, transferring representations across domains and estimating conditional predictive distributions. ML offers a family
+of methods suited to these tasks. However, the competition must permit statistical and physical baselines so that ML is
+required to demonstrate value rather than assumed to be superior.
+4.3 Research hypotheses to test
+ Hypothesis
+Testable evidence
+H1: Catchment attributes improve transfer.
+Compare otherwise identical models with and without static catchment attributes on unseen basins.
+H2: Geographic holdouts reveal
+generalization gaps.
+Compare familiar-basin temporal testing with fully unseen-basin testing.
+H3: Probabilistic models improve risk
+communication.
+Measure Brier score/CRPS, reliability and interval coverage.
+H4: Robust training improves
+degraded-input performance.
+Apply fixed missingness/noise perturbations and compare relative degradation.
+H5: Hybrid approaches may improve
+physical plausibility.
+Evaluate against the same hidden data and documented physical constraints.
+These are hypotheses, not established findings. The competition should publish the hypotheses as
+motivation without implying that any particular method is guaranteed to win.
+BASINSHIFT | Organizer & Technical Documentation
+Page 6 of 22
+
+
+--- page ---
+5. Official participant-facing problem statement
+BASINSHIFT: Learning to Predict Extreme River Events Beyond Observed
+Environments
+Background
+Flood-related decisions depend in part on understanding how rivers respond to rainfall and changing environmental
+conditions. Yet hydrological systems differ substantially from one catchment to another. Models that perform well in familiar
+locations may not maintain the same reliability in geographically unfamiliar basins or during unusual events.
+The challenge
+Build a machine-learning system that forecasts future river discharge and estimates the probability of
+high-flow events across diverse catchments. Your solution must demonstrate generalization beyond the
+catchments used for training and provide evidence about the reliability of its predictions.
+Core requirements
+●
+ Produce river-discharge forecasts for the official forecast horizons.
+●
+ Estimate high-flow and extreme high-flow exceedance probabilities.
+●
+ Demonstrate performance on unseen catchments.
+●
+ Quantify uncertainty using a documented method.
+●
+ Handle missing or degraded observations according to the benchmark specification.
+●
+ Provide reproducible code, model artifacts and technical documentation.
+Potential input data
+The organizer-provided package may include historical discharge, meteorological observations or forcing, catchment
+attributes, timestamps and data-quality indicators. The final data dictionary will specify the exact available variables, units,
+missing-value conventions and permitted use.
+Expected output
+For each evaluated catchment and forecast origin, teams will submit predicted discharge for each official horizon, high-flow
+exceedance probabilities, uncertainty information and required metadata in the published schema.
+Permitted methods
+Teams may use statistically justified approaches, tree-based models, neural sequence models, graph models, probabilistic
+methods, transfer learning, domain adaptation, physics-informed methods or hybrid systems. No specific architecture is
+mandatory. All external data, pretrained models and synthetic-data use must be declared.
+Success
+An exceptional solution will combine strong forecast skill with reliable high-flow detection, transfer to unseen catchments,
+calibrated uncertainty, robustness and reproducible engineering. The competition does not certify a system for operational
+flood warnings.
+Official wording must be updated after the organizer has frozen the forecast horizons, variable list, data
+policy, split definitions and submission schema.
+BASINSHIFT | Organizer & Technical Documentation
+Page 7 of 22
+
+
+--- page ---
+6. Dataset and data governance strategy
+6.1 Primary resource: Caravan
+Caravan is a large-sample hydrology dataset designed to make data from multiple catchment datasets more accessible in a
+standardized structure. The challenge proposal uses it as the primary starting point because it combines streamflow
+observations, meteorological forcing and catchment attributes across many catchments.
+The often-cited collection size is 6,830 catchments. This figure must be checked against the exact release, version and files
+selected by the organizers. It must not be treated as a guarantee that every variable or every date is complete for every
+catchment.
+6.2 Secondary and complementary sources
+ Resource
+Potential role
+Important caveat
+GloFAS
+Context, comparison or secondary forecast
+reference.
+Check product version, licensing, spatial resolution,
+temporal coverage and whether its variables overlap with
+targets.
+Copernicus Emergency
+Management Service
+Optional spatial event-mapping extension.
+Flood extent products are not interchangeable with river
+discharge observations.
+Additional meteorological products
+Fill or extend permitted forcing inputs where justified.
+Ensure temporal/spatial alignment, licensing and no
+hidden-label leakage.
+6.3 Data inventory required before release
+●
+ Dataset name, version, source URL and retrieval date.
+●
+ License and permitted competition, redistribution and commercial-use terms.
+●
+ Catchment identifier and geographic metadata.
+●
+ Variable names, units, measurement definitions and time zones.
+●
+ Observation frequency, date coverage and missingness rate.
+●
+ Quality flags, measurement uncertainty and known caveats.
+●
+ Spatial resolution and mapping between sources.
+●
+ Data transformations, filters and derived features.
+●
+ Checksum or immutable manifest for released files.
+6.4 Data processing rules
+●
+ Preserve raw downloaded data separately from processed benchmark data.
+●
+ Record every transformation in a version-controlled pipeline.
+●
+ Normalize units explicitly and test conversions.
+●
+ Use UTC or a clearly documented canonical time convention.
+●
+ Do not forward-fill across long gaps without an explicit rule.
+●
+ Never replace missing discharge labels with zero.
+●
+ Fit scalers, imputers and feature-selection steps using training data only.
+●
+ Record catchment-level exclusions and their reasons.
+6.5 Synthetic data policy
+Synthetic data may be used for training or augmentation if disclosed and documented. Synthetic data must not be passed off
+as measured observations and must not replace genuine hidden evaluation labels. Organizers should define whether
+external pretraining is allowed, whether public external labels may be used and how data provenance is audited.
+BASINSHIFT | Organizer & Technical Documentation
+Page 8 of 22
+
+
+--- page ---
+6.6 Privacy and licensing
+Hydrological data are often environmental rather than personal data, but licensing, critical-infrastructure
+sensitivity and location-related restrictions still require review. Organizers must verify rights to redistribute
+every dataset component and must not assume that public availability means unrestricted reuse.
+BASINSHIFT | Organizer & Technical Documentation
+Page 9 of 22
+
+
+--- page ---
+7. Benchmark and split design
+The benchmark's credibility depends on split design. The organizing committee should define splits at the
+catchment level before generating windows, sequences or samples. Randomly splitting overlapping windows
+is not sufficient for a geographic-generalization challenge.
+7.1 Proposed evaluation partitions
+ Partition
+Design
+Access
+Purpose
+Training
+Selected catchments and historical periods.
+Public
+Fit model parameters.
+Validation
+Separate catchments and/or time windows defined in
+advance.
+Public
+Model selection and iteration.
+Test A: Temporal
+Later periods in catchments represented in training,
+where feasible.
+Hidden
+Temporal extrapolation.
+Test B: Geographic
+Catchment identities fully excluded from training.
+Hidden
+Unseen-catchment transfer.
+Test C: Stress
+Controlled input corruption or distribution-shift cases.
+Hidden
+Robustness and reliability.
+7.2 Leakage controls
+●
+ Assign catchment IDs to partitions before constructing training windows.
+●
+ Ensure no target labels from hidden periods enter training-derived statistics.
+●
+ Compute catchment thresholds from an approved historical reference period only.
+●
+ Fit preprocessing parameters using training data only.
+●
+ Audit external datasets for hidden-period or hidden-location labels.
+●
+ Inspect public mirrors and derived products for possible reconstruction of hidden targets.
+●
+ Check that forecast input timestamps never include information after the forecast origin.
+●
+ Run duplicate and near-duplicate record checks across partitions.
+7.3 Geographic split strategy
+Do not rely on a single random basin split. Consider region-stratified holdouts so that test partitions include a defensible mix
+of climatic and geographic conditions. Report the distribution of catchment area, aridity, elevation, climate zone and record
+length across splits. The exact strategy should be selected after coverage analysis.
+7.4 Temporal split strategy
+For temporal testing, use chronologically later periods than the training period. Avoid random time shuffling. Ensure that the
+input history available at each forecast origin is strictly prior to the target horizon. Document whether a warm-up context is
+permitted for a test catchment and whether that context contains labels.
+7.5 Stress-test design
+Apply reproducible perturbations such as fixed rates of missing observations, short contiguous gaps, measurement noise and
+delayed input availability. Publish the perturbation families and general methodology, but keep exact hidden-test seeds and
+examples confidential until after the competition.
+7.6 Split acceptance criteria
+The benchmark is not ready until independent reviewers confirm that split assignments are reproducible, the hidden targets
+cannot be trivially reconstructed, the partitions are sufficiently large for stable metrics and no accidental identity or time
+leakage remains.
+BASINSHIFT | Organizer & Technical Documentation
+Page 10 of 22
+
+
+--- page ---
+8. ML task and input/output contract
+8.1 Task formulation
+For catchment c and forecast origin t, the model receives a permitted input history X(c, ≤t) and static or slowly varying
+attributes A(c). It predicts discharge q(c,t+h) at each official horizon h, plus the probability of exceeding the official threshold
+T(c).
+The forecast horizons should be selected after inspecting the temporal resolution, label coverage and
+practical baseline difficulty. A provisional set of 1, 3 and 7 days may be explored only if the data support those
+horizons; it is not a frozen requirement.
+8.2 Input fields
+ Field group
+Example fields
+Rules
+Identity
+Catchment ID, forecast origin timestamp.
+IDs are identifiers, not hidden labels.
+Hydrology history
+Past observed discharge values and quality flags.
+Only observations available at forecast origin.
+Meteorology
+Past and permitted forecast precipitation, temperature or
+other forcing.
+Clearly distinguish observed history from forecast inputs.
+Catchment attributes
+Area, elevation, soil/land attributes where available.
+Static fields must be documented and checked for leakage.
+Missingness metadata
+Masks, quality flags, observation gaps.
+Use only if included in the official contract.
+8.3 Output schema (illustrative)
+The following is a conceptual example only. The organizers must publish a formal JSON Schema or equivalent machine-readable contract and define
+units, probability semantics and uncertainty representation.
+{ "catchment_id": "BASIN_001", "forecast_origin": "2026-01-15T00:00:00Z", "forecast_horizons_days": [1, 3, 7],
+"predicted_discharge": [12.4, 14.1, 18.7], "high_flow_probability": [0.08, 0.17, 0.31],
+"extreme_flow_probability": [0.01, 0.04, 0.12], "prediction_intervals": { "lower": [8.1, 8.8, 9.5], "upper":
+[17.9, 22.6, 31.2] } }
+All numeric values above are illustrative placeholders, not actual observations or recommended predictions.
+8.4 Validation rules
+●
+ Reject unknown catchment IDs and unexpected forecast horizons.
+●
+ Reject NaN, infinity, invalid probability values and malformed records.
+●
+ Require non-negative discharge predictions unless a documented target transformation changes the output semantics.
+●
+ Check prediction interval ordering and required coverage fields.
+●
+ Enforce one prediction per required key and prevent duplicate submissions.
+●
+ Record missing outputs and apply a published penalty or submission rejection rule.
+BASINSHIFT | Organizer & Technical Documentation
+Page 11 of 22
+
+
+--- page ---
+9. Modeling approaches and baselines
+The competition should be architecture-neutral. Participants should be able to justify any method that satisfies the interface
+and constraints. Organizers should provide strong, reproducible baselines to establish task difficulty and reduce the risk that
+the benchmark is accidentally trivial or impossible.
+9.1 Required organizer baselines
+ Baseline
+Role
+Implementation considerations
+Persistence
+Simple reference forecast.
+Use last available discharge or a clearly defined persistence variant.
+Seasonal/climatological
+Reference for recurring patterns.
+Fit using training data only; define handling of sparse records.
+Gradient boosting
+Strong tabular/time-lag baseline.
+Document features, missingness handling, hyperparameters and
+compute.
+Sequence model
+Neural temporal baseline.
+Use a modest recurrent or temporal convolution model; report seeds
+and runtime.
+Optional hydrological/hybrid
+Physical or process-based reference.
+Include only if inputs, calibration and runtime are comparable.
+9.2 Candidate participant methods
+●
+ Gradient-boosted decision trees using lagged forcing, discharge history and catchment attributes.
+●
+ Recurrent models such as LSTM or GRU for sequential dependencies.
+●
+ Temporal convolutional networks for multi-scale temporal patterns.
+●
+ Transformer-style sequence models where the data volume and compute justify them.
+●
+ Graph neural networks if river-network structure is reliably available and standardized.
+●
+ Probabilistic regression, quantile models or distributional forecasting.
+●
+ Domain adaptation, meta-learning or invariant representation methods.
+●
+ Physics-informed losses or hybrid physical/ML models, with constraints documented.
+9.3 Model selection discipline
+Teams should select methods based on the data regime, forecast horizon, compute budget and validation evidence. A
+complex model is not inherently superior. The final report should include ablations showing which components materially
+improve performance.
+9.4 Compute fairness
+Set an inference environment and resource budget before launch. Consider CPU inference as the baseline requirement, with
+a modest optional GPU allowance if the organizer platform supports it. The precise CPU, RAM, accelerator, runtime and
+artifact-size limits must be published after a pilot.
+BASINSHIFT | Organizer & Technical Documentation
+Page 12 of 22
+
+
+--- page ---
+10. Evaluation methodology
+The final score should combine complementary metrics. The metric implementation, aggregation rules,
+baseline normalization and tie-breaking rules must be frozen before submissions open.
+10.1 Metric families
+ Dimension
+Candidate metrics
+What it measures
+Continuous forecast
+MAE, normalized MAE, NSE (with careful handling).
+Magnitude of forecast errors and hydrological fit.
+Event detection
+AUPRC, event recall, precision at fixed alert budget.
+Ability to identify rare high-flow events.
+Operational alert burden
+False alarms per catchment or per unit time.
+Practical cost of excessive alerts.
+Probabilistic quality
+Brier score, CRPS, reliability diagrams.
+Quality of event probabilities and predictive distributions.
+Interval quality
+Coverage and interval width.
+Whether uncertainty intervals are reliable and informative.
+Generalization
+Macro-average by unseen catchment/region.
+Transfer to unfamiliar domains.
+Robustness
+Relative degradation under controlled corruption.
+Sensitivity to missing/noisy inputs.
+Efficiency
+Runtime, memory and artifact size.
+Practical inference cost.
+10.2 Proposed machine score
+ Component
+Weight
+Implementation note
+Forecast skill
+25
+Combine predeclared continuous metrics after baseline-aware normalization.
+High-flow event detection
+25
+Use event metrics appropriate for class imbalance and fixed alert budget.
+Out-of-distribution generalization
+20
+Score unseen catchments and report region-level dispersion.
+Calibration and uncertainty
+15
+Use proper scoring rules and interval reliability.
+Robustness
+10
+Evaluate fixed, predeclared input corruption scenarios.
+Efficiency
+5
+Measure under the standardized execution environment.
+Total
+100
+Freeze exact formula and directionality before competition.
+This is a proposed weighting scheme. It should be calibrated through baseline and pilot results. Metric aggregation must avoid double-counting the
+same underlying error signal.
+10.3 Normalization
+A defensible option is to map each metric to a bounded score using fixed baseline anchors and predeclared caps. For
+example, improvement over a baseline can be normalized against a fixed target range. The formula must handle negative
+skill, zero denominators, degenerate cases and missing outputs. Do not choose normalization after seeing participant results.
+10.4 Statistical reporting
+●
+ Report both macro-average across catchments and pooled observation-level results.
+●
+ Use catchment-level bootstrap intervals where appropriate.
+●
+ Report event counts and denominators with every rare-event metric.
+●
+ Report performance by region, catchment characteristics and event severity.
+●
+ Record variance across random seeds for stochastic methods.
+●
+ Do not claim meaningful superiority when confidence intervals overlap materially.
+●
+ Publish failure cases and metric limitations after the competition.
+BASINSHIFT | Organizer & Technical Documentation
+Page 13 of 22
+
+
+--- page ---
+10.5 Avoiding accuracy-only ranking
+A model may achieve low average error while missing rare extreme events, or may issue too many false alarms. A
+probabilistic model may be better calibrated even if its point forecast is slightly less accurate. The scoring system must
+preserve these distinctions.
+BASINSHIFT | Organizer & Technical Documentation
+Page 14 of 22
+
+
+--- page ---
+11. Competition rules and constraints
+11.1 Data rules
+●
+ Use organizer-provided data according to the published license and terms.
+●
+ Declare all external datasets, pretrained weights, foundation models and synthetic data.
+●
+ Do not access, infer, scrape or reconstruct hidden evaluation labels.
+●
+ Do not use future observations or post-origin information as input.
+●
+ Do not manually edit predictions for hidden test records.
+●
+ Retain data provenance and transformation records.
+11.2 Model and API rules
+●
+ Submissions must execute in the organizer-defined environment.
+●
+ External network access during final inference should be disabled unless explicitly permitted.
+●
+ Proprietary APIs must not be mandatory; if permitted, teams must disclose dependency and cost.
+●
+ Model weights and source code must be submitted in the required format.
+●
+ All inference must follow the official input/output contract.
+●
+ Teams must disclose model lineage and material third-party components.
+11.3 Team and authorship rules
+The organizing committee must define team size, eligibility, collaboration rules, open-source obligations, intellectual-property
+terms, attribution requirements and conflict-of-interest disclosures. These administrative terms are not determined by this
+technical document.
+11.4 Submission attempts
+Use a limited number of public leaderboard submissions to reduce overfitting. The number, reset policy, late-submission
+handling and final cutoff must be published before registration closes.
+11.5 Disqualification conditions
+●
+ Attempted access to hidden labels or evaluation infrastructure.
+●
+ Undisclosed external data or prohibited inference-time network calls.
+●
+ Fabricated experiments, benchmark results or data provenance.
+●
+ Malicious code, environment escape attempts or resource abuse.
+●
+ Submission materially different from the model defended to judges.
+●
+ Violation of licensing, privacy or organizer-defined collaboration rules.
+BASINSHIFT | Organizer & Technical Documentation
+Page 15 of 22
+
+
+--- page ---
+12. Submission deliverables
+ Deliverable
+Minimum expected contents
+1. Executable model
+Inference code, weights/artifacts and entry point.
+2. Source code
+Readable repository, setup instructions and versioned commit.
+3. Dependency manifest
+Pinned packages, runtime requirements and environment definition.
+4. Technical report
+Problem framing, hypotheses, methods, experiments, results and limitations.
+5. Data provenance
+All sources, licenses, transformations and external data declarations.
+6. Evaluation evidence
+Public validation results, ablations and robustness analysis.
+7. Reproduction guide
+Commands to install, run inference and reproduce reported metrics.
+8. Model card
+Intended use, limitations, risks, training data and evaluation scope.
+9. Demonstration
+Short technical demo or presentation showing system behavior.
+10. Team declaration
+Authors, roles, conflicts and third-party contributions.
+12.1 Suggested technical report structure
+1
+Abstract and executive summary.
+2
+Problem formulation and research hypothesis.
+3
+Dataset and feature provenance.
+4
+Preprocessing and leakage controls.
+5
+Model architecture and training procedure.
+6
+Baseline comparison and ablation study.
+7
+Temporal and unseen-catchment results.
+8
+Extreme-event and calibration results.
+9
+Robustness and efficiency analysis.
+10
+Limitations, failure cases and responsible-use considerations.
+11
+Reproduction instructions and artifact references.
+12.2 Technical defense questions
+●
+ What evidence shows the model generalizes to catchments not used during training?
+●
+ Which input features would be unavailable in a real deployment?
+●
+ How are high-flow thresholds defined and frozen?
+●
+ How does the model behave when discharge history is missing?
+●
+ Which ablation most changed the result?
+●
+ How are uncertainty estimates calibrated?
+●
+ What are the largest failure modes?
+●
+ What would be required before deployment in a real basin?
+BASINSHIFT | Organizer & Technical Documentation
+Page 16 of 22
+
+
+--- page ---
+13. Judging rubric
+ Category
+Points
+Evidence judges should inspect
+ML performance and generalization
+20
+Hidden benchmark score, unseen-basin performance and event detection.
+Research novelty
+15
+Specific research contribution, hypothesis and evidence beyond standard integration.
+Technical architecture
+10
+Model rationale, data pipeline, system design and implementation.
+Robustness and reliability
+15
+Stress tests, failure analysis, calibration and stability.
+Real-world applicability
+10
+Deployment pathway, constraints and limitations.
+Reproducibility and engineering
+15
+Code, pinned dependencies, provenance, repeatable runs and logs.
+Presentation and technical defense
+5
+Clarity, evidence quality and answers to technical questions.
+Uncertainty and responsible AI
+10
+Probabilistic quality, risk communication and responsible-use analysis.
+TOTAL
+100
+13.1 Score anchors
+ Score band
+Interpretation
+0–20% of category points
+Absent, invalid or unsupported evidence.
+21–40%
+Weak execution; substantial methodological or engineering gaps.
+41–60%
+Competent baseline-level work with limited differentiation.
+61–80%
+Strong work with credible evidence and sound decisions.
+81–100%
+Exceptional, well-defended work with reproducible evidence and clear differentiation.
+13.2 Judge calibration
+Judges should independently score submissions before discussion. The committee should provide example submissions or
+calibration exercises, define conflict-of-interest procedures and record score justifications. Large scoring disagreements
+should trigger a review rather than informal averaging without explanation.
+13.3 Novelty standard
+Novelty should be judged against relevant prior work and the team's own evidence. A new combination of known methods
+may be useful engineering but should not automatically receive high research-novelty points. A smaller, well-supported
+contribution can be more valuable than an elaborate but unvalidated architecture.
+BASINSHIFT | Organizer & Technical Documentation
+Page 17 of 22
+
+
+--- page ---
+14. Hidden evaluation and competition integrity
+14.1 Threat model
+ Threat
+Control
+Catchment/time leakage
+Split by catchment and chronology before window generation; audit overlap.
+Hidden label reconstruction
+Restrict test periods, inspect public data mirrors and maintain protected labels.
+Leaderboard overfitting
+Limit submissions; use public validation and final hidden evaluation.
+Hardcoded outputs
+Use unseen catchments/origins, randomized record ordering where safe and independent inference.
+External data leakage
+Require source declarations and audit feature provenance.
+Fabricated results
+Execute submitted code and reproduce key claims.
+Environment abuse
+Run isolated containers with resource and network controls.
+Model substitution
+Hash artifacts and verify the model used in the technical defense.
+14.2 Evaluation execution
+1
+Freeze the dataset release, split manifest and metric package.
+2
+Build an isolated, versioned evaluator image.
+3
+Validate the submission schema before scoring.
+4
+Execute inference with fixed resource limits and controlled inputs.
+5
+Store logs, artifact hashes, environment versions and score outputs.
+6
+Run independent reproduction for finalists.
+7
+Escalate anomalies to a technical integrity panel.
+8
+Publish aggregate results and methodology after the competition.
+14.3 Confidentiality boundaries
+Participant-facing materials may describe the existence and purpose of hidden geographic, temporal and
+stress tests. They should not disclose exact hidden catchments, time windows, threshold values, stress-test
+seeds, private labels or implementation details that would enable direct reconstruction. Judges and
+evaluators should operate under access controls and conflict-of-interest rules.
+BASINSHIFT | Organizer & Technical Documentation
+Page 18 of 22
+
+
+--- page ---
+15. Organizer implementation plan
+The committee should treat benchmark creation as a software and research project with explicit acceptance gates. A polished
+problem statement is not a substitute for a functioning benchmark.
+Phase
+Workstream
+Exit criteria
+1. Research audit
+Dataset/version/license verification; literature review; task
+definition.
+Signed source register and feasibility report.
+2. Data
+engineering
+Download, validate, align, clean and version data.
+Reproducible data pipeline and data dictionary.
+3. Split
+construction
+Create catchment and temporal partitions; audit leakage.
+Approved split manifest and red-team report.
+4. Baselines
+Implement persistence, seasonal, tree and sequence baselines.
+Reproducible metrics and resource profiles.
+5. Evaluator
+Build schema validation, isolated inference and scoring.
+End-to-end test on sample submissions.
+6. Pilot
+Invite independent test teams; observe failure modes.
+Pilot report and resolved critical issues.
+7. Release
+Publish statement, data, rules, starter kit and support docs.
+Public launch checklist signed off.
+8. Post-event
+Reproduce finalists, publish results and benchmark
+paper/report.
+Auditable final results and lessons learned.
+15.1 Suggested technical components
+ Component
+Possible implementation
+Data pipeline
+Python, pandas/polars, xarray where appropriate, Parquet/Zarr.
+ML baselines
+scikit-learn, XGBoost/LightGBM, PyTorch.
+Experiment tracking
+MLflow or an equivalent reproducible tracking system.
+Submission interface
+Versioned JSON Schema or typed API contract.
+Execution
+Docker or equivalent isolated container environment.
+Scoring
+Versioned metric package with unit and integration tests.
+Artifact registry
+Immutable storage with hashes and access controls.
+Documentation
+Version-controlled data dictionary, rules and benchmark guide.
+These are suggested tools, not mandatory dependencies. Final selection should reflect data volume, platform constraints, participant access and
+organizer expertise.
+15.2 Minimum staffing
+●
+ Hydrology/domain lead responsible for scientific validity and target definitions.
+●
+ ML benchmark lead responsible for splits, metrics and baseline quality.
+●
+ Data engineer responsible for ingestion, provenance and data quality.
+●
+ Platform engineer responsible for submission execution and isolation.
+●
+ Competition operations lead responsible for rules, participant support and schedule.
+●
+ Independent red-team reviewers responsible for leakage and fairness audits.
+15.3 Pilot requirements
+The pilot should include teams that did not build the benchmark. Ask them to reproduce baselines, train at least one
+alternative model, submit through the official interface and attempt to identify leakage or ambiguities. A pilot that only confirms
+the organizer's own code works is insufficient.
+BASINSHIFT | Organizer & Technical Documentation
+Page 19 of 22
+
+
+--- page ---
+16. Risks, limitations and responsible use
+ Risk
+Severity
+Mitigation / disclosure
+Global coverage is uneven
+High
+Publish catchment distribution and regions not represented.
+Discharge is mistaken for inundation
+Critical
+Keep the core target explicit; do not imply street-level flood maps.
+Extreme-event labels are sparse
+High
+Report event counts and uncertainty; avoid unstable rankings.
+Measurement errors or missing
+records
+High
+Retain quality flags and disclose exclusions.
+Geographic leakage
+Critical
+Independent split audit before release.
+External data contaminates test
+High
+Source register and hidden-label reconstruction review.
+Compute inequality
+Medium
+Standardized inference budgets and CPU-capable baselines.
+Poor calibration
+High
+Score proper probabilistic metrics and report reliability.
+Benchmark overfitting
+High
+Limited submissions and final hidden evaluation.
+Operational misuse
+Critical
+Explicitly state that benchmark success is not deployment certification.
+16.1 Responsible-use statement
+BASINSHIFT is an experimental research benchmark. Model outputs must not be used as the sole basis for
+evacuation, emergency response, infrastructure operation or public warning decisions. Any future
+deployment requires local validation, hydrological expert review, appropriate data governance, operational
+monitoring, fail-safe procedures and coordination with competent authorities.
+16.2 Known limitations of the proposed design
+●
+ Caravan's global coverage does not mean uniform coverage, complete records or identical data quality.
+●
+ Catchment discharge is a point or basin-level hydrological variable and does not directly describe local flood depth or
+exposure.
+●
+ High-flow percentile thresholds are statistical benchmark labels, not official hazard thresholds.
+●
+ Publicly available secondary datasets may have different spatial and temporal semantics.
+●
+ Benchmark performance does not establish causal understanding or operational readiness.
+●
+ Results may depend on the selected regions, periods, horizons and data versions.
+BASINSHIFT | Organizer & Technical Documentation
+Page 20 of 22
+
+
+--- page ---
+17. Acceptance criteria and launch checklist
+A public launch should be blocked until all critical checks pass. The committee should maintain evidence for each item rather
+than marking tasks complete based on verbal assurance.
+Gate
+Acceptance criterion
+Status before
+verification
+Scientific validity
+Hydrology expert approves target, horizons and threshold semantics.
+OPEN
+Dataset rights
+Every distributed file has verified license and redistribution permission.
+OPEN
+Data quality
+Coverage, missingness, units and exclusions documented.
+OPEN
+Split integrity
+Independent leakage audit completed.
+OPEN
+Baseline reproducibility
+All required baselines rerun from clean environment.
+OPEN
+Metric correctness
+Metric package unit-tested on synthetic edge cases and known examples.
+OPEN
+Submission interface
+Valid/invalid example submissions tested end-to-end.
+OPEN
+Hidden evaluator
+Isolation, resource limits, logs and access controls verified.
+OPEN
+Fairness
+CPU/modest-compute path demonstrated and constraints published.
+OPEN
+Pilot
+Independent teams complete full workflow successfully.
+OPEN
+Rules
+Eligibility, IP, data, collaboration and appeals rules approved.
+OPEN
+Communications
+Public statement accurately reflects what is implemented.
+OPEN
+17.1 Go/no-go criteria
+GO: all critical gates pass, baseline difficulty is meaningful, the evaluator is reproducible, and independent reviewers approve
+the benchmark.
+CONDITIONAL GO: only non-critical documentation or polish remains, with an owner and deadline; no hidden-test or
+licensing risk remains open.
+NO-GO: unresolved licensing, label leakage, invalid target definitions, unrepeatable scores, hidden-test exposure or inability
+to reproduce final submissions.
+17.2 Final committee recommendation
+Proceed with BASINSHIFT as the leading challenge concept and begin a time-boxed feasibility and
+benchmark-engineering phase. Do not advertise the challenge as a validated global flood-prediction
+benchmark until the data pipeline, baseline suite, hidden evaluator and independent pilot have passed their
+acceptance gates.
+BASINSHIFT | Organizer & Technical Documentation
+Page 21 of 22
+
+
+--- page ---
+18. References and source notes
+The following resources are recommended starting points for verification and benchmark construction. The organizing
+committee must check the current release, license, data coverage and documentation directly before using or redistributing
+any resource.
+Resource
+Use in BASINSHIFT
+Official / primary link
+Caravan — global large-sample
+hydrology dataset
+Primary candidate dataset for streamflow,
+meteorological forcing and catchment attributes.
+https://doi.org/10.1038/s41597-023-01975-w
+Global Flood Awareness System
+(GloFAS)
+Potential operational context and secondary
+comparison resource.
+https://global-flood.emergency.copernicus.eu/
+Copernicus Emergency
+Management Service
+Potential flood event mapping and optional spatial
+extension.
+https://emergency.copernicus.eu/
+WeatherBench 2
+Reference for ML weather forecasting benchmark
+practices; not the core hydrology dataset.
+https://weatherbench2.readthedocs.io/
+NASA Prediction of Worldwide
+Energy Resources (POWER)
+Potential meteorological/solar data source; suitability
+and licensing must be checked for the specific task.
+https://power.larc.nasa.gov/
+HydroShare
+Potential repository for hydrological data and
+reproducible research artifacts.
+https://www.hydroshare.org/
+Source and verification note
+This document is a competition design proposal synthesized from the selected BASINSHIFT concept and the technical
+requirements established in the preceding discussion. It is not a systematic literature review, legal opinion, hydrological
+validation report or confirmation that all listed sources can be combined for this task. Before publication, add a dated
+bibliography of peer-reviewed papers, dataset release notes, official license texts and exact data-version identifiers.
+Recommended additional research before launch
+●
+ Review the Caravan paper, supplement, release documentation and source dataset licenses.
+●
+ Review GloFAS product documentation for target semantics, forecast lead times and access terms.
+●
+ Review relevant hydrological model intercomparison and cross-catchment ML literature.
+●
+ Review probabilistic hydrological forecasting and uncertainty calibration literature.
+●
+ Review benchmark leakage and data contamination risks for every candidate external source.
+●
+ Record all research decisions in a version-controlled benchmark design log.
+ END OF DOCUMENT
+ BASINSHIFT — Full Challenge Documentation | Version 1.0 Draft
+BASINSHIFT | Organizer & Technical Documentation
+Page 22 of 22

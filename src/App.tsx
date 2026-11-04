@@ -814,7 +814,7 @@ export default function App() {
                     className={filterRegion === 'in' ? 'active' : ''}
                     onClick={() => setFilterRegion('in')}
                   >
-                    India
+                    India (live)
                   </button>
                 </div>
 
@@ -1134,6 +1134,7 @@ export default function App() {
 
               <ModelForecastCard
                 usgs={station.usgs}
+                nwic={station.nwic}
                 river={station.river}
                 onSimulate={(metres) => {
                   setRise(Math.min(profile.maxRise, Math.max(profile.minRise, Number(metres.toFixed(2)))));
