@@ -18,7 +18,7 @@ export class WaterSurface implements CustomLayerInterface {
   private data = new Float32Array();
   private timer?: ReturnType<typeof setTimeout>;
   private reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  exaggeration = 3.2;
+  exaggeration = 1.5;
 
   onAdd(map: RiverMap, gl: WebGL2RenderingContext) {
     this.map=map;this.gl=gl;

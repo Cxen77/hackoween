@@ -1,6 +1,18 @@
 # FLOODCAST — current handoff
 
-Updated: 2026-11-04, Asia/Calcutta. Read this file first when continuing. Keep it current; do not create competing context logs.
+Updated: 2026-11-05, Asia/Calcutta. Read this file first when continuing. Keep it current; do not create competing context logs.
+
+## CURRENT — water simulation repair, 2026-11-05
+
+User requested fixing unrealistic flood/water-level behavior. Work isolated in C:/Users/Dev/Desktop/hackoween-water-fix (branch fix/water-simulation, preview5180) after another editor rebased/stashed the shared C:/Users/Dev/Desktop/hackoween folder during this turn. Initial recovered implementation was also integrated by that editor in origin/main commit63d76e7; final refinements must be merged with latest origin/main, preserving newer forecast-chart changes. Do not reset the shared working folder or overwrite concurrent work.
+
+New core: src/river-flood.mjs (actual mapped-channel rasterization, local robust reference surfaces, nearest-channel extension, terrain-saddle minimax connectivity, continuous clipped shoreline mesh), src/riverGeometry.ts (OSM water polygons/lines from existing Geoapify vector tiles; keyless OpenFreeMap fallback; four requests at once, tile caching), src/WaterSurface.ts (elevated WebGL water, terrain depth testing, ripple/depth shading, GL-state/resource cleanup). Terrain uses193×193 bilinear DEM samples with proper pixel-center alignment, preserves floodplain ridges, default12km window plus6/20km options. Only suitable low river samples seed water; high bank/bridge pixels do not inject water across barriers. A labeled point-source fallback is explicit if geometry fails.
+
+Fixed pause jumping to final target, resume resetting to zero, and slider/animation races. Displayed stage drives map, stats and alerts consistently; zero reset clears the scenario. Replay14seconds is illustrative, not physical arrival time. Reduced-motion preferences respected. Area excludes mapped river cells and boundary truncation is flagged. Sticky bounded-height map keeps the selected river visible while controls/forecast panel scroll; controls precede forecast details. Relief reduced to1.5× on both terrain and water; all reported depths are actual metres.
+
+Removed unsafe live-sync assumption that absolute gauge height (or generic discharge rule) equals rise above the terrain reference. Gauge observations remain visible; forecast-card map presets explicitly say assumed/exploratory. This is still a quasi-static stage visualization, NOT a calibrated hydraulic solver or emergency product. No numerical flood-depth accuracy is claimed. Future physical modeling needs surveyed channel/bathymetry, local gauge datum/rating calibration, defenses and time-dependent shallow-water routing.
+
+Validation:28 JS tests pass (including six new channel/slope/barrier/shoreline/missing-data tests); TypeScript/Vite build checked. Browser5180 successfully loaded actual Austin OSM geometry, rendered rising water, paused and stayed at+0.8m instead of jumping to+3m, and reset to0area/0depth. Geometry source and resolution visible in UI. Further current verification/commit status follows git log. No ML retraining or dataset changes in this turn. Do not commit .env.local or data/river_tilejson.json (temporary local tile metadata can contain the map key); latter explicitly ignored and excluded locally.
 
 ## NEW CONTEXT (2026-11-04): context/ folder + BASINSHIFT spec
 

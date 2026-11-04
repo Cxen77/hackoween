@@ -66,8 +66,8 @@ export async function loadGrid(lat: number, lon: number, span = 20000, size = 19
     return {
       x: Math.floor(tx),
       y: Math.floor(ty),
-      px: Math.min(255, (tx % 1) * 256),
-      py: Math.min(255, (ty % 1) * 256)
+      px: Math.max(0, Math.min(255, (tx % 1) * 256 - .5)),
+      py: Math.max(0, Math.min(255, (ty % 1) * 256 - .5))
     };
   });
 
@@ -245,7 +245,7 @@ export function floodFeatures(
   const size = grid.size;
 
   for (let i = 0; i < depths.length; i++) {
-    if (depths[i] > 0.05) {
+    if (depths[i] > 0.02) {
       wetCount++;
     }
   }

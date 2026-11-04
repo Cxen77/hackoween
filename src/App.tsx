@@ -113,15 +113,14 @@ export default function App() {
     } catch {}
     return 3;
   });
-  // The simulation follows the live water level by default; moving the slider yourself turns that off for this river.
-  const followLive = useRef<boolean>(!(() => { try { return new URLSearchParams(window.location.search).has('rise'); } catch { return false; } })());
-  const [corridorSpan, setCorridorSpan] = useState<number>(28000);
+  const [corridorSpan, setCorridorSpan] = useState<number>(12000);
   const [grid, setGrid] = useState<Grid | null>(null);
   const [gridError, setGridError] = useState('');
   const [gridLoading, setGridLoading] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [animatedRise, setAnimatedRise] = useState(rise);
   const displayedRise = useRef(rise);
+  const lastSliderTarget = useRef<{ rise:number; grid:Grid } | null>(null);
   const waterSurface = useRef<WaterSurface | null>(null);
 
   const [sources, setSources] = useState(false);
@@ -199,9 +198,8 @@ export default function App() {
     setDay(0);
     setPlaying(false);
     const prof = riverProfiles[s.id] || defaultRiverProfile;
-    followLive.current = true;
     setRise(prof.defaultRise);
-    setCorridorSpan(prof.defaultReach);
+    setCorridorSpan(Math.min(12000, prof.defaultReach));
   };
 
   const toggle3D = (force?: boolean) => {
@@ -209,13 +207,13 @@ export default function App() {
     setIs3d(next);
     const m = map.current;
     if (!m) return;
-    m.setTerrain(next ? { source: 'terrain-dem', exaggeration: 3.2 } : null);
-    if (waterSurface.current) waterSurface.current.exaggeration = next ? 3.2 : 0;
+    m.setTerrain(next ? { source: 'terrain-dem', exaggeration: 1.5 } : null);
+    if (waterSurface.current) waterSurface.current.exaggeration = next ? 1.5 : 0;
     if (m.getLayer('terrain-hills')) {
       m.setLayoutProperty('terrain-hills', 'visibility', next ? 'visible' : 'none');
     }
     m.easeTo({
-      pitch: next ? 65 : 0,
+      pitch: next ? 55 : 0,
       bearing: next ? -24 : 0,
       duration: 900
     });
@@ -227,7 +225,8 @@ export default function App() {
     const current = m.getPitch();
     const next = current < 15 ? 48 : current < 55 ? 65 : current < 72 ? 80 : 0;
     setIs3d(next > 0);
-    m.setTerrain(next > 0 ? { source: 'terrain-dem', exaggeration: 3.2 } : null);
+    if (waterSurface.current) waterSurface.current.exaggeration = next > 0 ? 1.5 : 0;
+    m.setTerrain(next > 0 ? { source: 'terrain-dem', exaggeration: 1.5 } : null);
     if (m.getLayer('terrain-hills')) {
       m.setLayoutProperty('terrain-hills', 'visibility', next > 0 ? 'visible' : 'none');
     }
@@ -254,7 +253,7 @@ export default function App() {
         style: satellite ? rasterStyle(true) : key ? `https://maps.geoapify.com/v1/styles/dark-matter/style.json?apiKey=${key}` : rasterStyle(false),
         center: [station.lon, station.lat],
         zoom: 12.2,
-        pitch: 65,
+        pitch: 55,
         bearing: -24,
         maxPitch: 85,
         attributionControl: { compact: true },
@@ -293,14 +292,14 @@ export default function App() {
         maxzoom: 15,
         attribution: 'Elevation: AWS Terrain Tiles'
       });
-      m.setTerrain(terrainMode.current ? { source: 'terrain-dem', exaggeration: 3.2 } : null);
+      m.setTerrain(terrainMode.current ? { source: 'terrain-dem', exaggeration: 1.5 } : null);
       m.addLayer({
         id: 'terrain-hills',
         type: 'hillshade',
         source: 'terrain-dem',
         layout: { visibility: 'visible' },
         paint: {
-          'hillshade-exaggeration': 1.0,
+          'hillshade-exaggeration': 0.35,
           'hillshade-shadow-color': '#020617',
           'hillshade-highlight-color': '#e0f2fe',
           'hillshade-accent-color': '#38bdf8',
@@ -352,7 +351,7 @@ export default function App() {
         }
       });
       waterSurface.current = new WaterSurface();
-      waterSurface.current.exaggeration = terrainMode.current ? 3.2 : 0;
+      waterSurface.current.exaggeration = terrainMode.current ? 1.5 : 0;
       m.addLayer(waterSurface.current);
       m.addSource('monitored-areas', { type: 'geojson', data: empty });
       m.addLayer({
@@ -498,6 +497,8 @@ export default function App() {
   // Slider changes smoothly approach the target; pausing never changes stage.
   useEffect(() => {
     if (!grid || playing) return;
+    if (lastSliderTarget.current?.rise === rise && lastSliderTarget.current?.grid === grid) return;
+    lastSliderTarget.current = {rise, grid};
     const from = displayedRise.current;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       displayedRise.current = rise; setAnimatedRise(rise); return;
@@ -510,7 +511,7 @@ export default function App() {
       if (t === 1) clearInterval(id);
     }, 70);
     return () => clearInterval(id);
-  }, [rise, grid]);
+  }, [rise, grid, playing]);
 
   useEffect(() => {
     if (!playing || !grid) return;
@@ -678,31 +679,6 @@ export default function App() {
   const scale = unit === 'cfs' ? 35.3146667 : 1;
   const discharge = forecast.data?.daily.river_discharge[day];
   const stale = gauge.data?.time ? Date.now() - new Date(gauge.data.time).getTime() > 2 * 3600000 : false;
-
-  // Best available "live level" for the 3D map, in metres above the channel, with where it came from.
-  //   1. the gauge's own height reading (real stage), 2. live observed flow from the model server (rule of thumb),
-  //   3. GloFAS model flow (rule of thumb, least reliable). Always kept inside the slider's range.
-  const liveLevel = useMemo<{ m: number; source: string } | null>(() => {
-    const clamp = (v: number) => Number(Math.min(profile.maxRise, Math.max(profile.minRise, v)).toFixed(1));
-    const fromFlow = (cfs: number) => Math.max(0.3, Math.min(22, Math.pow(cfs / 35.3146667 / 300, 0.42)));
-    if (gauge.data?.height != null && Number.isFinite(gauge.data.height)) {
-      return { m: clamp(gauge.data.height * 0.3048), source: 'from the live gauge height' };
-    }
-    if (modelLive?.latest_observed_cfs != null && Number.isFinite(modelLive.latest_observed_cfs)) {
-      return { m: clamp(fromFlow(modelLive.latest_observed_cfs)), source: `estimated from the observed flow of ${Math.round(modelLive.latest_observed_cfs).toLocaleString('en-US')} cfs (no stage gauge)` };
-    }
-    if (forecast.data?.daily.river_discharge[0] != null) {
-      return { m: clamp(fromFlow(forecast.data.daily.river_discharge[0]! * 35.3146667)), source: 'estimated from the GloFAS model flow (least reliable)' };
-    }
-    return null;
-  }, [gauge.data, forecast.data, modelLive, profile.minRise, profile.maxRise]);
-  const liveStageMetres = liveLevel?.m ?? null;
-  useEffect(() => {
-    if (liveStageMetres == null || !followLive.current || playing) return;
-    if (gauge.loading || forecast.loading) return; // wait for the fresh readings so the slider does not flicker
-    setRise(liveStageMetres);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [liveStageMetres, gauge.loading, forecast.loading, station.id]);
 
   const filtered = stations.filter(s => {
     const matchesQuery = `${s.name} ${s.river} ${s.region}`.toLowerCase().includes(query.toLowerCase());
@@ -1009,7 +985,7 @@ export default function App() {
                     type="button"
                     className={`view-mode-btn ${is3d ? 'active' : ''}`}
                     onClick={() => toggle3D(true)}
-                    title="3D Lit Terrain (sun illumination & 3.2× elevation relief)"
+                    title="3D Lit Terrain (sun illumination & 1.5× elevation relief)"
                   >
                     <span className="hud-dot" />
                     3D Lit Height
@@ -1125,7 +1101,7 @@ export default function App() {
                 <div className="depth-legend">
                   <div className="legend-header">
                     <span>Simulated Depth</span>
-                    <small>{(corridorSpan / 1000).toFixed(0)} km reach · 3.2× relief</small>
+                    <small>{(corridorSpan / 1000).toFixed(0)} km reach · 1.5× relief</small>
                   </div>
                   <div className="legend-bar" />
                   <div className="legend-ticks">
@@ -1152,24 +1128,18 @@ export default function App() {
                 </button>
               </div>
               <p className="sim-description">Raise the river and watch water spread across connected low ground. {(corridorSpan / 1000).toFixed(0)} km terrain window.</p>
-
-              <ModelForecastCard
-                usgs={station.usgs}
-                nwic={station.nwic}
-                river={station.river}
-                onData={setModelLive}
-                onSimulate={(metres) => {
-                  followLive.current = false;
-                  setRise(Math.min(profile.maxRise, Math.max(profile.minRise, Number(metres.toFixed(2)))));
-                  setPlaying(false);
-                  if (!showSimulation) setShowSimulation(true);
-                }}
-              />
+              <label className="simulation-window">Terrain window
+                <select value={corridorSpan} onChange={e => setCorridorSpan(Number(e.target.value))}>
+                  <option value={6000}>6 km · finer detail</option>
+                  <option value={12000}>12 km</option>
+                  <option value={20000}>20 km · wider area</option>
+                </select>
+              </label>
 
               <div className="slider-group">
                 <div className="slider-label">
                   <span>Rise above reference river surface</span>
-                  <strong className="rise-numeric">+{animatedRise.toFixed(profile.step < 0.1 ? 2 : 1)} <span>m</span>{liveStageMetres != null && Math.abs(animatedRise - liveStageMetres) < 0.05 && <span className="live-tag" title={liveLevel?.source}>● LIVE</span>}</strong>
+                  <strong className="rise-numeric">+{animatedRise.toFixed(profile.step < 0.1 ? 2 : 1)} <span>m</span></strong>
                 </div>
                 <div className="slider-track-wrap">
                   <input
@@ -1183,7 +1153,7 @@ export default function App() {
                     style={{
                       background: `linear-gradient(to right, #18181b 0%, #18181b ${sliderProgress}%, #e2e8f0 ${sliderProgress}%, #e2e8f0 100%)`
                     }}
-                    onChange={e => { followLive.current = false; setRise(Number(e.target.value)); setPlaying(false); }}
+                    onChange={e => { setRise(Number(e.target.value)); setPlaying(false); }}
                     aria-label="Water rise above channel"
                   />
                   <div className="slider-ticks-container">
@@ -1192,7 +1162,7 @@ export default function App() {
                         key={t.val}
                         className={`slider-tick ${t.isMajor ? 'major-tick' : 'minor-tick'}`}
                         style={{ left: `calc(11px + (100% - 22px) * ${t.percent / 100})` }}
-                        onClick={() => { followLive.current = false; setRise(t.val); setPlaying(false); }}
+                        onClick={() => { setRise(t.val); setPlaying(false); }}
                         title={`Set to +${t.val}m`}
                       >
                         <span className="tick-line" />
@@ -1207,7 +1177,7 @@ export default function App() {
               </div>
 
               <div className="simulation-playback-status">
-                <span>{playing ? 'Rising' : Math.abs(animatedRise - rise) > .02 ? 'Paused / adjusting' : 'At target'} · target +{rise.toFixed(1)} m</span>
+                <span>{gridLoading ? 'Preparing river' : playing ? 'Rising' : Math.abs(animatedRise - rise) > .02 ? 'Paused / adjusting' : 'At target'} · target +{rise.toFixed(1)} m</span>
                 <button type="button" onClick={() => { setPlaying(false); setRise(0); displayedRise.current = 0; setAnimatedRise(0); }}>Reset to river level</button>
               </div>
 
@@ -1278,6 +1248,18 @@ export default function App() {
               {grid && <p className="simulation-source-note">{grid.channelSource} · {Math.round(Math.sqrt(grid.cellArea))} m cells. {grid.channelSource === 'Point-source fallback' && 'Channel data unavailable; local point-source scenario only.'}</p>}
               {floodStats.boundaryReached && <p className="inline-error">Water reaches the terrain-window edge. The affected area extends beyond this view.</p>}
 
+              <ModelForecastCard
+                usgs={station.usgs}
+                nwic={station.nwic}
+                river={station.river}
+                onData={setModelLive}
+                onSimulate={(metres) => {
+                  setRise(Math.min(profile.maxRise, Math.max(0, Number(metres.toFixed(2)))));
+                  setPlaying(false);
+                  if (!showSimulation) setShowSimulation(true);
+                }}
+              />
+
               <div className="method-note">
                 <Mountain size={13} />
                 <span>Exploratory elevation model. Excludes hydrodynamics, levees, and storm drains.</span>
@@ -1329,26 +1311,6 @@ export default function App() {
                   <strong className="metric-sub-val">{number(weather.data?.current.temperature_2m, 1)} <small>°C</small></strong>
                 </div>
               </div>
-
-              {liveStageMetres != null && (
-                <button
-                  type="button"
-                  className="sync-live-btn"
-                  onClick={() => {
-                    followLive.current = true;
-                    setRise(liveStageMetres);
-                    if (!showSimulation) setShowSimulation(true);
-                    setPlaying(false);
-                  }}
-                  title="Calibrate 3D flood map directly to live gauge/stage telemetry"
-                >
-                  <Activity size={13} />
-                  <span>Sync 3D Map to Live Level (+{liveStageMetres}m)</span>
-                </button>
-              )}
-              {liveLevel != null && (
-                <small className="sync-live-note">Level {liveLevel.source}.</small>
-              )}
 
               <div className="observation-note">
                 {gauge.data?.time ? (
@@ -1431,8 +1393,8 @@ export default function App() {
               title: "Methodology",
               links: [
                 { label: "Data methodology & citations", onClick: (e) => { e.preventDefault(); setSources(true); } },
-                { label: "3D Lit Hydraulic Inundation", badge: "Engine" },
-                { label: "Chaikin Shoreline Smoothing" },
+                { label: "River-connected stage scenarios", badge: "3D" },
+                { label: "Continuous shoreline interpolation" },
                 { label: "USGS 3DEP & Terrarium DEM" },
               ],
             },

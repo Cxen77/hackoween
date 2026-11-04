@@ -64,9 +64,7 @@ export function channelMaskFromWays(elements, grid) {
 }
 
 /** Robust reach slope from mapped channel DEM samples, never floodplain peaks. */
-function reachSurface(heights,n,channel,seed) {
-  const points=[];
-  for(let i=0;i<heights.length;i++)if(channel[i]&&Number.isFinite(heights[i]))points.push(i);
+function fitReachPlane(heights,n,points,seed) {
   const center=(n-1)/2;
   let a=0,b=0,offset=median(points.map(i=>heights[i]));
   // Iteratively weighted plane fit suppresses DEM canopy/bridge outliers.
@@ -84,7 +82,44 @@ function reachSurface(heights,n,channel,seed) {
     a=(xz*yy-yz*xy)/det;b=(yz*xx-xz*xy)/det;offset=(sz-a*sx-b*sy)/sw;
   }
   if(points.length<6){a=0;b=0;offset=heights[seed];}
-  return {base:Float32Array.from(heights,(_,i)=>offset+a*(i%n-center)+b*(Math.floor(i/n)-center)),a,b};
+  return {offset,a,b};
+}
+
+function reachSurface(heights,n,channel,seed) {
+  const points=[];
+  for(let i=0;i<heights.length;i++)if(channel[i]&&Number.isFinite(heights[i]))points.push(i);
+  const direction=fitReachPlane(heights,n,points,seed), center=(n-1)/2;
+  const local=new Float32Array(heights.length), owner=new Int32Array(heights.length).fill(-1);
+  // Follow local river bends and changes in slope; never extrapolate one plane
+  // across an entire valley (which can put water tens of metres above its banks).
+  for(const i of points){
+    const r=Math.floor(i/n),c=i%n,near=[];
+    for(let dr=-3;dr<=3;dr++)for(let dc=-3;dc<=3;dc++){
+      const rr=r+dr,cc=c+dc,j=rr*n+cc;
+      if(rr>=0&&rr<n&&cc>=0&&cc<n&&channel[j]&&Number.isFinite(heights[j]))near.push(j);
+    }
+    const fitted=fitReachPlane(heights,n,near,i);
+    // Water pixels can be mixed with high riverbanks/bridge decks in the DEM.
+    // Use the lower residual envelope, preserving a clean channel's actual slope.
+    const residuals=near.map(j=>heights[j]-fitted.offset-fitted.a*(j%n-center)-fitted.b*(Math.floor(j/n)-center)).sort((a,b)=>a-b);
+    const correction=near.length>=6?Math.min(0,residuals[Math.floor(residuals.length*.15)]??0):0;
+    local[i]=fitted.offset+fitted.a*(c-center)+fitted.b*(r-center)+correction;owner[i]=i;
+  }
+  const distance=(i,s)=>s<0?Infinity:(i%n-s%n)**2+(Math.floor(i/n)-Math.floor(s/n))**2;
+  // Two bidirectional Euclidean nearest-channel sweeps, independent of river stage.
+  for(let pass=0;pass<2;pass++)for(const direction of [1,-1]){
+    for(let rr=0;rr<n;rr++)for(let cc=0;cc<n;cc++){
+      const r=direction>0?rr:n-1-rr,c=direction>0?cc:n-1-cc,i=r*n+c;
+      if(channel[i])continue;
+      for(const [dr,dc] of [[0,-direction],[-direction,-1],[-direction,0],[-direction,1]]){
+        const y=r+dr,x=c+dc;
+        if(y<0||y>=n||x<0||x>=n)continue;
+        const candidate=owner[y*n+x];
+        if(distance(i,candidate)<distance(i,owner[i]))owner[i]=candidate;
+      }
+    }
+  }
+  return {base:Float32Array.from(heights,(_,i)=>local[owner[i]]),a:direction.a,b:direction.b};
 }
 
 /** Precompute minimum river stage needed to cross every terrain saddle.
@@ -104,7 +139,9 @@ export function prepareRiverFlood(heights,size,channel,seed) {
     if(heap.length){let j=0;while(j*2+1<heap.length){let c=j*2+1;if(c+1<heap.length&&heap[c+1][1]<heap[c][1])c++;if(heap[c][1]>=last[1])break;heap[j]=heap[c];j=c;}heap[j]=last;}
     return first;
   }
-  for(let i=0;i<channel.length;i++)if(channel[i]&&Number.isFinite(heights[i])){activation[i]=0;push(i,0);}
+  let sources=0;
+  for(let i=0;i<channel.length;i++)if(channel[i]&&Number.isFinite(heights[i])&&heights[i]<=surface.base[i]+.5){activation[i]=0;push(i,0);sources++;}
+  if(!sources){activation[seed]=0;push(seed,0);}
   while(heap.length){
     const [i,cost]=pop();if(cost>activation[i]+1e-5)continue;
     for(const j of neighbours(i,size))if(Number.isFinite(heights[j])){
