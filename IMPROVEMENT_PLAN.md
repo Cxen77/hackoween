@@ -85,3 +85,22 @@ Generic longer-weather/coordinate models did not pass the validation gate. Regio
 Tradeoff:20/53 test stations now have negativeR² (baseline11/53). Aggregate gains do not imply every river improved. Baseline artifacts are retained in `reports/baseline_v1/` and `evaluation/baseline_v1/`. The historical diagnosis above refers to `evaluation/baseline_v1/error_diagnostics.csv`; current errors are in `evaluation/error_diagnostics.csv`.
 
 Next improvements need better large-basin attributes and basin/upstream meteorology.2025 has been inspected and remains labeled a reused benchmark, not a new independent test.
+
+## Additional weakness-focused experiments (V6–V9)
+
+Ten more candidates were actually trained: seven LightGBM/CatBoost raw/log/Tweedie/peak-weighted variants and three models with separate upstream HUC weather histories. The latter retain HUC05/06/07/08/10/11 weather-point signals for Lower Mississippi stations, including disjoint antecedent rainfall windows, rather than collapsing every upstream region to one average. These remain sparse point-weather proxies, not true basin means or hydraulic routing.
+
+The V9 convex minimax blend reduced all four temporal/geographic validation RMSE objectives by at least1.344%. Its weights were locked before reading benchmark targets. On the reused2025 benchmark:
+
+| Metric | Current V2 | V9 alternate | Outcome |
+| --- | ---: | ---: | --- |
+| Overall RMSE (cfs) | 46,542.88 | 46,812.78 | 0.580% worse |
+| Extreme RMSE (cfs) | 111,776.95 | 111,072.49 | 0.630% better |
+| MAE (cfs) | 14,002.94 | 13,824.66 | 1.273% better |
+| R² | 0.914924 | 0.913934 | lower |
+
+This is a measured peak/MAE tradeoff, **not an across-the-board improvement**. V9 was not promoted because overall RMSE worsened. The earlier advanced minimax blend V8 worsened both benchmark RMSE metrics and was also rejected. V6/V7 did not clear all incumbent validation gates. Production predictions stay unchanged.
+
+Evidence: `evaluation/improvement_trials.csv` (166 validation rows), `reports/experiments/v6` through `v9`, and the frozen production snapshot `reports/champion_v2`. All22 Python tests pass, including causal upstream weather, target invariance and convex optimization checks. Large cached data and serialized models remain local under `data/experiments/`.
+
+The repeated validation/benchmark mismatch strengthens the need for fresh basin-disjoint assessment and actual basin-wide forcings. Further tuning on inspected2025 labels cannot establish independent skill. More years of gauge-point rainfall alone do not repair the missing upstream information, reservoir operations or incomplete large-basin descriptors.

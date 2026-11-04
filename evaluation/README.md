@@ -20,6 +20,7 @@ Test RMSE is **45.6% lower** than a station-median baseline learned from trainin
 - `evaluation_charts.png`: actual-vs-predicted scatter, monthly test RMSE, and a named Potomac time-series example.
 - `predictions_vs_actual.csv`: every public test station/date, actual discharge, prediction and errors.
 - `per_station_metrics.csv`: all station scores. **20 of 53 evaluated stations have negative R²**; aggregate results must not hide these failures.
+- `improvement_trials.csv`:166 validation metric rows from the advanced/upstream V6–V9 experiments, including rejected candidates. V9 lowered benchmark peak RMSE0.630% and MAE1.273% but increased overall RMSE0.580%, so the current V2 predictions remain active. Full comparisons and frozen selections are under `../reports/experiments/`.
 
 Lower RMSE, extreme RMSE, and MAE are better. Higher R² is better. The extreme-event calculation uses the actual top 10% within each evaluated station, including ties at the threshold. Overall cfs metrics are influenced heavily by large rivers. The chart uses symmetric logarithmic axes so low and high flows, including zero, remain visible.
 
