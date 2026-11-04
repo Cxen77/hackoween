@@ -50,3 +50,4 @@ test('rdfElevation produces consistent altitude readout in metres', () => {
   const elevation = rdfElevation(50, 100, 0, 6);
   assert.ok(elevation >= 420 && elevation <= 4000);
 });
+

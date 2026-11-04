@@ -44,6 +44,7 @@ export interface RidgelineLink {
   href?: string
   /** A small pill after the label, e.g. "New" or "Hiring". */
   badge?: string
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void
 }
 
 export interface RidgelineColumn {
@@ -874,7 +875,7 @@ export default function RidgelineDitherFooter({
               <ul>
                 {col.links.map((l, li) => (
                   <li key={l.label} className="rdf-r" style={{ "--d": 330 + ci * 110 + li * 55 } as React.CSSProperties}>
-                    <a className="rdf-link" href={l.href || "#"}>
+                    <a className="rdf-link" href={l.href || "#"} onClick={l.onClick}>
                       {l.label}
                       {l.badge ? <span className="rdf-badge">{l.badge}</span> : null}
                     </a>
@@ -969,3 +970,4 @@ type PointerEv = PointerEvent
 // Declared after the JSX: the 21st CLI tokenizer hangs on mapped types before it.
 type RidgelinePresetMap = { [K in RidgelineTheme]: RidgelinePalette }
 type RidgelineSocialNameMap = { [K in RidgelineSocialIcon]: string }
+

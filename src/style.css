@@ -1861,6 +1861,15 @@ input[type=range] {
 }
 
 /* Footer */
+.floodcast-footer-wrapper {
+  margin-top: 48px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
+  background: var(--bg-surface);
+}
+
 .workspace-footer {
   display: flex;
   justify-content: space-between;

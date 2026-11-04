@@ -13,6 +13,7 @@ import type { Station, Forecast, Weather, Gauge, Remote, RiverHydraulicProfile }
 import { loadGrid, floodFeatures } from './terrain';
 import type { Grid } from './terrain';
 import MonitorPanel from './MonitorPanel';
+import RidgelineDitherFooter from '@/components/ui/ridgeline-dither-footer';
 import { evaluateMonitor, validBoundary, validMonitor } from './geofence.mjs';
 import type { AreaMonitor, MonitorResult } from './monitorTypes';
 import type { FeatureCollection, Polygon, LineString } from 'geojson';
@@ -1296,16 +1297,55 @@ export default function App() {
             {storageError && <p className="inline-error">{storageError}</p>}
           </div>
 
-          <footer className="workspace-footer">
-            <span>
-              <Droplets size={14} />
-              FLOODCAST · USGS telemetry, ECMWF GloFAS forecasts & 3D terrain simulation
-            </span>
-            <button onClick={() => setSources(true)}>
-              <span>Data methodology & citations</span>
-              <ArrowUpRight size={13} />
-            </button>
-          </footer>
+          <div className="floodcast-footer-wrapper">
+            <RidgelineDitherFooter
+              preset="glacier"
+              name="FloodCast"
+              tagline="Hydrological intelligence platform connecting real-time USGS telemetry, ECMWF GloFAS forecasts, and high-resolution 3D hydraulic terrain inundation modeling."
+              brandHref="#"
+              columns={[
+                {
+                  title: "Telemetry & Forecasts",
+                  links: [
+                    { label: "USGS Water Gauges", href: "https://waterdata.usgs.gov", badge: "Live" },
+                    { label: "ECMWF Copernicus GloFAS", href: "https://global-floods.jrc.ec.europa.eu" },
+                    { label: "Open-Meteo Flood API", href: "https://open-meteo.com/en/docs/flood-api" },
+                    { label: "CWC India Hydrology", href: "https://cwc.gov.in" },
+                  ],
+                },
+                {
+                  title: "Monitored Basins",
+                  links: [
+                    { label: "Potomac River (DC)", badge: "Live USGS" },
+                    { label: "Mississippi River (St. Louis)", badge: "Calibrated" },
+                    { label: "Brahmaputra River (Guwahati)", badge: "Monsoon" },
+                    { label: "Yamuna River (New Delhi)", badge: "Protected" },
+                  ],
+                },
+                {
+                  title: "Methodology",
+                  links: [
+                    { label: "Data methodology & citations", onClick: (e) => { e.preventDefault(); setSources(true); } },
+                    { label: "3D Lit Hydraulic Inundation", badge: "Engine" },
+                    { label: "Chaikin Shoreline Smoothing" },
+                    { label: "USGS 3DEP & Terrarium DEM" },
+                  ],
+                },
+              ]}
+              socials={[
+                { icon: "github", href: "https://github.com/Cxen77/hackoween", label: "GitHub Repository" },
+              ]}
+              copyright={`© ${new Date().getFullYear()} FloodCast Intelligence. Authentic physical gauges & terrain models.`}
+              credit={{ label: "USGS & Copernicus GloFAS", href: "https://waterdata.usgs.gov" }}
+              ridges={6}
+              seed={37}
+              pixel={2}
+              height="580px"
+              sceneMinHeight="260px"
+              interactive={true}
+              altimeter={true}
+            />
+          </div>
         </main>
       </div>
 
