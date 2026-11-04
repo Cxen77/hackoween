@@ -40,3 +40,4 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
   }
 );
 Image.displayName = "NextImageShim";
+
