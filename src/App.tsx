@@ -878,8 +878,9 @@ export default function App() {
             </button>
           </div>
 
-          <div className="explorer-grid">
-            <section className="map-card" aria-label="Interactive 3D river map">
+          <div className="explorer-layout">
+            <div className="map-simulation-row">
+              <section className="map-card" aria-label="Interactive 3D river map">
               <div className="map-canvas" ref={mapNode} />
 
               <div className="map-hud-topleft">
@@ -1025,211 +1026,211 @@ export default function App() {
               )}
             </section>
 
-            <aside className="inspector">
-              <section className="observation-card">
-                <div className="card-heading">
-                  <div className="card-title-group">
-                    <h3>River conditions</h3>
-                    <span className="station-code">{station.usgs ? `USGS ${station.usgs}` : 'GloFAS Model'}</span>
-                  </div>
-                  <button className="icon-button" aria-label="Refresh river telemetry" onClick={() => setRefresh(n => n + 1)}>
-                    <RefreshCw size={14} className={gauge.loading ? 'spin' : ''} />
-                  </button>
-                </div>
+            <section className="simulation-card">
+              <div className="card-heading">
+                <h3><Waves size={16} /><span>Flood scenario</span></h3>
+                <button
+                  className={`switch ${showSimulation ? 'on' : ''}`}
+                  role="switch"
+                  aria-checked={showSimulation}
+                  aria-label="Toggle flood scenario"
+                  onClick={() => { setShowSimulation(!showSimulation); setPlaying(false); }}
+                >
+                  <span />
+                </button>
+              </div>
+              <p className="sim-description">Hydraulic reach inundation across {(corridorSpan / 1000).toFixed(0)} km river corridor.</p>
 
-                <div className={`source-badge ${!gauge.data || stale ? 'neutral' : 'live'}`}>
-                  <span className="status-dot" />
-                  <span>{gauge.loading ? 'Connecting to gauge…' : gauge.data ? (stale ? 'Delayed observation' : 'Live USGS Telemetry') : 'GloFAS modeled station'}</span>
-                </div>
+              <div className="flow-direction-badge">
+                <Compass size={13} />
+                <span>
+                  Flow: <strong>{floodStats.flowDirection || 'Upstream → Downstream'}</strong>
+                  {floodStats.gradient > 0 ? ` · Gradient: ${floodStats.gradient.toFixed(2)} m/km` : ''}
+                </span>
+              </div>
 
-                <div className="metric">
-                  <span className="metric-label">Measured discharge</span>
-                  <div className="metric-val-wrap">
-                    <strong className="metric-val">{number(gauge.data?.discharge)}</strong>
-                    <span className="metric-unit">cfs</span>
-                  </div>
-                </div>
-
-                <div className="metric-row">
-                  <div className="metric-sub">
-                    <span className="metric-label">Gauge height</span>
-                    <strong className="metric-sub-val">
-                      {gauge.data?.height != null ? (
-                        <>
-                          {number(gauge.data.height, 2)} <small>ft</small>
-                          <span className="unit-equiv"> ({number(gauge.data.height * 0.3048, 2)}m)</span>
-                        </>
-                      ) : (
-                        '—'
-                      )}
-                    </strong>
-                  </div>
-                  <div className="metric-sub">
-                    <span className="metric-label">Temperature</span>
-                    <strong className="metric-sub-val">{number(weather.data?.current.temperature_2m, 1)} <small>°C</small></strong>
-                  </div>
-                </div>
-
-                {liveStageMetres != null && (
-                  <button
-                    type="button"
-                    className="sync-live-btn"
-                    onClick={() => {
-                      setRise(liveStageMetres);
-                      if (!showSimulation) setShowSimulation(true);
-                      setPlaying(false);
-                    }}
-                    title="Calibrate 3D flood map directly to live gauge/stage telemetry"
-                  >
-                    <Activity size={13} />
-                    <span>Sync 3D Map to Live Level (+{liveStageMetres}m)</span>
-                  </button>
-                )}
-
-                <div className="observation-note">
-                  {gauge.data?.time ? (
-                    <>
-                      <Radio size={13} />
-                      <span>
-                        {new Date(gauge.data.time).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                        {gauge.data.approval ? ` · Status: ${gauge.data.approval}` : ''}
-                        <br />
-                        Gauge datum relative; not flood depth.
-                      </span>
-                    </>
-                  ) : (
-                    <span>{gauge.error ?? 'Awaiting live observations…'}</span>
-                  )}
-                </div>
-              </section>
-
-              <section className="simulation-card">
-                <div className="card-heading">
-                  <h3><Waves size={16} /><span>Flood scenario</span></h3>
-                  <button
-                    className={`switch ${showSimulation ? 'on' : ''}`}
-                    role="switch"
-                    aria-checked={showSimulation}
-                    aria-label="Toggle flood scenario"
-                    onClick={() => { setShowSimulation(!showSimulation); setPlaying(false); }}
-                  >
-                    <span />
-                  </button>
-                </div>
-                <p className="sim-description">Hydraulic reach inundation across {(corridorSpan / 1000).toFixed(0)} km river corridor.</p>
-
-                <div className="flow-direction-badge">
-                  <Compass size={13} />
-                  <span>
-                    Flow: <strong>{floodStats.flowDirection || 'Upstream → Downstream'}</strong>
-                    {floodStats.gradient > 0 ? ` · Gradient: ${floodStats.gradient.toFixed(2)} m/km` : ''}
-                  </span>
-                </div>
-
-                <div className="reach-selector-row">
-                  <span className="reach-title">River Length (Reach):</span>
-                  <div className="reach-button-group" role="group" aria-label="River reach span">
-                    {[
-                      { label: '14 km', val: 14000 },
-                      { label: '28 km', val: 28000 },
-                      { label: '45 km', val: 45000 }
-                    ].map(r => (
-                      <button
-                        key={r.val}
-                        type="button"
-                        className={`reach-pill ${corridorSpan === r.val ? 'active-reach' : ''}`}
-                        onClick={() => { setCorridorSpan(r.val); if (!showSimulation) setShowSimulation(true); }}
-                      >
-                        {r.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="preset-chips">
-                  {liveStageMetres != null && (
+              <div className="reach-selector-row">
+                <span className="reach-title">River Length (Reach):</span>
+                <div className="reach-button-group" role="group" aria-label="River reach span">
+                  {[
+                    { label: '14 km', val: 14000 },
+                    { label: '28 km', val: 28000 },
+                    { label: '45 km', val: 45000 }
+                  ].map(r => (
                     <button
+                      key={r.val}
                       type="button"
-                      className={`preset-chip live-chip ${Math.abs(rise - liveStageMetres) < 0.04 ? 'active-preset' : ''}`}
-                      onClick={() => { setRise(liveStageMetres); setPlaying(false); if (!showSimulation) setShowSimulation(true); }}
-                      title="Set water rise directly to live gauge observation"
+                      className={`reach-pill ${corridorSpan === r.val ? 'active-reach' : ''}`}
+                      onClick={() => { setCorridorSpan(r.val); if (!showSimulation) setShowSimulation(true); }}
                     >
-                      <strong>⚡ +{liveStageMetres}m</strong>
-                      <small>Live Stage</small>
-                    </button>
-                  )}
-                  {profile.presets.map(p => (
-                    <button
-                      key={p.val}
-                      type="button"
-                      className={`preset-chip ${Math.abs(rise - p.val) < 0.04 ? 'active-preset' : ''}`}
-                      onClick={() => { setRise(p.val); setPlaying(false); if (!showSimulation) setShowSimulation(true); }}
-                    >
-                      <strong>{p.label}</strong>
-                      <small>{p.sub}</small>
+                      {r.label}
                     </button>
                   ))}
                 </div>
+              </div>
 
-                <div className="slider-group">
-                  <div className="slider-label">
-                    <span>Water rise above channel</span>
-                    <strong className="rise-numeric">+{rise.toFixed(profile.step < 0.1 ? 2 : 1)} <span>m</span></strong>
+              <div className="preset-chips">
+                {liveStageMetres != null && (
+                  <button
+                    type="button"
+                    className={`preset-chip live-chip ${Math.abs(rise - liveStageMetres) < 0.04 ? 'active-preset' : ''}`}
+                    onClick={() => { setRise(liveStageMetres); setPlaying(false); if (!showSimulation) setShowSimulation(true); }}
+                    title="Set water rise directly to live gauge observation"
+                  >
+                    <strong>⚡ +{liveStageMetres}m</strong>
+                    <small>Live Stage</small>
+                  </button>
+                )}
+                {profile.presets.map(p => (
+                  <button
+                    key={p.val}
+                    type="button"
+                    className={`preset-chip ${Math.abs(rise - p.val) < 0.04 ? 'active-preset' : ''}`}
+                    onClick={() => { setRise(p.val); setPlaying(false); if (!showSimulation) setShowSimulation(true); }}
+                  >
+                    <strong>{p.label}</strong>
+                    <small>{p.sub}</small>
+                  </button>
+                ))}
+              </div>
+
+              <div className="slider-group">
+                <div className="slider-label">
+                  <span>Water rise above channel</span>
+                  <strong className="rise-numeric">+{rise.toFixed(profile.step < 0.1 ? 2 : 1)} <span>m</span></strong>
+                </div>
+                <input
+                  id="water-rise"
+                  type="range"
+                  min={profile.minRise}
+                  max={profile.maxRise}
+                  step={profile.step}
+                  value={rise}
+                  onChange={e => { setRise(Number(e.target.value)); setPlaying(false); }}
+                />
+                <div className="range-labels">
+                  <span>+{profile.minRise.toFixed(profile.step < 0.1 ? 2 : 1)} m (Low flow)</span>
+                  <span>+{profile.maxRise.toFixed(1)} m (Extreme)</span>
+                </div>
+                <div className="river-context-note">
+                  {profile.contextNote}
+                </div>
+              </div>
+
+              <button
+                className="primary-button sim-btn"
+                disabled={gridLoading || !!gridError}
+                onClick={() => {
+                  if (!showSimulation) setShowSimulation(true);
+                  else setPlaying(!playing);
+                }}
+              >
+                {gridLoading ? <RefreshCw className="spin" size={15} /> : playing ? <Pause size={15} /> : <Play size={15} />}
+                <span>{gridLoading ? 'Loading elevation…' : playing ? 'Pause scenario' : showSimulation ? 'Animate water rise' : 'Enable flood scenario'}</span>
+              </button>
+
+              {gridError ? (
+                <p className="inline-error">
+                  {gridError}
+                  <button onClick={() => { setShowSimulation(false); setTimeout(() => setShowSimulation(true), 0); }}>Retry</button>
+                </p>
+              ) : showSimulation && grid ? (
+                <div className="scenario-stats">
+                  <div className="stat-box">
+                    <strong>{number(floodStats.area, 2)} <small>km²</small></strong>
+                    <span>Flooded area</span>
                   </div>
-                  <input
-                    id="water-rise"
-                    type="range"
-                    min={profile.minRise}
-                    max={profile.maxRise}
-                    step={profile.step}
-                    value={rise}
-                    onChange={e => { setRise(Number(e.target.value)); setPlaying(false); }}
-                  />
-                  <div className="range-labels">
-                    <span>+{profile.minRise.toFixed(profile.step < 0.1 ? 2 : 1)} m (Low flow)</span>
-                    <span>+{profile.maxRise.toFixed(1)} m (Extreme)</span>
-                  </div>
-                  <div className="river-context-note">
-                    {profile.contextNote}
+                  <div className="stat-box">
+                    <strong>{number(floodStats.maxDepth, 1)} <small>m</small></strong>
+                    <span>Peak depth</span>
                   </div>
                 </div>
+              ) : null}
 
-                <button
-                  className="primary-button sim-btn"
-                  disabled={gridLoading || !!gridError}
-                  onClick={() => {
-                    if (!showSimulation) setShowSimulation(true);
-                    else setPlaying(!playing);
-                  }}
-                >
-                  {gridLoading ? <RefreshCw className="spin" size={15} /> : playing ? <Pause size={15} /> : <Play size={15} />}
-                  <span>{gridLoading ? 'Loading elevation…' : playing ? 'Pause scenario' : showSimulation ? 'Animate water rise' : 'Enable flood scenario'}</span>
+              <div className="method-note">
+                <Mountain size={13} />
+                <span>Exploratory elevation model. Excludes hydrodynamics, levees, and storm drains.</span>
+              </div>
+            </section>
+          </div>
+
+          <div className="telemetry-outlook-row">
+            <section className="observation-card">
+              <div className="card-heading">
+                <div className="card-title-group">
+                  <h3>River conditions</h3>
+                  <span className="station-code">{station.usgs ? `USGS ${station.usgs}` : 'GloFAS Model'}</span>
+                </div>
+                <button className="icon-button" aria-label="Refresh river telemetry" onClick={() => setRefresh(n => n + 1)}>
+                  <RefreshCw size={14} className={gauge.loading ? 'spin' : ''} />
                 </button>
+              </div>
 
-                {gridError ? (
-                  <p className="inline-error">
-                    {gridError}
-                    <button onClick={() => { setShowSimulation(false); setTimeout(() => setShowSimulation(true), 0); }}>Retry</button>
-                  </p>
-                ) : showSimulation && grid ? (
-                  <div className="scenario-stats">
-                    <div className="stat-box">
-                      <strong>{number(floodStats.area, 2)} <small>km²</small></strong>
-                      <span>Flooded area</span>
-                    </div>
-                    <div className="stat-box">
-                      <strong>{number(floodStats.maxDepth, 1)} <small>m</small></strong>
-                      <span>Peak depth</span>
-                    </div>
-                  </div>
-                ) : null}
+              <div className={`source-badge ${!gauge.data || stale ? 'neutral' : 'live'}`}>
+                <span className="status-dot" />
+                <span>{gauge.loading ? 'Connecting to gauge…' : gauge.data ? (stale ? 'Delayed observation' : 'Live USGS Telemetry') : 'GloFAS modeled station'}</span>
+              </div>
 
-                <div className="method-note">
-                  <Mountain size={13} />
-                  <span>Exploratory elevation model. Excludes hydrodynamics, levees, and storm drains.</span>
+              <div className="metric">
+                <span className="metric-label">Measured discharge</span>
+                <div className="metric-val-wrap">
+                  <strong className="metric-val">{number(gauge.data?.discharge)}</strong>
+                  <span className="metric-unit">cfs</span>
                 </div>
-              </section>
-            </aside>
+              </div>
+
+              <div className="metric-row">
+                <div className="metric-sub">
+                  <span className="metric-label">Gauge height</span>
+                  <strong className="metric-sub-val">
+                    {gauge.data?.height != null ? (
+                      <>
+                        {number(gauge.data.height, 2)} <small>ft</small>
+                        <span className="unit-equiv"> ({number(gauge.data.height * 0.3048, 2)}m)</span>
+                      </>
+                    ) : (
+                      '—'
+                    )}
+                  </strong>
+                </div>
+                <div className="metric-sub">
+                  <span className="metric-label">Temperature</span>
+                  <strong className="metric-sub-val">{number(weather.data?.current.temperature_2m, 1)} <small>°C</small></strong>
+                </div>
+              </div>
+
+              {liveStageMetres != null && (
+                <button
+                  type="button"
+                  className="sync-live-btn"
+                  onClick={() => {
+                    setRise(liveStageMetres);
+                    if (!showSimulation) setShowSimulation(true);
+                    setPlaying(false);
+                  }}
+                  title="Calibrate 3D flood map directly to live gauge/stage telemetry"
+                >
+                  <Activity size={13} />
+                  <span>Sync 3D Map to Live Level (+{liveStageMetres}m)</span>
+                </button>
+              )}
+
+              <div className="observation-note">
+                {gauge.data?.time ? (
+                  <>
+                    <Radio size={13} />
+                    <span>
+                      {new Date(gauge.data.time).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      {gauge.data.approval ? ` · Status: ${gauge.data.approval}` : ''}
+                      <br />
+                      Gauge datum relative; not flood depth.
+                    </span>
+                  </>
+                ) : (
+                  <span>{gauge.error ?? 'Awaiting live observations…'}</span>
+                )}
+              </div>
+            </section>
 
             <HydrographOutlookCard
               forecast={forecast}
@@ -1244,6 +1245,7 @@ export default function App() {
               setRefresh={setRefresh}
               setSources={setSources}
             />
+          </div>
 
             <MonitorPanel
               areas={areas}
