@@ -131,7 +131,7 @@ The flood scenario is a **static connected bathtub approximation**, using a 65×
 
 Judge-facing results are stored in [`evaluation/README.md`](evaluation/README.md), with the evaluation matrix, metric definitions, actual-versus-predicted charts, every public test prediction, per-station scores, and a two-page PDF. The five-slide presentation is in `presentation/`. These report the measured public experiment, not official hidden-test scores.
 
-[`IMPROVEMENT_PLAN.md`](IMPROVEMENT_PLAN.md) compares the uploaded brief with measured failure modes and prioritizes leakage-safe experiments. It does not claim that those proposed improvements are already trained.
+[`IMPROVEMENT_PLAN.md`](IMPROVEMENT_PLAN.md) compares the uploaded brief with measured failure modes and distinguishes completed experiments from remaining data work. [`evaluation/improvement_trials.csv`](evaluation/improvement_trials.csv) records candidate validation metrics, including rejected attempts; compact evidence is retained under `reports/experiments/`. Optional advanced learners require `pip install -r requirements-advanced.txt`.
 
 Area monitoring is implemented through **Draw boundary** on the map and **Area alerts** below the chart. Draw at least three points, finish the polygon, then set a name and height threshold in metres. Simulation alerts require both flood intersection and sufficient simulated water rise. USGS alerts require a linked gauge inside the polygon and a fresh gauge-height observation; gauge height is relative to its datum, not flood depth. Areas persist only in this browser, and alerts run only while the page is open. Geometry/threshold tests and the build pass; full browser verification of the newly added drawing/alert flow remains pending in the handoff.
 

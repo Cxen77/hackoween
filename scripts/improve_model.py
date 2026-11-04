@@ -322,6 +322,7 @@ def run(args):
     test_upstream=upstream_features(test,metadata,history=history) if getattr(args,'upstream',False) else None
     trained=[];train_pred=np.zeros(len(train));test_pred=np.zeros(len(test))
     for kind,weight in parts:
+        print(f'Refitting locked component {kind}: {len(train):,} training rows, weight {weight:.6f}',flush=True)
         x=design(kind,base,enriched,regional,upstream)
         component=fit_candidate(kind,train,x,args.seed);component['weight']=weight;trained.append(component)
         train_pred+=weight*predict_candidate(component,train,x)

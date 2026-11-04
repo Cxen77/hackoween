@@ -15,11 +15,11 @@ import type { Grid } from './terrain';
 import MonitorPanel from './MonitorPanel';
 import { evaluateMonitor, validBoundary, validMonitor } from './geofence.mjs';
 import type { AreaMonitor, MonitorResult } from './monitorTypes';
-import type { FeatureCollection, Polygon } from 'geojson';
+import type { FeatureCollection, Polygon, LineString } from 'geojson';
 
 const key = (import.meta as unknown as { env: Record<string, string> }).env.VITE_GEOAPIFY_API_KEY;
 maplibregl.setWorkerUrl(workerUrl);
-const empty: FeatureCollection<Polygon> = { type: 'FeatureCollection', features: [] };
+const empty: FeatureCollection<Polygon | LineString> = { type: 'FeatureCollection', features: [] };
 
 const rasterStyle = (satellite: boolean): StyleSpecification => ({
   version: 8,
@@ -142,7 +142,20 @@ function Chart({ data, day, setDay, unit, weather }: { data: Forecast | null; da
 }
 
 export default function App() {
-  const [station, setStation] = useState<Station>(stations[0]);
+  const [station, setStation] = useState<Station>(() => {
+    try {
+      const p = new URLSearchParams(window.location.search).get('station');
+      if (p) {
+        const found = stations.find(s =>
+          s.id === p ||
+          s.river.toLowerCase().includes(p.toLowerCase()) ||
+          s.name.toLowerCase().includes(p.toLowerCase())
+        );
+        if (found) return found;
+      }
+    } catch {}
+    return stations[0];
+  });
   const [query, setQuery] = useState('');
   const [filterRegion, setFilterRegion] = useState<'all' | 'us' | 'in'>('all');
   const [places, setPlaces] = useState<Station[]>([]);
@@ -159,11 +172,24 @@ export default function App() {
 
   const [ready, setReady] = useState(false);
   const [mapError, setMapError] = useState('');
-  const [satellite, setSatellite] = useState(false);
+  const [satellite, setSatellite] = useState<boolean>(() => {
+    try {
+      return new URLSearchParams(window.location.search).get('satellite') === '1';
+    } catch {
+      return false;
+    }
+  });
   const [is3d, setIs3d] = useState(true);
 
-  const [showSimulation, setShowSimulation] = useState(false);
-  const [rise, setRise] = useState(3);
+  const [showSimulation, setShowSimulation] = useState(true);
+  const [rise, setRise] = useState<number>(() => {
+    try {
+      const p = new URLSearchParams(window.location.search).get('rise');
+      if (p && Number.isFinite(Number(p))) return Number(p);
+    } catch {}
+    return 3;
+  });
+  const [corridorSpan, setCorridorSpan] = useState<number>(28000);
   const [grid, setGrid] = useState<Grid | null>(null);
   const [gridError, setGridError] = useState('');
   const [gridLoading, setGridLoading] = useState(false);
@@ -193,12 +219,12 @@ export default function App() {
   const [pendingRing, setPendingRing] = useState<[number, number][] | null>(null);
   const [drawingError, setDrawingError] = useState('');
 
-  const [scenarioCells, setScenarioCells] = useState<FeatureCollection<Polygon>>(empty);
+  const [scenarioCells, setScenarioCells] = useState<FeatureCollection<Polygon | LineString>>(empty);
   const [scenarioHeight, setScenarioHeight] = useState(0);
   const [alertToast, setAlertToast] = useState<{ name: string; message: string; height: number | null; threshold: number; basis: string } | null>(null);
   const previousAlerts = useRef<Record<string, boolean>>({});
   const [storageError, setStorageError] = useState('');
-  const [floodStats, setFloodStats] = useState({ area: 0, maxDepth: 0, level: 0 });
+  const [floodStats, setFloodStats] = useState({ area: 0, maxDepth: 0, level: 0, flowDirection: '', gradient: 0 });
 
   const pick = (s: Station) => {
     setStation(s);
@@ -206,6 +232,35 @@ export default function App() {
     setPlaces([]);
     setDay(0);
     setPlaying(false);
+  };
+
+  const toggle3D = (force?: boolean) => {
+    const next = force !== undefined ? force : !is3d;
+    setIs3d(next);
+    const m = map.current;
+    if (!m) return;
+    m.setTerrain(next ? { source: 'terrain-dem', exaggeration: 3.2 } : null);
+    if (m.getLayer('terrain-hills')) {
+      m.setLayoutProperty('terrain-hills', 'visibility', next ? 'visible' : 'none');
+    }
+    m.easeTo({
+      pitch: next ? 65 : 0,
+      bearing: next ? -24 : 0,
+      duration: 900
+    });
+  };
+
+  const cyclePitch = () => {
+    const m = map.current;
+    if (!m) return;
+    const current = m.getPitch();
+    const next = current < 15 ? 48 : current < 55 ? 65 : current < 72 ? 80 : 0;
+    setIs3d(next > 0);
+    m.setTerrain(next > 0 ? { source: 'terrain-dem', exaggeration: 3.2 } : null);
+    if (m.getLayer('terrain-hills')) {
+      m.setLayoutProperty('terrain-hills', 'visibility', next > 0 ? 'visible' : 'none');
+    }
+    m.easeTo({ pitch: next, bearing: next > 0 ? -24 : 0, duration: 600 });
   };
 
   useEffect(() => {
@@ -225,12 +280,12 @@ export default function App() {
     try {
       m = new maplibregl.Map({
         container: mapNode.current,
-        style: key ? `https://maps.geoapify.com/v1/styles/dark-matter/style.json?apiKey=${key}` : rasterStyle(false),
-        center: [stations[0].lon, stations[0].lat],
+        style: satellite ? rasterStyle(true) : key ? `https://maps.geoapify.com/v1/styles/dark-matter/style.json?apiKey=${key}` : rasterStyle(false),
+        center: [station.lon, station.lat],
         zoom: 12.2,
-        pitch: 58,
-        bearing: -22,
-        maxPitch: 75,
+        pitch: 65,
+        bearing: -24,
+        maxPitch: 85,
         attributionControl: { compact: true },
         canvasContextAttributes: { preserveDrawingBuffer: true }
       });
@@ -258,25 +313,62 @@ export default function App() {
         maxzoom: 15,
         attribution: 'Elevation: AWS Terrain Tiles'
       });
-      m.setTerrain({ source: 'terrain-dem', exaggeration: 1.5 });
+      m.setTerrain({ source: 'terrain-dem', exaggeration: 3.2 });
+      m.addLayer({
+        id: 'terrain-hills',
+        type: 'hillshade',
+        source: 'terrain-dem',
+        layout: { visibility: 'visible' },
+        paint: {
+          'hillshade-exaggeration': 1.0,
+          'hillshade-shadow-color': '#020617',
+          'hillshade-highlight-color': '#e0f2fe',
+          'hillshade-accent-color': '#38bdf8',
+          'hillshade-illumination-direction': 315,
+          'hillshade-illumination-anchor': 'viewport'
+        }
+      });
       m.addSource('flood', { type: 'geojson', data: empty });
       m.addLayer({
         id: 'flood-fill',
         type: 'fill',
         source: 'flood',
+        filter: ['==', ['geometry-type'], 'Polygon'],
         paint: {
-          'fill-color': ['interpolate', ['linear'], ['get', 'depth'], 0, '#38bdf8', 2, '#0284c7', 5, '#1d4ed8', 10, '#1e1b4b'],
-          'fill-opacity': 0.65
+          'fill-color': [
+            'interpolate', ['linear'], ['get', 'depth'],
+            0, '#38bdf8',
+            1.0, '#0ea5e9',
+            2.5, '#0284c7',
+            5.0, '#1d4ed8',
+            8.0, '#1e1b4b'
+          ],
+          'fill-opacity': 0.74,
+          'fill-antialias': true
         }
       });
       m.addLayer({
-        id: 'flood-volume',
-        type: 'fill-extrusion',
+        id: 'flood-shoreline-glow',
+        type: 'line',
         source: 'flood',
+        filter: ['==', ['geometry-type'], 'LineString'],
         paint: {
-          'fill-extrusion-color': ['interpolate', ['linear'], ['get', 'depth'], 0, '#38bdf8', 3, '#0284c7', 10, '#1e3a8a'],
-          'fill-extrusion-height': ['get', 'depth'],
-          'fill-extrusion-opacity': 0.45
+          'line-color': '#0284c7',
+          'line-width': 5.5,
+          'line-opacity': 0.45,
+          'line-blur': 3.0
+        }
+      });
+      m.addLayer({
+        id: 'flood-shoreline',
+        type: 'line',
+        source: 'flood',
+        filter: ['==', ['geometry-type'], 'LineString'],
+        paint: {
+          'line-color': '#67e8f9',
+          'line-width': 2.4,
+          'line-opacity': 0.95,
+          'line-blur': 0.5
         }
       });
       m.addSource('monitored-areas', { type: 'geojson', data: empty });
@@ -409,12 +501,12 @@ export default function App() {
     setGrid(null);
     setGridLoading(true);
     setGridError('');
-    loadGrid(station.lat, station.lon)
+    loadGrid(station.lat, station.lon, corridorSpan)
       .then(g => { if (alive) setGrid(g); })
       .catch(() => { if (alive) setGridError('AWS Terrarium elevation tiles could not load. Check network.'); })
       .finally(() => { if (alive) setGridLoading(false); });
     return () => { alive = false; };
-  }, [station, showSimulation]);
+  }, [station, showSimulation, corridorSpan]);
 
   useEffect(() => {
     if (!playing) return;
@@ -438,7 +530,7 @@ export default function App() {
       (m.getSource('flood') as GeoJSONSource).setData(empty);
       setScenarioCells(empty);
       setScenarioHeight(0);
-      setFloodStats({ area: 0, maxDepth: 0, level: 0 });
+      setFloodStats({ area: 0, maxDepth: 0, level: 0, flowDirection: '', gradient: 0 });
       return;
     }
     const waterRise = playing ? animatedRise : rise;
@@ -446,7 +538,13 @@ export default function App() {
     (m.getSource('flood') as GeoJSONSource).setData(result.geojson);
     setScenarioCells(result.geojson);
     setScenarioHeight(waterRise);
-    setFloodStats({ area: result.area, maxDepth: result.maxDepth, level: result.level });
+    setFloodStats({
+      area: result.area,
+      maxDepth: result.maxDepth,
+      level: result.level,
+      flowDirection: result.flowDirection,
+      gradient: result.gradient
+    });
   }, [grid, rise, playing, animatedRise, showSimulation, ready, refresh]);
 
   useEffect(() => {
@@ -570,6 +668,17 @@ export default function App() {
   const scale = unit === 'cfs' ? 35.3146667 : 1;
   const discharge = forecast.data?.daily.river_discharge[day];
   const stale = gauge.data?.time ? Date.now() - new Date(gauge.data.time).getTime() > 2 * 3600000 : false;
+
+  const liveStageMetres = useMemo<number | null>(() => {
+    if (gauge.data?.height != null && Number.isFinite(gauge.data.height)) {
+      return Number((gauge.data.height * 0.3048).toFixed(1));
+    }
+    if (forecast.data?.daily.river_discharge[0] != null) {
+      const q = forecast.data.daily.river_discharge[0]!;
+      return Number(Math.max(0.3, Math.min(22, Math.pow(q / 300, 0.42))).toFixed(1));
+    }
+    return null;
+  }, [gauge.data, forecast.data]);
 
   const filtered = stations.filter(s => {
     const matchesQuery = `${s.name} ${s.river} ${s.region}`.toLowerCase().includes(query.toLowerCase());
@@ -763,9 +872,42 @@ export default function App() {
               <div className="map-canvas" ref={mapNode} />
 
               <div className="map-hud-topleft">
-                <div className="map-tag">
-                  <span className="hud-dot" />
-                  <span>{is3d ? '3D Terrarium DEM' : '2D Map'}</span>
+                <div className="view-mode-toggle-group" role="group" aria-label="Map view mode">
+                  <button
+                    type="button"
+                    className={`view-mode-btn ${!is3d ? 'active' : ''}`}
+                    onClick={() => toggle3D(false)}
+                    title="2D Plan View (flat top-down)"
+                  >
+                    2D Plan
+                  </button>
+                  <button
+                    type="button"
+                    className={`view-mode-btn ${is3d ? 'active' : ''}`}
+                    onClick={() => toggle3D(true)}
+                    title="3D Lit Terrain (sun illumination & 3.2× elevation relief)"
+                  >
+                    <span className="hud-dot" />
+                    3D Lit Height
+                  </button>
+                </div>
+                <div className="view-mode-toggle-group" role="group" aria-label="Base map layer">
+                  <button
+                    type="button"
+                    className={`view-mode-btn ${!satellite ? 'active' : ''}`}
+                    onClick={() => changeBase(false)}
+                    title="Dark Matter vector map"
+                  >
+                    Dark
+                  </button>
+                  <button
+                    type="button"
+                    className={`view-mode-btn ${satellite ? 'active' : ''}`}
+                    onClick={() => changeBase(true)}
+                    title="Esri World Imagery 3D satellite layer"
+                  >
+                    Satellite
+                  </button>
                 </div>
                 <div className="map-coords">
                   {station.lat.toFixed(4)}° N, {Math.abs(station.lon).toFixed(4)}° {station.lon < 0 ? 'W' : 'E'}
@@ -803,8 +945,15 @@ export default function App() {
                 <button aria-label="Zoom in" onClick={() => map.current?.zoomIn()}><Plus size={16} /></button>
                 <button aria-label="Zoom out" onClick={() => map.current?.zoomOut()}><Minus size={16} /></button>
                 <span className="divider" />
-                <button aria-label="Reset map orientation" onClick={() => map.current?.easeTo({ bearing: 0, pitch: is3d ? 58 : 0 })}><Compass size={16} /></button>
-                <button aria-label="Center selected river" onClick={() => map.current?.flyTo({ center: [station.lon, station.lat], zoom: 12.2 })}><MapPin size={16} /></button>
+                <button
+                  aria-label="Cycle 3D camera tilt"
+                  title="Cycle 3D tilt (2D / 45° / 65° / 78°)"
+                  onClick={cyclePitch}
+                >
+                  <Mountain size={16} />
+                </button>
+                <button aria-label="Reset map orientation" onClick={() => map.current?.easeTo({ bearing: 0, pitch: is3d ? 62 : 0 })}><Compass size={16} /></button>
+                <button aria-label="Center selected river" onClick={() => map.current?.flyTo({ center: [station.lon, station.lat], zoom: 12.5 })}><MapPin size={16} /></button>
                 <button aria-label="Fullscreen map" onClick={() => mapNode.current?.parentElement?.requestFullscreen()}><Expand size={15} /></button>
               </div>
 
@@ -825,12 +974,9 @@ export default function App() {
                       <input
                         type="checkbox"
                         checked={is3d}
-                        onChange={e => {
-                          setIs3d(e.target.checked);
-                          map.current?.setTerrain(e.target.checked ? { source: 'terrain-dem', exaggeration: 1.5 } : null);
-                        }}
+                        onChange={e => toggle3D(e.target.checked)}
                       />
-                      <span>3D Terrain (1.5× relief)</span>
+                      <span>3D Lit Height (2.4× relief)</span>
                     </label>
                     <label>
                       <input type="checkbox" checked={showSimulation} onChange={e => setShowSimulation(e.target.checked)} />
@@ -855,7 +1001,7 @@ export default function App() {
                 <div className="depth-legend">
                   <div className="legend-header">
                     <span>Simulated Depth</span>
-                    <small>1.5× relief</small>
+                    <small>{(corridorSpan / 1000).toFixed(0)} km reach · 3.2× relief</small>
                   </div>
                   <div className="legend-bar" />
                   <div className="legend-ticks">
@@ -896,13 +1042,38 @@ export default function App() {
                 <div className="metric-row">
                   <div className="metric-sub">
                     <span className="metric-label">Gauge height</span>
-                    <strong className="metric-sub-val">{number(gauge.data?.height, 2)} <small>ft</small></strong>
+                    <strong className="metric-sub-val">
+                      {gauge.data?.height != null ? (
+                        <>
+                          {number(gauge.data.height, 2)} <small>ft</small>
+                          <span className="unit-equiv"> ({number(gauge.data.height * 0.3048, 2)}m)</span>
+                        </>
+                      ) : (
+                        '—'
+                      )}
+                    </strong>
                   </div>
                   <div className="metric-sub">
                     <span className="metric-label">Temperature</span>
                     <strong className="metric-sub-val">{number(weather.data?.current.temperature_2m, 1)} <small>°C</small></strong>
                   </div>
                 </div>
+
+                {liveStageMetres != null && (
+                  <button
+                    type="button"
+                    className="sync-live-btn"
+                    onClick={() => {
+                      setRise(liveStageMetres);
+                      if (!showSimulation) setShowSimulation(true);
+                      setPlaying(false);
+                    }}
+                    title="Calibrate 3D flood map directly to live gauge/stage telemetry"
+                  >
+                    <Activity size={13} />
+                    <span>Sync 3D Map to Live Level (+{liveStageMetres}m)</span>
+                  </button>
+                )}
 
                 <div className="observation-note">
                   {gauge.data?.time ? (
@@ -934,19 +1105,60 @@ export default function App() {
                     <span />
                   </button>
                 </div>
-                <p className="sim-description">Connected static bathtub inundation on a 5 × 5 km elevation grid.</p>
+                <p className="sim-description">Hydraulic reach inundation across {(corridorSpan / 1000).toFixed(0)} km river corridor.</p>
+
+                <div className="flow-direction-badge">
+                  <Compass size={13} />
+                  <span>
+                    Flow: <strong>{floodStats.flowDirection || 'Upstream → Downstream'}</strong>
+                    {floodStats.gradient > 0 ? ` · Gradient: ${floodStats.gradient.toFixed(2)} m/km` : ''}
+                  </span>
+                </div>
+
+                <div className="reach-selector-row">
+                  <span className="reach-title">River Length (Reach):</span>
+                  <div className="reach-button-group" role="group" aria-label="River reach span">
+                    {[
+                      { label: '14 km', val: 14000 },
+                      { label: '28 km', val: 28000 },
+                      { label: '45 km', val: 45000 }
+                    ].map(r => (
+                      <button
+                        key={r.val}
+                        type="button"
+                        className={`reach-pill ${corridorSpan === r.val ? 'active-reach' : ''}`}
+                        onClick={() => { setCorridorSpan(r.val); if (!showSimulation) setShowSimulation(true); }}
+                      >
+                        {r.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
                 <div className="preset-chips">
+                  {liveStageMetres != null && (
+                    <button
+                      type="button"
+                      className={`preset-chip live-chip ${Math.abs(rise - liveStageMetres) < 0.05 ? 'active-preset' : ''}`}
+                      onClick={() => { setRise(liveStageMetres); setPlaying(false); if (!showSimulation) setShowSimulation(true); }}
+                      title="Set water rise directly to live gauge observation"
+                    >
+                      <strong>⚡ +{liveStageMetres}m</strong>
+                      <small>Live Stage</small>
+                    </button>
+                  )}
                   {[
-                    { label: '+1m', sub: 'Minor', val: 1 },
-                    { label: '+3m', sub: 'Moderate', val: 3 },
-                    { label: '+6m', sub: 'Major', val: 6 },
-                    { label: '+10m', sub: 'Extreme', val: 10 }
+                    { label: '+0.2m', sub: 'Low Flow', val: 0.2 },
+                    { label: '+1m', sub: 'Bankfull', val: 1.0 },
+                    { label: '+3m', sub: 'Moderate', val: 3.0 },
+                    { label: '+7m', sub: 'Major', val: 7.0 },
+                    { label: '+15m', sub: 'Monsoon', val: 15.0 },
+                    { label: '+22m', sub: 'Historic', val: 22.0 }
                   ].map(p => (
                     <button
                       key={p.val}
                       type="button"
-                      className={`preset-chip ${rise === p.val ? 'active-preset' : ''}`}
+                      className={`preset-chip ${Math.abs(rise - p.val) < 0.05 ? 'active-preset' : ''}`}
                       onClick={() => { setRise(p.val); setPlaying(false); if (!showSimulation) setShowSimulation(true); }}
                     >
                       <strong>{p.label}</strong>
@@ -963,15 +1175,15 @@ export default function App() {
                   <input
                     id="water-rise"
                     type="range"
-                    min="0.5"
-                    max="12"
-                    step="0.5"
+                    min="0.1"
+                    max="25"
+                    step="0.1"
                     value={rise}
                     onChange={e => { setRise(Number(e.target.value)); setPlaying(false); }}
                   />
                   <div className="range-labels">
-                    <span>+0.5 m (Channel full)</span>
-                    <span>+12.0 m (Catastrophic)</span>
+                    <span>+0.1 m (Low stage)</span>
+                    <span>+25.0 m (Extreme monsoon)</span>
                   </div>
                 </div>
 
