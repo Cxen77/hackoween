@@ -757,7 +757,6 @@ export default function App() {
                     title="FloodCast Hydrological Intelligence"
                   >
                     <RidgeMark width={28} height={20} />
-                    <span className="sidebar-brand-title">FloodCast</span>
                   </div>
                   <button
                     type="button"
