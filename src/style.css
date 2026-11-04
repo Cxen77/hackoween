@@ -833,10 +833,23 @@ svg {
 /* Row 2: River Conditions on Left + River Discharge & Hydrograph Outlook on Right */
 .telemetry-outlook-row {
   display: grid;
-  grid-template-columns: 350px minmax(0, 1fr);
+  grid-template-columns: 360px minmax(0, 1fr);
   gap: 20px;
   align-items: stretch;
   width: 100%;
+}
+
+.telemetry-outlook-row > .observation-card {
+  grid-column: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.telemetry-outlook-row > .hydrograph-reference-card,
+.telemetry-outlook-row > .forecast-card {
+  grid-column: 2;
+  width: 100%;
+  height: 100%;
 }
 
 .map-canvas {
@@ -1225,11 +1238,12 @@ svg {
 .observation-card, .simulation-card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 20px 22px;
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-xl);
+  padding: 24px 26px;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   height: 100%;
 }
 
@@ -1685,7 +1699,6 @@ input[type=range] {
 
 /* Forecast Card & Hydrograph Reference Card */
 .forecast-card {
-  grid-column: 1 / -1;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -1694,8 +1707,9 @@ input[type=range] {
 }
 
 .hydrograph-reference-card {
+  grid-column: auto;
   border-radius: var(--radius-xl);
-  padding: 24px 28px 18px;
+  padding: 24px 26px;
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
   border: 1px solid var(--border);
   background: var(--bg-surface);
