@@ -29,6 +29,15 @@ Script: scripts/basinshift_horizon.py. Summary: data/experiments/basinshift_hori
 - Chosen approach for BASINSHIFT-style forecasts: blend_50. Not applicable to FLOODCAST 2025 (no discharge inputs). FLOODCAST V2 champion unchanged.
 - Caveat: gains over persistence are modest (about 1-7%); no exceedance-probability or calibration model yet.
 
+## Station-climatology experiment (2026-11-04) - REJECTED, V2 unchanged
+
+Scripts: scripts/climatology_experiment.py, scripts/climatology_final.py. Results under data/experiments/climatology_v1, climatology_v2, climatology_final (local).
+Idea: per-station train-only log-discharge statistics (mean, q10, q90, max, month mean), leave-one-year-out for fit rows, station masking so unseen stations still work.
+- Validation, seen stations (mask 0.25): blend RMSE 44,715 vs V2 47,232; MAE 15,254 vs 16,816; extreme 53,119 vs 53,138; R2 0.893 vs 0.881. Unseen stations: RMSE 127,610 vs 72,109 (fails badly).
+- Control with same LightGBM learner and NO station stats (mask 0.5 run): clim features did not help in either split.
+- Router (seen station -> climatology blend, unseen -> V2) on the reused 2025 benchmark: RMSE 48,142 vs 46,543 (3.4% worse), extreme 114,965 vs 111,777 (2.9% worse), MAE 13,615 vs 14,003 (2.8% better), R2 0.9090 vs 0.9149. Fails the overall+extreme RMSE gate. Not promoted. Root predictions.csv untouched.
+- Lesson: third validation/benchmark mismatch. Further FLOODCAST gains need basin-wide weather, not more station-level tricks.
+
 ## Event readiness check (2026-11-04)
 
 Dry run of solution.py --improved --regional on files in the organizers exact schema (4 public stations, no impervious column, 6-column metadata, train through 2022, test 2023): completed, validator PASS (1,460 rows). Held-out RMSE 51,848 cfs vs 82,720 median baseline (small 4-station set). README event section now uses this command. Team details filled in README (Straw_Hats; Harsh Srivastav 1BY25CB020, Arman Jha 1BY25CS057, Sumit Santosh Bulbule 1TD25CS307, Dev Chandra Prasad Yadav 1BY25CS085). User confirmed the organizers gave ONLY the briefs, no event CSVs, so the public-data predictions.csv is the submission. Remaining: presentation speaker notes still say team name pending; target definition (peak vs daily mean) unconfirmed.
