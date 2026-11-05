@@ -97,65 +97,100 @@ const Stat = ({ label, value, hint }: { label: string; value: string; hint?: str
 const toCsv = (rows: (string | number | null)[][]) => rows.map(r => r.map(v => (v === null ? '' : String(v))).join(',')).join('\n') + '\n';
 
 /* ---------- tab: results ---------- */
-function Results({ summary }: { summary: Json }) {
-  // One model, fixed views: unseen US gauges at 1 day in the main table, and every horizon for both test sets below.
-  const set = 'heldout' as const, h = '1';
-  const f = summary.floodcast, b = summary.basinshift?.[set]?.horizons?.[h];
-  const rows: [string, Json][] = b ? [['BASINSHIFT blend (this model)', b.blend], ['Persistence (yesterday\'s flow)', b.persistence], ['Seasonal climatology', b.climatology], ['Weather-only boosting', b.weather_only]] : [];
-  const ev = (k: 'high_flow_q90' | 'extreme_flow_q99') => b?.[k];
+const CHOICE_LABEL = { auto: 'Auto (routed by river size)', mixed: 'Gauges + Caravan model', gauge: 'USGS-gauge model' } as const;
+
+function Results({ summary, choice }: { summary: Json; choice: 'auto' | 'mixed' | 'gauge' }) {
+  // Numbers follow the page's model selector; the saved Auto results are the fallback.
+  const cur = (set: string): Json => summary.basinshift_by_choice?.[choice]?.[set] ?? summary.basinshift?.[set];
+  const f = summary.floodcast;
+  const bands = useJson('/reports/model/forecast_bands.json');
+  const g = cur('heldout'), c = cur('caravan');
+  // Detail for the selected model: the 11 unseen gauges pooled together over 2024, per horizon.
+  const detail = (hz: string) => {
+    const list: Json[] = bands.data?.[choice] ?? [];
+    let n = 0, sse = 0, sae = 0, bias = 0, sum = 0, sumSq = 0, pSse = 0, pSae = 0, inside = 0, withBand = 0;
+    for (const st of list) {
+      const h = st.horizons?.[hz];
+      if (!h) continue;
+      st.actual.forEach((a: number | null, i: number) => {
+        const p = h.point[i];
+        if (a === null || p === null) return;
+        n++; sse += (p - a) ** 2; sae += Math.abs(p - a); bias += p - a; sum += a; sumSq += a * a;
+        const q = h.persistence[i];
+        if (q !== null) { pSse += (q - a) ** 2; pSae += Math.abs(q - a); }
+        if (h.lo[i] !== null && h.hi[i] !== null) { withBand++; if (a >= h.lo[i] && a <= h.hi[i]) inside++; }
+      });
+    }
+    if (!n) return null;
+    const sst = sumSq - (sum * sum) / n;
+    return { n, rmse: Math.sqrt(sse / n), mae: sae / n, bias: bias / n, r2: sst > 0 ? 1 - sse / sst : null, pRmse: Math.sqrt(pSse / n), pMae: pSae / n, cov: withBand ? inside / withBand : null };
+  };
+  const ratio = (m: Json) => (m ? m.blend.rmse / m.persistence.rmse : null);
+  const nse = (m: Json) => (m ? `${fmt(m.blend.median_basin_nse, 2)} vs ${fmt(m.persistence.median_basin_nse, 2)}` : '—');
+  const cov = (m: Json) => (m ? `${fmt(m.interval.coverage * 100, 1)}%` : '—');
   return (
-    <div className="mp-grid2">
+    <div className="mp-stack">
       <section className="mp-card">
-        <div className="mp-eyebrow"><Gauge size={14} /> FLOODCAST submission model</div>
-        <h3>Same-day discharge estimate</h3>
-        <p className="mp-muted">{f.model}. Trained on {fmt(f.train_rows)} rows from {f.stations_trained} US gauges; scored on {fmt(f.test_rows)} rows from 2025.</p>
-        <div className="mp-stats">
+        <div className="mp-eyebrow"><FlaskConical size={14} /> Overall result · {CHOICE_LABEL[choice]}</div>
+        <h3>How well does the forecast do on rivers it never saw?</h3>
+        <p className="mp-muted">
+          Every number below is from catchments left out of training: {g ? `${fmt(g.stations)} US gauges (2022 to 2024)` : 'US gauges'} and {c ? `${fmt(c.stations)} Caravan basins (2010 to 2014)` : 'Caravan basins'}.
+          The error ratio is the model's error divided by the error of repeating yesterday's flow, so <b>below 1.00 means the model wins</b>. Change the model above to see how each choice scores.
+        </p>
+        <table className="mp-table">
+          <thead><tr>
+            <th rowSpan={2}>Forecast</th>
+            <th colSpan={3}>Unseen US gauges</th>
+            <th colSpan={3}>Unseen Caravan basins</th>
+          </tr><tr>
+            <th>Error ratio</th><th>Median NSE (model vs persistence)</th><th>90% interval coverage</th>
+            <th>Error ratio</th><th>Median NSE (model vs persistence)</th><th>90% interval coverage</th>
+          </tr></thead>
+          <tbody>{['1', '3', '7'].map(k => {
+            const gm = g?.horizons?.[k], cm = c?.horizons?.[k];
+            return (<tr key={k} className={k === '1' ? 'hl' : ''}>
+              <td>+{k} day{k === '1' ? '' : 's'}</td>
+              <td><b>{fmt(ratio(gm), 3)}</b></td><td>{nse(gm)}</td><td>{cov(gm)}</td>
+              <td><b>{fmt(ratio(cm), 3)}</b></td><td>{nse(cm)}</td><td>{cov(cm)}</td>
+            </tr>);
+          })}</tbody>
+        </table>
+        <p className="mp-muted">NSE: 1 is perfect, 0 is no better than guessing the average, below 0 is worse. Interval coverage should be near 90%.</p>
+      </section>
+
+      <section className="mp-card">
+        <div className="mp-eyebrow"><LineChart size={14} /> In detail · {CHOICE_LABEL[choice]}</div>
+        <h3>Unseen US gauges, all of 2024</h3>
+        <p className="mp-muted">The {(bands.data?.[choice] ?? []).length || 11} unseen gauges pooled together, one row per forecast day. Because the big rivers carry the most water, they dominate the RMSE and MAE.</p>
+        {bands.data ? (
+          <table className="mp-table">
+            <thead><tr><th>Forecast</th><th>RMSE (cfs)</th><th>MAE (cfs)</th><th>Bias (cfs)</th><th>R²</th><th>90% interval coverage</th></tr></thead>
+            <tbody>{['1', '3', '7'].map(hz => {
+              const d = detail(hz);
+              if (!d) return <tr key={hz}><td>+{hz}</td><td colSpan={5}>not available</td></tr>;
+              return (<tr key={hz} className={hz === '1' ? 'hl' : ''}>
+                <td>+{hz} day{hz === '1' ? '' : 's'}</td>
+                <td><b>{fmt(d.rmse)}</b> <span className="mp-sub">persistence {fmt(d.pRmse)}</span></td>
+                <td><b>{fmt(d.mae)}</b> <span className="mp-sub">persistence {fmt(d.pMae)}</span></td>
+                <td title={d.bias < 0 ? 'negative: the forecast is too low on average' : 'positive: the forecast is too high on average'}><b>{fmt(d.bias)}</b> <span className="mp-sub">{d.bias < 0 ? 'too low' : 'too high'}</span></td>
+                <td><b>{fmt(d.r2, 3)}</b></td>
+                <td><b>{d.cov === null ? '—' : `${fmt(d.cov * 100, 1)}%`}</b> <span className="mp-sub">target 90%</span></td>
+              </tr>);
+            })}</tbody>
+          </table>
+        ) : <div className="mp-empty">Loading…</div>}
+      </section>
+
+      <section className="mp-card">
+        <div className="mp-eyebrow"><Gauge size={14} /> FLOODCAST submission file</div>
+        <h3>Same-day discharge estimate, 2025</h3>
+        <p className="mp-muted">The daily estimate for the FLOODCAST test file ({fmt(f.test_rows)} rows from 2025). It is a separate model from the forecast above, so it does not change with the model selector.</p>
+        <div className="mp-stats small">
           <Stat label="RMSE (cfs)" value={fmt(f.overall.rmse)} hint={`median baseline ${fmt(f.median_baseline.rmse)}`} />
           <Stat label="Extreme RMSE (cfs)" value={fmt(f.overall.extreme_rmse)} hint={`median baseline ${fmt(f.median_baseline.extreme_rmse)}`} />
           <Stat label="MAE (cfs)" value={fmt(f.overall.mae)} hint={`median baseline ${fmt(f.median_baseline.mae)}`} />
           <Stat label="R²" value={fmt(f.overall.r2, 3)} hint="not an accuracy percentage" />
         </div>
-        <div className="mp-card-foot">
-          <b>How to read these</b>
-          <ul>
-            <li><b>RMSE:</b> the typical miss in cfs; large misses count more.</li>
-            <li><b>Extreme RMSE:</b> the same, on the highest 10% of flows at each station.</li>
-            <li><b>MAE:</b> the average miss in cfs, with every miss counted equally.</li>
-            <li><b>R²:</b> the share of the ups and downs the model explains. It is not a percentage.</li>
-          </ul>
-          <p>Benchmark: {f.benchmark}</p>
-        </div>
-      </section>
-
-      <section className="mp-card">
-        <div className="mp-eyebrow"><FlaskConical size={14} /> BASINSHIFT-style forecast system</div>
-        <h3>Forecasts, intervals and exceedance probabilities</h3>
-        <p className="mp-muted">Main table: unseen US gauges at +1 day. All horizons for both test sets are in the table at the bottom of this card.</p>
-        {b ? (<>
-          <p className="mp-muted">Routed forecaster, tested on {fmt(summary.basinshift.heldout.stations)} US gauges left out of training (2022–2024, {fmt(summary.basinshift.heldout.rows)} days).</p>
-          <table className="mp-table">
-            <thead><tr><th>Method</th><th>RMSE</th><th>Extreme RMSE</th><th>MAE</th><th>Median NSE</th></tr></thead>
-            <tbody>{rows.map(([name, m], i) => (
-              <tr key={name} className={i === 0 ? 'hl' : ''}><td>{name}</td><td>{fmt(m.rmse)}</td><td>{fmt(m.extreme_rmse)}</td><td>{fmt(m.mae, 1)}</td><td>{fmt(m.median_basin_nse, 3)}</td></tr>))}</tbody>
-          </table>
-          <div className="mp-stats small">
-            <Stat label="90% interval coverage" value={`${fmt(b.interval.coverage * 100, 1)}%`} hint="target 90%" />
-            <Stat label="High-flow (Q90) AUPRC" value={fmt(ev('high_flow_q90').auprc, 3)} hint={`persistence ${fmt(ev('high_flow_q90').persistence_auprc, 3)}`} />
-            <Stat label="Extreme (Q99) AUPRC" value={fmt(ev('extreme_flow_q99').auprc, 3)} hint={`persistence ${fmt(ev('extreme_flow_q99').persistence_auprc, 3)}`} />
-            <Stat label="RMSE vs persistence" value={`${fmt(b.bootstrap.rmse_ratio_model_over_persistence_ci95[0], 3)}–${fmt(b.bootstrap.rmse_ratio_model_over_persistence_ci95[1], 3)}`} hint="95% CI by basin; below 1 is better" />
-          </div>
-        </>) : <div className="mp-empty">Results for this dataset are not available.</div>}
-        <h4>All horizons, both unseen test sets</h4>
-        <table className="mp-table">
-          <thead><tr><th>Forecast</th><th>Unseen US gauges: error ratio</th><th>Median NSE (model / persistence)</th><th>Unseen Caravan basins: error ratio</th><th>Median NSE (model / persistence)</th></tr></thead>
-          <tbody>{['1', '3', '7'].map(k => {
-            const g = summary.basinshift?.heldout?.horizons?.[k], c = summary.basinshift?.caravan?.horizons?.[k];
-            const ratio = (m: Json) => (m ? m.blend.rmse / m.persistence.rmse : null);
-            const nse = (m: Json) => (m ? `${fmt(m.blend.median_basin_nse, 2)} / ${fmt(m.persistence.median_basin_nse, 2)}` : '—');
-            return (<tr key={k}><td>+{k} day{k === '1' ? '' : 's'}</td><td><b>{fmt(ratio(g), 3)}</b></td><td>{nse(g)}</td><td><b>{fmt(ratio(c), 3)}</b></td><td>{nse(c)}</td></tr>);
-          })}</tbody>
-        </table>
-        <p className="mp-muted">Error ratio = model RMSE ÷ persistence RMSE (below 1.00 beats repeating yesterday's flow).</p>
       </section>
     </div>
   );
@@ -576,7 +611,7 @@ export default function ModelPage() {
       {error && <div className="mp-error"><XCircle size={14} /> Could not load results: {error}</div>}
       {tab === 'station' && <StationTest choice={choice} />}
       {tab === 'score' && <ScoreCsv />}
-      {summary && tab === 'results' && <Results summary={summary} />}
+      {summary && tab === 'results' && <Results summary={summary} choice={choice} />}
       {summary && tab === 'judge' && <JudgeTests summary={summary} choice={choice} />}
       {summary && tab === 'robust' && <Robust summary={summary} />}
       {!summary && !error && tab !== 'station' && tab !== 'score' && <div className="mp-empty">Loading results…</div>}

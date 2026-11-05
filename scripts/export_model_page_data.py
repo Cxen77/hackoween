@@ -77,6 +77,33 @@ def main() -> None:
     rp = EXP / 'route_by_size.json'
     if rp.exists():
         summary['routing'] = json.loads(rp.read_text(encoding='utf-8'))['summary']
+    # Results for each model choice (auto, mixed, gauge), on the same two unseen test sets, so the Results tab
+    # changes with the page selector. Computed with the same routine as scripts/eval_routed.py.
+    new = joblib.load(EXP / 'models_aug_holdout.joblib')   # mixed model (gauges + Caravan), held-out version
+    old = joblib.load(EXP / 'models_heldout.joblib')       # USGS-gauge model, held-out version
+    by_choice = {}
+    aug = pd.read_csv('data/augmented_v2/train_augmented.csv', dtype={'station_id': str}).sort_values(['station_id', 'date']).reset_index(drop=True)
+    held_ids = json.loads(Path('models/holdout_ids.json').read_text(encoding='utf-8'))
+    for set_label, ids, t0, t1, old_cut in (('heldout', held_ids['usgs_gauges'], '2022-01-01', '2024-12-31', '2022-01-01'),
+                                            ('caravan', held_ids['caravan_basins'], '2010-01-01', '2014-12-31', '2010-01-01')):
+        test = aug[aug.station_id.isin(ids)].reset_index(drop=True)
+        in_test = ((test.date >= t0) & (test.date <= t1)).to_numpy()
+        y, area = test.discharge_cfs.to_numpy(float), test.drainage_area_sqmi.to_numpy(float)
+        clim = bm.clim_forecast(test, (test.date < t0).to_numpy())
+        big = area >= LARGE_SQMI
+        for choice in ('auto', 'mixed', 'gauge'):
+            for h in (1, 3, 7):
+                if choice == 'auto':
+                    o = routed(new, old, test, h, old_cut, big)
+                elif choice == 'mixed':
+                    o = forecast(new['bundle'], test, '2000-01-01', h)
+                else:
+                    o = forecast(old['bundle'], test, old_cut, h)
+                mask = in_test & ~np.isnan(o['thr'].T90.to_numpy()) & ~np.isnan(clim)
+                rep = bm.evaluate(o, test, y, mask, new['bundle']['horizons'][h], area, True, clim)
+                by_choice.setdefault(choice, {}).setdefault(set_label, {'stations': int(test[in_test].station_id.nunique()), 'rows': int(in_test.sum()), 'horizons': {}})
+                by_choice[choice][set_label]['horizons'][str(h)] = compact_horizon(rep)
+    summary['basinshift_by_choice'] = by_choice
     (OUT / 'summary.json').write_text(json.dumps(summary, separators=(',', ':')), encoding='utf-8')
 
     # 2025 per-station series (production V2).
