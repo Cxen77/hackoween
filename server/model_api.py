@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import threading
 import time
 import urllib.error
@@ -186,7 +187,7 @@ def live_forecast(sid: str) -> dict:
     missing_wx = frame[['precipitation_mm', 'temp_max_c', 'temp_min_c', 'soil_moisture']].isna().any(axis=1)
     warnings = []
     if len(days) - max(STATE['horizons']) < 30:
-        warnings.append(f'Only {len(days) - max(STATE['horizons'])} days of input history are available; accuracy may be reduced.')
+        warnings.append(f"Only {len(days) - max(STATE['horizons'])} days of input history are available; accuracy may be reduced.")
     # Only warn about gaps that can matter: the last 30 days before the forecast origin and the forecast days. A gap in the
     # oldest part of the window (e.g. the first day's soil moisture, which the weather API publishes a day late) is harmless.
     relevant = missing_wx.to_numpy() & (pd.to_datetime(frame.date) > last - pd.Timedelta(days=30)).to_numpy()
@@ -306,7 +307,7 @@ def live_forecast_new(lat: float, lon: float, name: str) -> dict:
     if snap['mean_m3s'] > 2 * max(snap['original_mean_m3s'], 1e-6):
         warnings.append(f"The map point was moved to the main river channel in GloFAS's grid ({slat}, {slon}); the original cell carried only {snap['original_mean_m3s']:.1f} m3/s.")
     if len(days) - max(STATE['horizons']) < 30:
-        warnings.append(f'Only {len(days) - max(STATE['horizons'])} days of input history are available; accuracy may be reduced.')
+        warnings.append(f"Only {len(days) - max(STATE['horizons'])} days of input history are available; accuracy may be reduced.")
     out = {'station': name, 'name': name, 'new_river': True, 'origin_date': last.strftime('%Y-%m-%d'), 'latest_observed_cfs': float(obs.iloc[-1]),
            'threshold_q90_cfs': float(thr.T90.iloc[0]), 'threshold_q99_cfs': float(thr.T99.iloc[0]), 'snapped_to': [slat, slon],
            'recent': [{'date': d.strftime('%Y-%m-%d'), 'cfs': float(v)} for d, v in obs.iloc[-30:].items()], 'horizons': [], 'warnings': warnings, 'rating': None,
@@ -394,7 +395,7 @@ def live_forecast_india(key: str) -> dict:
     if stale > 3:
         warnings.append(f'The latest NWIC value is {stale} days old (last reading {last.strftime("%Y-%m-%d")}); forecasts start from that date.')
     if len(days) - max(STATE['horizons']) < 30:
-        warnings.append(f'Only {len(days) - max(STATE['horizons'])} days of input history are available.')
+        warnings.append(f"Only {len(days) - max(STATE['horizons'])} days of input history are available.")
     out = {'station': key, 'name': f"{st['station']} ({st['river']})", 'new_river': True, 'origin_date': last.strftime('%Y-%m-%d'),
            'latest_observed_cfs': float(obs.iloc[-1]), 'threshold_q90_cfs': st['threshold_q90_cfs'], 'threshold_q99_cfs': st['threshold_q99_cfs'],
            'recent': [{'date': d.strftime('%Y-%m-%d'), 'cfs': float(v)} for d, v in obs.iloc[-30:].items()], 'horizons': [], 'warnings': warnings,
@@ -556,8 +557,8 @@ class Handler(BaseHTTPRequestHandler):
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument('--port', type=int, default=8765)
-    ap.add_argument('--host', default='127.0.0.1')
+    ap.add_argument('--port', type=int, default=int(os.environ.get('PORT', '8765')))
+    ap.add_argument('--host', default='0.0.0.0' if os.environ.get('PORT') else '127.0.0.1')
     daily = ROOT / 'data/experiments/basinshift_model/models_daily.joblib'
     ap.add_argument('--model', default=str(daily if daily.exists() else ROOT / 'data/experiments/basinshift_model/models_caravan.joblib'),
                     help='trained model bundle (models_daily.joblib = horizons +1..+7 if present, else models_caravan.joblib = +1/+3/+7)')
