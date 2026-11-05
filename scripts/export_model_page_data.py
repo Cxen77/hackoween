@@ -20,6 +20,7 @@ import pandas as pd
 
 from solution import read_input
 from scripts.basinshift_model import HORIZONS, forecast
+import scripts.basinshift_model as bm
 from scripts.clean_data import clean_frame
 from scripts.eval_routed import LARGE_SQMI, routed
 
@@ -98,20 +99,29 @@ def main() -> None:
     held = sorted(np.random.default_rng(42).choice(ids, size=max(2, len(ids) // 5), replace=False).tolist())
     names = pd.read_csv('data/large/metadata/station_metadata.csv', dtype=str).set_index('station_id').station_name
     test_df = ours[ours.station_id.isin(held)].sort_values(['station_id', 'date']).reset_index(drop=True)
-    bands = {}
+    # One set of forecast bands per model choice, so the Test a station tab follows the page selector.
     big = test_df.drainage_area_sqmi.to_numpy(float) >= LARGE_SQMI
-    for h in (1, 3, 7):
-        o = routed(new, old, test_df, h, '2022-01-01', big)
-        in24 = (test_df.date >= '2024-01-01').to_numpy()
-        for sid in held:
-            m = in24 & (test_df.station_id == sid).to_numpy()
-            entry = bands.setdefault(sid, {'id': sid, 'name': str(names.get(sid, sid)), 'dates': test_df.date[m].tolist(),
-                                           'actual': [r(v) for v in test_df.discharge_cfs[m]], 'threshold_q90': r(o['thr'].T90[m].iloc[0]),
-                                           'threshold_q99': r(o['thr'].T99[m].iloc[0]), 'horizons': {}})
-            entry['horizons'][str(h)] = {'point': [r(v) for v in o['point'][m]], 'lo': [r(v) for v in o['lo'][m]], 'hi': [r(v) for v in o['hi'][m]],
-                                         'p90': [r(v, 3) for v in o['p90'][m]], 'p99': [r(v, 3) for v in o['p99'][m]],
-                                         'persistence': [r(v) for v in o['persistence'][m]]}
-    (OUT / 'forecast_bands.json').write_text(json.dumps(sorted(bands.values(), key=lambda s: s['name']), separators=(',', ':')), encoding='utf-8')
+    producers = {
+        'auto': lambda h: routed(new, old, test_df, h, '2022-01-01', big),
+        'mixed': lambda h: bm.forecast(new['bundle'], test_df, '2000-01-01', h),
+        'gauge': lambda h: bm.forecast(old['bundle'], test_df, '2022-01-01', h),
+    }
+    all_bands = {}
+    for choice, make in producers.items():
+        bands = {}
+        for h in (1, 3, 7):
+            o = make(h)
+            in24 = (test_df.date >= '2024-01-01').to_numpy()
+            for sid in held:
+                m = in24 & (test_df.station_id == sid).to_numpy()
+                entry = bands.setdefault(sid, {'id': sid, 'name': str(names.get(sid, sid)), 'dates': test_df.date[m].tolist(),
+                                               'actual': [r(v) for v in test_df.discharge_cfs[m]], 'threshold_q90': r(o['thr'].T90[m].iloc[0]),
+                                               'threshold_q99': r(o['thr'].T99[m].iloc[0]), 'horizons': {}})
+                entry['horizons'][str(h)] = {'point': [r(v) for v in o['point'][m]], 'lo': [r(v) for v in o['lo'][m]], 'hi': [r(v) for v in o['hi'][m]],
+                                             'p90': [r(v, 3) for v in o['p90'][m]], 'p99': [r(v, 3) for v in o['p99'][m]],
+                                             'persistence': [r(v) for v in o['persistence'][m]]}
+        all_bands[choice] = sorted(bands.values(), key=lambda s: s['name'])
+    (OUT / 'forecast_bands.json').write_text(json.dumps(all_bands, separators=(',', ':')), encoding='utf-8')
     for f in sorted(OUT.glob('*.json')):
         print(f'{f.name:22s} {f.stat().st_size / 1e3:8.0f} KB')
 

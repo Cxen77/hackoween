@@ -152,7 +152,7 @@ function Results({ summary }: { summary: Json }) {
 }
 
 /* ---------- tab: test a station ---------- */
-function StationTest() {
+function StationTest({ choice }: { choice: 'auto' | 'mixed' | 'gauge' }) {
   // Forecast only: the same-day estimate is not offered on this tab.
   const bands = useJson('/reports/model/forecast_bands.json');
   const mode = 'forecast' as const;
@@ -160,7 +160,7 @@ function StationTest() {
   const [h, setH] = useState('3');
   const [month, setMonth] = useState('last90');
   const [logScale, setLogScale] = useState(false);
-  const list: Json[] = bands.data ?? [];
+  const list: Json[] = bands.data?.[choice] ?? [];
   useEffect(() => { if (list.length && !list.find(s => s.id === id)) setId(list[0].id); }, [mode, list.length]); // eslint-disable-line react-hooks/exhaustive-deps
   const st = list.find(s => s.id === id);
   const sel = useMemo(() => {
@@ -557,7 +557,7 @@ export default function ModelPage() {
         {tabs.map(([k, label, icon]) => <button key={k} role="tab" aria-selected={tab === k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{icon}{label}</button>)}
       </nav>
       {error && <div className="mp-error"><XCircle size={14} /> Could not load results: {error}</div>}
-      {tab === 'station' && <StationTest />}
+      {tab === 'station' && <StationTest choice={choice} />}
       {tab === 'score' && <ScoreCsv />}
       {summary && tab === 'results' && <Results summary={summary} />}
       {summary && tab === 'judge' && <JudgeTests summary={summary} choice={choice} />}
