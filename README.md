@@ -4,6 +4,8 @@ Predict river discharge from weather and catchment characteristics, then explore
 
 ## Production hosting
 
+Live app: [floodcast-hackoween.vercel.app](https://floodcast-hackoween.vercel.app). API health: [Render health](https://floodcast-api-ok9n.onrender.com/api/health). Anonymous deployment checks are saved in `reports/deployment.json`; repeat them with `python scripts/check_hosted_site.py --frontend https://floodcast-hackoween.vercel.app --station 01646500`.
+
 - Render runs the Python model API at `https://floodcast-api-ok9n.onrender.com`. Build with `pip install -r requirements-render.txt`, start with `python -m server.model_api`, and health-check `/api/health`. `PORT` selects the public bind address automatically. `.python-version` and the pinned serving dependencies reproduce the serialized model runtime without installing training/report packages. `render.yaml` records the free-plan configuration; numerical-library thread counts are limited to1.
 - Vercel builds the Vite frontend with `npm ci` and `npm run build`, publishing `dist/`. `vercel.json` forwards `/api/*` to Render on the same browser origin and keeps SPA routes working. Production project: `floodcast-hackoween`.
 - Set `VITE_GEOAPIFY_API_KEY` in Vercel's Production and Preview environment settings before building. The browser map uses this key; no actual key belongs in Git. Restrict its allowed domains in Geoapify as appropriate.

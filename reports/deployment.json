@@ -1,0 +1,29 @@
+{
+  "frontend": "https://floodcast-hackoween.vercel.app",
+  "anonymous_html_status": 200,
+  "module_bundles": 1,
+  "geoapify_build_environment_verified": true,
+  "api_proxy": {
+    "status": 200,
+    "model": "models_daily.joblib",
+    "large_model": "models_large.joblib",
+    "station_count": 55,
+    "capabilities": {
+      "live_forecast": true,
+      "caravan_live_test": false
+    }
+  },
+  "saved_report_status": 200,
+  "spa_fallback_status": 200,
+  "live_forecast": {
+    "status": 200,
+    "station": "01646500",
+    "model": "models_large.joblib",
+    "origin_date": "2026-11-03",
+    "horizons": [
+      1,
+      3,
+      7
+    ]
+  }
+}
