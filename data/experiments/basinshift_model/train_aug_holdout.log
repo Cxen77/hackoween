@@ -1,0 +1,33 @@
+holdout: fitting on 5,145,872 rows / 463 stations (train 4,696,876, calibration 433,627)
+  trained horizon 1: train rows 4,695,453, calibration rows 433,469, conformal k=-0.000
+  trained horizon 3: train rows 4,692,750, calibration rows 433,213, conformal k=0.001
+  trained horizon 7: train rows 4,687,507, calibration rows 432,763, conformal k=0.003
+saved data\experiments\basinshift_model\models_aug_holdout.joblib (13.6 MB) in 13.8 min
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "D:\hackoween'\hackoween-1\scripts\train_augmented_v2.py", line 88, in <module>
+    main()
+  File "D:\hackoween'\hackoween-1\scripts\train_augmented_v2.py", line 75, in main
+    o = bm.forecast(bundle, test, '2000-01-01', h)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\hackoween'\hackoween-1\scripts\basinshift_model.py", line 122, in forecast
+    X, thr, lag = build(frame, ref_cut, h, hist_frame, weather_frame, delay, thr_override)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\hackoween'\hackoween-1\scripts\basinshift_model.py", line 73, in build
+    thr = (thr_override if thr_override is not None else thresholds(frame, (frame.date < ref_cut).to_numpy())).reset_index(drop=True)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\hackoween'\hackoween-1\scripts\basinshift_model.py", line 46, in thresholds
+    t.columns = ['T90', 'T99']
+    ^^^^^^^^^
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\generic.py", line 6208, in __setattr__
+    return object.__setattr__(self, name, value)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/properties.pyx", line 69, in pandas._libs.properties.AxisProperty.__set__
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\generic.py", line 754, in _set_axis
+    self._mgr.set_axis(axis, labels)
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\internals\managers.py", line 273, in set_axis
+    self._validate_set_axis(axis, new_labels)
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\internals\managers.py", line 288, in _validate_set_axis
+    raise ValueError(
+ValueError: Length mismatch: Expected axis has 0 elements, new values have 2 elements

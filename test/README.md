@@ -5,7 +5,7 @@ They are also checked automatically by `npm test` (`tests/test_data_files.test.m
 
 ## FLOODCAST: daily discharge file (this folder)
 
-The 2025 benchmark: 55 US gauges, 19,306 daily rows. Same-day estimates from the earlier FLOODCAST model.
+The 2025 benchmark: 53 US gauges, 19,306 daily rows. Same-day estimates from the earlier FLOODCAST model.
 
 | File | Use it as | What it is |
 |---|---|---|

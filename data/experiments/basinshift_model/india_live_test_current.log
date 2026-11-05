@@ -1,0 +1,63 @@
+Boudh                  Mahanadi       h1 ratio 0.93  h7 ratio 0.53
+KALMA                  Mahanadi       h1 ratio 0.98  h7 ratio 0.52
+Handia                 Narmada        h1 ratio 0.80  h7 ratio 0.48
+Narmadapuram           Narmada        h1 ratio 0.93  h7 ratio 0.48
+Simga                  Mahanadi       h1 ratio 0.91  h7 ratio 0.78
+Sandia                 Narmada        h1 ratio 0.91  h7 ratio 0.45
+Mandleshwar            Narmada        h1 ratio 0.97  h7 ratio 0.86
+Kantamal               Mahanadi       h1 ratio 1.00  h7 ratio 0.49
+Barmanghat             Narmada        h1 ratio 0.86  h7 ratio 0.37
+Mandla                 Narmada        h1 ratio 0.88  h7 ratio 0.77
+RAJIM                  Mahanadi       h1 ratio 0.88  h7 ratio 0.79
+Kesinga                Mahanadi       h1 ratio 1.05  h7 ratio 0.50
+Kotni                  Mahanadi       h1 ratio 0.92  h7 ratio 0.79
+Parmanpur              Mahanadi       h1 ratio 0.83  h7 ratio 0.79
+Saradaput              Godavari       h1 ratio 0.87  h7 ratio 0.53
+Manot                  Narmada        h1 ratio 0.87  h7 ratio 0.78
+Tlabung                Karnaphuli     h1 ratio 1.00  h7 ratio 0.63
+HRUITEZAWL             Kolodyne       h1 ratio 0.88  h7 ratio 0.58
+Mohgaon                Narmada        h1 ratio 0.85  h7 ratio 0.78
+Sihthangpui            Kolodyne       h1 ratio 0.91  h7 ratio 0.56
+TUIPUI D               Kolodyne       h1 ratio 0.90  h7 ratio 0.49
+KODUMUDI               Cauvery        h1 ratio 0.97  h7 ratio 1.27
+MUSIRI                 Cauvery        h1 ratio 1.02  h7 ratio 1.17
+KURUNDWAD              Krishna        h1 ratio 1.03  h7 ratio 0.86
+Rampur                 Mahanadi       h1 ratio 0.97  h7 ratio 0.77
+Patan                  Narmada        h1 ratio 0.91  h7 ratio 0.76
+Dindori                Narmada        h1 ratio 0.81  h7 ratio 0.79
+Rajegaon               Godavari       h1 ratio 0.58  h7 ratio 0.49
+Padampur               Mahanadi       h1 ratio 1.00  h7 ratio 0.60
+Salebhata              Mahanadi       h1 ratio 0.93  h7 ratio 0.94
+BILIGUNDULU            Cauvery        h1 ratio 0.97  h7 ratio 0.90
+Kurubhata              Mahanadi       h1 ratio 0.98  h7 ratio 0.74
+Huvinhedigi            Krishna        h1 ratio 0.90  h7 ratio 0.85
+Dhanora (Wardha)       Godavari       h1 ratio 0.80  h7 ratio 0.66
+Potteru (Potteruvagu)  Godavari       h1 ratio 0.98  h7 ratio 0.90
+Bamni                  Narmada        h1 ratio 0.91  h7 ratio 0.76
+Tumnar (Dantewara)     Godavari       h1 ratio 0.93  h7 ratio 0.71
+Jeeraguda              Sabari         h1 ratio 0.95  h7 ratio 0.67
+Nowrangpur             Godavari       h1 ratio 0.92  h7 ratio 0.70
+Baronda                Mahanadi       h1 ratio 0.82  h7 ratio 0.78
+{
+ "1": {
+  "stations": 40,
+  "median_rmse_ratio": 0.9155,
+  "share_model_better_than_persistence": 0.9,
+  "p25": 0.877,
+  "p75": 0.97
+ },
+ "3": {
+  "stations": 40,
+  "median_rmse_ratio": 0.7835000000000001,
+  "share_model_better_than_persistence": 0.95,
+  "p25": 0.723,
+  "p75": 0.8055000000000001
+ },
+ "7": {
+  "stations": 40,
+  "median_rmse_ratio": 0.752,
+  "share_model_better_than_persistence": 0.95,
+  "p25": 0.533,
+  "p75": 0.79025
+ }
+}

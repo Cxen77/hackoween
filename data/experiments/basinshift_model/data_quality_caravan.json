@@ -1,0 +1,20 @@
+{
+  "rows_in": 5823591,
+  "stations_in": 479,
+  "dropped_bad_discharge": 0,
+  "dropped_duplicates": 0,
+  "dropped_missing_weather": 0,
+  "clipped_soil_moisture": 0,
+  "dropped_impossible_weather": 0,
+  "dropped_short_stations": [],
+  "rows_out": 5823591,
+  "rows_removed_total": 0,
+  "stations_out": 479,
+  "static_attribute_missing_rows": {
+    "mean_elevation_ft": 0,
+    "slope_pct": 0,
+    "forest_cover_pct": 0,
+    "impervious_surface_pct": 5823591
+  },
+  "note": "Static attribute gaps are real and left missing; imputed only inside the model with training-fit medians."
+}

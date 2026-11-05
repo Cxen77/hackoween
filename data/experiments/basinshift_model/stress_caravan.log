@@ -1,0 +1,20 @@
+stress test on 100 catchments, 176,126 test rows
+clean              h=1 RMSE       497 (x1.00 vs clean) medNSE 0.626 q90 AUPRC 0.883 cov 0.853 fallback 0.00%
+clean              h=3 RMSE       678 (x1.00 vs clean) medNSE 0.237 q90 AUPRC 0.691 cov 0.826 fallback 0.00%
+clean              h=7 RMSE       755 (x1.00 vs clean) medNSE 0.091 q90 AUPRC 0.579 cov 0.809 fallback 0.00%
+missing_10pct      h=1 RMSE       519 (x1.04 vs clean) medNSE 0.565 q90 AUPRC 0.857 cov 0.823 fallback 0.00%
+missing_10pct      h=3 RMSE       684 (x1.01 vs clean) medNSE 0.240 q90 AUPRC 0.672 cov 0.809 fallback 0.00%
+missing_10pct      h=7 RMSE       763 (x1.01 vs clean) medNSE 0.083 q90 AUPRC 0.560 cov 0.797 fallback 0.00%
+missing_30pct      h=1 RMSE       577 (x1.16 vs clean) medNSE 0.458 q90 AUPRC 0.790 cov 0.755 fallback 0.01%
+missing_30pct      h=3 RMSE       715 (x1.05 vs clean) medNSE 0.153 q90 AUPRC 0.630 cov 0.763 fallback 0.01%
+missing_30pct      h=7 RMSE       786 (x1.04 vs clean) medNSE 0.054 q90 AUPRC 0.523 cov 0.765 fallback 0.01%
+gaps_7day_blocks   h=1 RMSE       538 (x1.08 vs clean) medNSE 0.562 q90 AUPRC 0.819 cov 0.81 fallback 0.52%
+gaps_7day_blocks   h=3 RMSE       687 (x1.01 vs clean) medNSE 0.246 q90 AUPRC 0.647 cov 0.788 fallback 0.52%
+gaps_7day_blocks   h=7 RMSE       761 (x1.01 vs clean) medNSE 0.084 q90 AUPRC 0.548 cov 0.786 fallback 0.53%
+noise              h=1 RMSE       501 (x1.01 vs clean) medNSE 0.630 q90 AUPRC 0.864 cov 0.761 fallback 0.00%
+noise              h=3 RMSE       687 (x1.01 vs clean) medNSE 0.247 q90 AUPRC 0.676 cov 0.808 fallback 0.00%
+noise              h=7 RMSE       760 (x1.01 vs clean) medNSE 0.100 q90 AUPRC 0.566 cov 0.811 fallback 0.00%
+delay_1day         h=1 RMSE       682 (x1.37 vs clean) medNSE 0.292 q90 AUPRC 0.736 cov 0.682 fallback 0.00%
+delay_1day         h=3 RMSE       707 (x1.04 vs clean) medNSE 0.199 q90 AUPRC 0.660 cov 0.78 fallback 0.00%
+delay_1day         h=7 RMSE       759 (x1.01 vs clean) medNSE 0.086 q90 AUPRC 0.572 cov 0.795 fallback 0.00%
+efficiency {"rows": 21823, "horizons": 3, "cpu_threads": 12, "seconds_total": 4.359657900000457, "ms_per_1000_forecasts_all_heads_all_horizons": 199.7735370939127, "model_file_mb": 46.475147, "rss_increase_mb": -13.115392, "peak_process_rss_mb": 561.90976, "note": "CPU-only, includes feature construction and 8 LightGBM heads per horizon."}

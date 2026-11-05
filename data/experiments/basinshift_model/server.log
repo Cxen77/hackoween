@@ -1,0 +1,110 @@
+loaded model models_daily.joblib (gauge facts from model_meta.json); 55 stations, 293,057 training rows
+Model API on http://127.0.0.1:8765  (try /api/health)
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 50102)
+Traceback (most recent call last):
+  File "D:\hackoween'\hackoween-1\server\model_api.py", line 541, in do_GET
+    self._send(200, with_model(live_forecast(q.get('station', [''])[0])))
+  File "D:\hackoween'\hackoween-1\server\model_api.py", line 525, in _send
+    self.wfile.write(body)
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] An established connection was aborted by the software in your host machine
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 436, in handle
+    self.handle_one_request()
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 424, in handle_one_request
+    method()
+  File "D:\hackoween'\hackoween-1\server\model_api.py", line 554, in do_GET
+    self._send(500, {'error': f'{type(e).__name__}: {e}'})
+  File "D:\hackoween'\hackoween-1\server\model_api.py", line 524, in _send
+    self.end_headers()
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 538, in end_headers
+    self.flush_headers()
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 542, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] An established connection was aborted by the software in your host machine
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 63057)
+Traceback (most recent call last):
+  File "D:\hackoween'\hackoween-1\server\model_api.py", line 541, in do_GET
+    self._send(200, with_model(live_forecast(q.get('station', [''])[0])))
+  File "D:\hackoween'\hackoween-1\server\model_api.py", line 525, in _send
+    self.wfile.write(body)
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] An established connection was aborted by the software in your host machine
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 436, in handle
+    self.handle_one_request()
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 424, in handle_one_request
+    method()
+  File "D:\hackoween'\hackoween-1\server\model_api.py", line 554, in do_GET
+    self._send(500, {'error': f'{type(e).__name__}: {e}'})
+  File "D:\hackoween'\hackoween-1\server\model_api.py", line 524, in _send
+    self.end_headers()
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 538, in end_headers
+    self.flush_headers()
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 542, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] An established connection was aborted by the software in your host machine
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 53296)
+Traceback (most recent call last):
+  File "D:\hackoween'\hackoween-1\server\model_api.py", line 541, in do_GET
+    self._send(200, with_model(live_forecast(q.get('station', [''])[0])))
+  File "D:\hackoween'\hackoween-1\server\model_api.py", line 525, in _send
+    self.wfile.write(body)
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] An established connection was aborted by the software in your host machine
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 436, in handle
+    self.handle_one_request()
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 424, in handle_one_request
+    method()
+  File "D:\hackoween'\hackoween-1\server\model_api.py", line 554, in do_GET
+    self._send(500, {'error': f'{type(e).__name__}: {e}'})
+  File "D:\hackoween'\hackoween-1\server\model_api.py", line 524, in _send
+    self.end_headers()
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 538, in end_headers
+    self.flush_headers()
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\http\server.py", line 542, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] An established connection was aborted by the software in your host machine
+----------------------------------------

@@ -1,0 +1,46 @@
+stress test on 11 catchments, 12,051 test rows
+clean              h=1 RMSE    10,390 (x1.00 vs clean) medNSE 0.941 q90 AUPRC 0.939 cov 0.887 fallback 0.00%
+clean              h=3 RMSE    27,579 (x1.00 vs clean) medNSE 0.703 q90 AUPRC 0.740 cov 0.879 fallback 0.00%
+clean              h=7 RMSE    51,799 (x1.00 vs clean) medNSE 0.632 q90 AUPRC 0.572 cov 0.875 fallback 0.00%
+missing_10pct      h=1 RMSE    12,167 (x1.17 vs clean) medNSE 0.923 q90 AUPRC 0.919 cov 0.864 fallback 0.00%
+missing_10pct      h=3 RMSE    28,915 (x1.05 vs clean) medNSE 0.700 q90 AUPRC 0.719 cov 0.862 fallback 0.00%
+missing_10pct      h=7 RMSE    52,622 (x1.02 vs clean) medNSE 0.603 q90 AUPRC 0.566 cov 0.861 fallback 0.00%
+missing_30pct      h=1 RMSE    16,546 (x1.59 vs clean) medNSE 0.850 q90 AUPRC 0.864 cov 0.809 fallback 0.01%
+missing_30pct      h=3 RMSE    31,869 (x1.16 vs clean) medNSE 0.670 q90 AUPRC 0.670 cov 0.83 fallback 0.01%
+missing_30pct      h=7 RMSE    54,735 (x1.06 vs clean) medNSE 0.535 q90 AUPRC 0.524 cov 0.842 fallback 0.01%
+gaps_7day_blocks   h=1 RMSE    19,881 (x1.91 vs clean) medNSE 0.905 q90 AUPRC 0.902 cov 0.844 fallback 0.50%
+gaps_7day_blocks   h=3 RMSE    32,772 (x1.19 vs clean) medNSE 0.699 q90 AUPRC 0.709 cov 0.842 fallback 0.50%
+gaps_7day_blocks   h=7 RMSE    53,719 (x1.04 vs clean) medNSE 0.582 q90 AUPRC 0.560 cov 0.848 fallback 0.50%
+noise              h=1 RMSE    27,324 (x2.63 vs clean) medNSE 0.917 q90 AUPRC 0.878 cov 0.768 fallback 0.00%
+noise              h=3 RMSE    37,788 (x1.37 vs clean) medNSE 0.683 q90 AUPRC 0.655 cov 0.856 fallback 0.00%
+noise              h=7 RMSE    57,521 (x1.11 vs clean) medNSE 0.594 q90 AUPRC 0.496 cov 0.876 fallback 0.00%
+delay_1day         h=1 RMSE    19,621 (x1.89 vs clean) medNSE 0.794 q90 AUPRC 0.814 cov 0.714 fallback 0.00%
+delay_1day         h=3 RMSE    35,121 (x1.27 vs clean) medNSE 0.590 q90 AUPRC 0.644 cov 0.814 fallback 0.00%
+delay_1day         h=7 RMSE    56,434 (x1.09 vs clean) medNSE 0.582 q90 AUPRC 0.558 cov 0.853 fallback 0.00%
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "D:\hackoween'\hackoween-1\scripts\basinshift_stress.py", line 138, in <module>
+    main()
+  File "D:\hackoween'\hackoween-1\scripts\basinshift_stress.py", line 126, in main
+    forecast(bundle, sample, test_ref_cut, h)
+  File "D:\hackoween'\hackoween-1\scripts\basinshift_model.py", line 108, in forecast
+    X, thr, lag = build(frame, ref_cut, h, hist_frame, weather_frame, delay)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\hackoween'\hackoween-1\scripts\basinshift_model.py", line 61, in build
+    thr = thresholds(frame, (frame.date < ref_cut).to_numpy()).reset_index(drop=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\hackoween'\hackoween-1\scripts\basinshift_model.py", line 46, in thresholds
+    t.columns = ['T90', 'T99']
+    ^^^^^^^^^
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\generic.py", line 6208, in __setattr__
+    return object.__setattr__(self, name, value)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/properties.pyx", line 69, in pandas._libs.properties.AxisProperty.__set__
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\generic.py", line 754, in _set_axis
+    self._mgr.set_axis(axis, labels)
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\internals\managers.py", line 273, in set_axis
+    self._validate_set_axis(axis, new_labels)
+  File "C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\internals\managers.py", line 288, in _validate_set_axis
+    raise ValueError(
+ValueError: Length mismatch: Expected axis has 0 elements, new values have 2 elements

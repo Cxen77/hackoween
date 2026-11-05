@@ -1,0 +1,9 @@
+training horizons [1, 2, 3, 4, 5, 6, 7] on 293,057 rows / 55 stations
+  trained horizon 1: train rows 254,039, calibration rows 38,936, conformal k=0.008
+  trained horizon 2: train rows 253,960, calibration rows 38,935, conformal k=0.013
+  trained horizon 3: train rows 253,882, calibration rows 38,934, conformal k=0.021
+  trained horizon 4: train rows 253,808, calibration rows 38,933, conformal k=0.031
+  trained horizon 5: train rows 253,735, calibration rows 38,932, conformal k=0.038
+  trained horizon 6: train rows 253,662, calibration rows 38,931, conformal k=0.041
+  trained horizon 7: train rows 253,589, calibration rows 38,930, conformal k=0.046
+saved data\experiments\basinshift_model\models_daily.joblib (29.0 MB) in 4.7 min

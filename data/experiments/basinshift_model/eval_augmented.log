@@ -1,0 +1,27 @@
+C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\site-packages\sklearn\base.py:525: InconsistentVersionWarning: Trying to unpickle estimator LabelEncoder from version 1.9.1 when using version 1.9.0. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+C:\Users\Harsh Srivastav\AppData\Local\Programs\Python\Python312\Lib\site-packages\sklearn\base.py:525: InconsistentVersionWarning: Trying to unpickle estimator IsotonicRegression from version 1.9.1 when using version 1.9.0. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+[original] h=1 rows=192,571 RMSE blend 16,169.9 persist 7,790.7 | median NSE 0.925 vs 0.923 | 90% cov 0.722
+[original] h=3 rows=192,571 RMSE blend 48,236.6 persist 18,721.8 | median NSE 0.646 vs 0.644 | 90% cov 0.744
+[original] h=7 rows=192,571 RMSE blend 52,558.9 persist 32,750.4 | median NSE 0.467 vs 0.302 | 90% cov 0.758
+[stress] clean             h=1 RMSE 10,655 x1.00 medNSE 0.922
+[stress] clean             h=3 RMSE 30,068 x1.00 medNSE 0.668
+[stress] clean             h=7 RMSE 34,413 x1.00 medNSE 0.449
+[stress] missing_10pct     h=1 RMSE 11,042 x1.04 medNSE 0.901
+[stress] missing_10pct     h=3 RMSE 24,634 x0.82 medNSE 0.661
+[stress] missing_10pct     h=7 RMSE 29,429 x0.86 medNSE 0.478
+[stress] missing_30pct     h=1 RMSE 12,290 x1.15 medNSE 0.871
+[stress] missing_30pct     h=3 RMSE 23,548 x0.78 medNSE 0.691
+[stress] missing_30pct     h=7 RMSE 29,500 x0.86 medNSE 0.488
+[stress] gaps_7day_blocks  h=1 RMSE 12,261 x1.15 medNSE 0.892
+[stress] gaps_7day_blocks  h=3 RMSE 29,844 x0.99 medNSE 0.648
+[stress] gaps_7day_blocks  h=7 RMSE 31,689 x0.92 medNSE 0.483
+[stress] noise             h=1 RMSE 14,109 x1.32 medNSE 0.896
+[stress] noise             h=3 RMSE 32,620 x1.08 medNSE 0.654
+[stress] noise             h=7 RMSE 36,483 x1.06 medNSE 0.445
+[stress] delay_1day        h=1 RMSE 13,466 x1.26 medNSE 0.831
+[stress] delay_1day        h=3 RMSE 31,039 x1.03 medNSE 0.617
+[stress] delay_1day        h=7 RMSE 35,315 x1.03 medNSE 0.415

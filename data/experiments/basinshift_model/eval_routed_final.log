@@ -1,0 +1,24 @@
+[heldout_gauges] h=1 rows=12,051 routed RMSE 10,391.4 persist 10,659.2 ratio 0.975 | medNSE 0.938 vs 0.926 | cov 0.885 | Q90 AUPRC 0.953
+[heldout_gauges] h=3 rows=12,051 routed RMSE 27,578.0 persist 28,707.4 ratio 0.961 | medNSE 0.697 vs 0.563 | cov 0.882 | Q90 AUPRC 0.757
+[heldout_gauges] h=7 rows=12,051 routed RMSE 51,795.4 persist 54,695.4 ratio 0.947 | medNSE 0.625 vs 0.178 | cov 0.874 | Q90 AUPRC 0.600
+[heldout_caravan] h=1 rows=97,590 routed RMSE 357.4 persist 431.5 ratio 0.828 | medNSE 0.709 vs 0.531 | cov 0.896 | Q90 AUPRC 0.929
+[heldout_caravan] h=3 rows=97,590 routed RMSE 486.5 persist 636.8 ratio 0.764 | medNSE 0.411 vs -0.076 | cov 0.894 | Q90 AUPRC 0.801
+[heldout_caravan] h=7 rows=97,590 routed RMSE 535.8 persist 719.3 ratio 0.745 | medNSE 0.260 vs -0.410 | cov 0.892 | Q90 AUPRC 0.726
+[stress] clean             h=1 RMSE 10,391 x1.00 medNSE 0.938
+[stress] clean             h=3 RMSE 27,578 x1.00 medNSE 0.697
+[stress] clean             h=7 RMSE 51,795 x1.00 medNSE 0.625
+[stress] missing_10pct     h=1 RMSE 12,167 x1.17 medNSE 0.922
+[stress] missing_10pct     h=3 RMSE 28,914 x1.05 medNSE 0.691
+[stress] missing_10pct     h=7 RMSE 52,619 x1.02 medNSE 0.582
+[stress] missing_30pct     h=1 RMSE 16,542 x1.59 medNSE 0.854
+[stress] missing_30pct     h=3 RMSE 31,869 x1.16 medNSE 0.651
+[stress] missing_30pct     h=7 RMSE 54,733 x1.06 medNSE 0.481
+[stress] gaps_7day_blocks  h=1 RMSE 19,885 x1.91 medNSE 0.899
+[stress] gaps_7day_blocks  h=3 RMSE 32,775 x1.19 medNSE 0.689
+[stress] gaps_7day_blocks  h=7 RMSE 53,718 x1.04 medNSE 0.585
+[stress] noise             h=1 RMSE 27,325 x2.63 medNSE 0.913
+[stress] noise             h=3 RMSE 37,786 x1.37 medNSE 0.670
+[stress] noise             h=7 RMSE 57,518 x1.11 medNSE 0.595
+[stress] delay_1day        h=1 RMSE 19,620 x1.89 medNSE 0.780
+[stress] delay_1day        h=3 RMSE 35,120 x1.27 medNSE 0.590
+[stress] delay_1day        h=7 RMSE 56,432 x1.09 medNSE 0.575

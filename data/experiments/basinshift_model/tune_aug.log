@@ -1,0 +1,9 @@
+tuning on 863,056 train rows (187,757 USGS); validating on 433,213 calibration rows
+baseline       large-USGS ratio 0.905 | all-USGS 0.902 | Caravan 0.736 | score 0.820 (0.4 min)
+w5             large-USGS ratio 0.884 | all-USGS 0.881 | Caravan 0.738 | score 0.811 (0.5 min)
+w20            large-USGS ratio 0.873 | all-USGS 0.870 | Caravan 0.742 | score 0.807 (0.4 min)
+w5_leaves31    large-USGS ratio 0.892 | all-USGS 0.889 | Caravan 0.746 | score 0.819 (0.3 min)
+w5_leaves127   large-USGS ratio 0.872 | all-USGS 0.869 | Caravan 0.730 | score 0.801 (0.4 min)
+w5_mcs200      large-USGS ratio 0.880 | all-USGS 0.877 | Caravan 0.736 | score 0.808 (0.7 min)
+w5_600trees    large-USGS ratio 0.883 | all-USGS 0.880 | Caravan 0.736 | score 0.809 (2.1 min)
+best: {'name': 'w5_leaves127', 'w': 5, 'leaves': 127, 'mcs': 60, 'trees': 300, 'lr': 0.06}

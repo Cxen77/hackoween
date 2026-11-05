@@ -1,0 +1,15 @@
+[heldout_daily] training heads on 234,556 rows / 44 stations
+  trained horizon 1: train rows 164,285, calibration rows 23,607, conformal k=0.010
+  trained horizon 2: train rows 164,217, calibration rows 23,607, conformal k=0.018
+  trained horizon 3: train rows 164,150, calibration rows 23,607, conformal k=0.022
+  trained horizon 4: train rows 164,087, calibration rows 23,607, conformal k=0.030
+  trained horizon 5: train rows 164,025, calibration rows 23,607, conformal k=0.037
+  trained horizon 6: train rows 163,963, calibration rows 23,607, conformal k=0.044
+  trained horizon 7: train rows 163,901, calibration rows 23,607, conformal k=0.052
+[heldout_daily] h=1 rows=12,051 RMSE blend 10,390 persist 10,659 clim 97,987 wx 81,671 | median NSE blend 0.941 persist 0.926 | 90% cov 0.887 | q90 AUPRC 0.939
+[heldout_daily] h=2 rows=12,051 RMSE blend 19,494 persist 20,157 clim 97,987 wx 81,671 | median NSE blend 0.823 persist 0.740 | 90% cov 0.886 | q90 AUPRC 0.821
+[heldout_daily] h=3 rows=12,051 RMSE blend 27,579 persist 28,707 clim 97,987 wx 81,671 | median NSE blend 0.703 persist 0.563 | 90% cov 0.879 | q90 AUPRC 0.740
+[heldout_daily] h=4 rows=12,051 RMSE blend 34,613 persist 36,362 clim 97,987 wx 81,671 | median NSE blend 0.601 persist 0.505 | 90% cov 0.872 | q90 AUPRC 0.651
+[heldout_daily] h=5 rows=12,051 RMSE blend 41,258 persist 43,194 clim 97,987 wx 81,671 | median NSE blend 0.632 persist 0.376 | 90% cov 0.873 | q90 AUPRC 0.618
+[heldout_daily] h=6 rows=12,051 RMSE blend 47,038 persist 49,287 clim 97,987 wx 81,671 | median NSE blend 0.629 persist 0.263 | 90% cov 0.872 | q90 AUPRC 0.605
+[heldout_daily] h=7 rows=12,051 RMSE blend 51,799 persist 54,695 clim 97,987 wx 81,671 | median NSE blend 0.632 persist 0.178 | 90% cov 0.875 | q90 AUPRC 0.572

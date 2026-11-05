@@ -1,0 +1,11 @@
+holdout: fitting on 5,145,872 rows / 463 stations (train 4,696,876, calibration 433,627)
+  trained horizon 1: train rows 4,695,453, calibration rows 433,469, conformal k=0.000
+  trained horizon 3: train rows 4,692,750, calibration rows 433,213, conformal k=0.003
+  trained horizon 7: train rows 4,687,507, calibration rows 432,763, conformal k=0.006
+saved data\experiments\basinshift_model\models_aug_holdout_tuned.joblib (28.4 MB) in 77.0 min
+[heldout_gauges] h=1 rows=12,051 RMSE blend 10,873.7 persist 10,659.2 ratio 1.020 | medNSE 0.938 vs 0.926 | cov 0.882
+[heldout_gauges] h=3 rows=12,051 RMSE blend 28,542.9 persist 28,707.4 ratio 0.994 | medNSE 0.697 vs 0.563 | cov 0.877
+[heldout_gauges] h=7 rows=12,051 RMSE blend 52,147.2 persist 54,695.4 ratio 0.953 | medNSE 0.625 vs 0.178 | cov 0.856
+[heldout_caravan] h=1 rows=97,590 RMSE blend 357.4 persist 431.5 ratio 0.828 | medNSE 0.709 vs 0.531 | cov 0.896
+[heldout_caravan] h=3 rows=97,590 RMSE blend 486.5 persist 636.8 ratio 0.764 | medNSE 0.411 vs -0.076 | cov 0.894
+[heldout_caravan] h=7 rows=97,590 RMSE blend 535.8 persist 719.3 ratio 0.745 | medNSE 0.260 vs -0.410 | cov 0.892

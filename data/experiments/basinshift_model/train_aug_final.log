@@ -1,0 +1,2 @@
+final: fitting on 5,887,304 rows / 534 stations (train 5,389,779, calibration 497,525)
+  trained horizon 1: train rows 5,388,068, calibration rows 497,340, conformal k=0.000

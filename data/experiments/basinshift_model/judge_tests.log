@@ -1,0 +1,7 @@
+Test A h=1: RMSE blend 6012 vs persistence 6622; median NSE 0.942 vs 0.944
+Test A h=3: RMSE blend 13362 vs persistence 15383; median NSE 0.783 vs 0.696
+Test A h=7: RMSE blend 21311 vs persistence 25292; median NSE 0.591 vs 0.315
+H1 h=1: with {'rmse': 10390.0209, 'extreme_rmse': 15984.6848, 'mae': 3855.2014, 'median_basin_nse': 0.9408} | without {'rmse': 10426.6629, 'extreme_rmse': 16106.4777, 'mae': 3855.1498, 'median_basin_nse': 0.9406}
+H1 h=3: with {'rmse': 27578.733, 'extreme_rmse': 39520.0663, 'mae': 10037.4494, 'median_basin_nse': 0.7035} | without {'rmse': 27367.4183, 'extreme_rmse': 39168.1542, 'mae': 9984.3895, 'median_basin_nse': 0.7184}
+H1 h=7: with {'rmse': 51798.5556, 'extreme_rmse': 73154.1596, 'mae': 18775.5755, 'median_basin_nse': 0.6321} | without {'rmse': 51824.0139, 'extreme_rmse': 73906.4255, 'mae': 18740.4956, 'median_basin_nse': 0.588}
+wrote public\reports\model\judge_tests.json

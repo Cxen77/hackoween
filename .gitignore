@@ -23,3 +23,7 @@ data/large/train/train_clean.csv
 !data/experiments/basinshift_model/models_caravan.joblib
 !data/experiments/basinshift_model/models_daily.joblib
 !data/experiments/basinshift_model/models_large.joblib
+
+# Large generated training set (759 MB): rebuild with python -m scripts.prepare_augmented --out data/augmented_v2
+data/augmented_v2/
+data/augmented_v2_prep.log

@@ -1,0 +1,2116 @@
+{
+  "heldout_gauges": {
+    "label": "heldout_gauges",
+    "test_rows": 12051,
+    "test_stations": 11,
+    "horizons": {
+      "1": {
+        "rows_scored": 12051,
+        "fallback_rows": 0,
+        "forecast": {
+          "basinshift_blend": {
+            "rmse": 10873.704241503692,
+            "extreme_rmse": 17150.73928858336,
+            "mae": 4003.45517266236,
+            "median_basin_nse": 0.9382176008005055,
+            "mean_basin_nse": 0.923794566576451,
+            "nse_iqr": [
+              0.8813612147813024,
+              0.9888978250592817
+            ],
+            "share_basins_nse_gt0": 1.0,
+            "basins": 11
+          },
+          "persistence": {
+            "rmse": 10659.206849839304,
+            "extreme_rmse": 17036.642077705314,
+            "mae": 3996.6336461704423,
+            "median_basin_nse": 0.9264788803006279,
+            "mean_basin_nse": 0.9059297600129923,
+            "nse_iqr": [
+              0.8651427504261664,
+              0.9872177211182331
+            ],
+            "share_basins_nse_gt0": 1.0,
+            "basins": 11
+          },
+          "weather_only_gbm": {
+            "rmse": 79270.0324857938,
+            "extreme_rmse": 127795.68966906867,
+            "mae": 31259.43617002468,
+            "median_basin_nse": 0.4885097342161381,
+            "mean_basin_nse": 0.24921364307928998,
+            "nse_iqr": [
+              0.27771805290656754,
+              0.49324697383769195
+            ],
+            "share_basins_nse_gt0": 0.8181818181818182,
+            "basins": 11
+          },
+          "seasonal_climatology": {
+            "rmse": 97986.60207185944,
+            "extreme_rmse": 74670.44459774418,
+            "mae": 38009.280692888555,
+            "median_basin_nse": 0.18486758727541452,
+            "mean_basin_nse": 0.1861236361238966,
+            "nse_iqr": [
+              0.09006498956657438,
+              0.25305573966569905
+            ],
+            "share_basins_nse_gt0": 0.9090909090909091,
+            "basins": 11
+          }
+        },
+        "bootstrap_vs_persistence": {
+          "rmse_ratio_model_over_persistence_ci95": [
+            0.9001407335394659,
+            1.048393500111435
+          ],
+          "median_nse_gain_ci95": [
+            -0.005472287903856343,
+            0.025100611618765024
+          ]
+        },
+        "interval_90": {
+          "coverage": 0.8819185129864742,
+          "median_width_cfs": 2349.9827552122215,
+          "rows": 12051,
+          "crps_approx_cfs": 1216.9817019881984,
+          "persistence_mae_for_reference": 3996.6336461704423
+        },
+        "events": {
+          "high_flow_q90": {
+            "model": {
+              "events": 706,
+              "rows": 12051,
+              "event_rate": 0.05858434984648577,
+              "auprc": 0.9489834450019901,
+              "recall_at_5pct_alert_budget": 0.7946175637393768,
+              "precision_at_5pct_alert_budget": 0.9318936877076412,
+              "false_alarms_per_basin_year_at_5pct_budget": 13.669218322130943,
+              "brier": 0.010244578938102716,
+              "brier_skill_vs_base_rate": 0.8198517155986695,
+              "ece": 0.004303100227378553,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0026971686734620125,
+                  "obs_freq": 0.0019949220166848025,
+                  "count": 11028
+                },
+                {
+                  "bin": 1,
+                  "mean_prob": 0.13563362924814668,
+                  "obs_freq": 0.09042553191489362,
+                  "count": 188
+                },
+                {
+                  "bin": 2,
+                  "mean_prob": 0.2540644158997333,
+                  "obs_freq": 0.24675324675324675,
+                  "count": 77
+                },
+                {
+                  "bin": 3,
+                  "mean_prob": 0.3493033406312676,
+                  "obs_freq": 0.375,
+                  "count": 56
+                },
+                {
+                  "bin": 4,
+                  "mean_prob": 0.4593904023435911,
+                  "obs_freq": 0.5818181818181818,
+                  "count": 55
+                },
+                {
+                  "bin": 5,
+                  "mean_prob": 0.557087857837789,
+                  "obs_freq": 0.7205882352941176,
+                  "count": 68
+                },
+                {
+                  "bin": 6,
+                  "mean_prob": 0.6564660834507987,
+                  "obs_freq": 0.8333333333333334,
+                  "count": 30
+                },
+                {
+                  "bin": 7,
+                  "mean_prob": 0.7506349122296309,
+                  "obs_freq": 0.7948717948717948,
+                  "count": 39
+                },
+                {
+                  "bin": 8,
+                  "mean_prob": 0.8289289172102288,
+                  "obs_freq": 0.8833333333333333,
+                  "count": 60
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 0.9832535889701784,
+                  "obs_freq": 0.9711111111111111,
+                  "count": 450
+                }
+              ]
+            },
+            "persistence_indicator": {
+              "events": 706,
+              "rows": 12051,
+              "event_rate": 0.05858434984648577,
+              "auprc": 0.7674511863146711,
+              "recall_at_5pct_alert_budget": 0.7436260623229461,
+              "precision_at_5pct_alert_budget": 0.872093023255814,
+              "false_alarms_per_basin_year_at_5pct_budget": 25.671458800099575,
+              "brier": 0.01501950045639366,
+              "brier_skill_vs_base_rate": 0.7358859494243482,
+              "ece": 0.015019500456393657,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0,
+                  "obs_freq": 0.00802044773488454,
+                  "count": 11346
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 1.0,
+                  "obs_freq": 0.8723404255319149,
+                  "count": 705
+                }
+              ]
+            }
+          },
+          "extreme_flow_q99": {
+            "model": {
+              "events": 59,
+              "rows": 12051,
+              "event_rate": 0.004895859264791303,
+              "auprc": 0.4696285923318507,
+              "recall_at_5pct_alert_budget": 0.9830508474576272,
+              "precision_at_5pct_alert_budget": 0.09634551495016612,
+              "false_alarms_per_basin_year_at_5pct_budget": 181.36718944485932,
+              "brier": 0.0031870872890434492,
+              "brier_skill_vs_base_rate": 0.3493007395114517,
+              "ece": 0.0014857872028215017,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0005687177800675867,
+                  "obs_freq": 0.001343408900083963,
+                  "count": 11910
+                },
+                {
+                  "bin": 1,
+                  "mean_prob": 0.13902365802478514,
+                  "obs_freq": 0.10909090909090909,
+                  "count": 55
+                },
+                {
+                  "bin": 2,
+                  "mean_prob": 0.24309774249506286,
+                  "obs_freq": 0.13636363636363635,
+                  "count": 22
+                },
+                {
+                  "bin": 3,
+                  "mean_prob": 0.3564697353393912,
+                  "obs_freq": 0.14285714285714285,
+                  "count": 7
+                },
+                {
+                  "bin": 4,
+                  "mean_prob": 0.4906730408698913,
+                  "obs_freq": 0.5714285714285714,
+                  "count": 14
+                },
+                {
+                  "bin": 5,
+                  "mean_prob": 0.5572553819698863,
+                  "obs_freq": 0.5,
+                  "count": 12
+                },
+                {
+                  "bin": 6,
+                  "mean_prob": 0.6571376986037554,
+                  "obs_freq": 0.6129032258064516,
+                  "count": 31
+                }
+              ]
+            },
+            "persistence_indicator": {
+              "events": 59,
+              "rows": 12051,
+              "event_rate": 0.004895859264791303,
+              "auprc": 0.4844008625507637,
+              "recall_at_5pct_alert_budget": 0.6949152542372882,
+              "precision_at_5pct_alert_budget": 0.0681063122923588,
+              "false_alarms_per_basin_year_at_5pct_budget": 187.0349141150112,
+              "brier": 0.002987303958177745,
+              "brier_skill_vs_base_rate": 0.3900899786700911,
+              "ece": 0.002987303958177745,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0,
+                  "obs_freq": 0.0015010006671114075,
+                  "count": 11992
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 1.0,
+                  "obs_freq": 0.6949152542372882,
+                  "count": 59
+                }
+              ]
+            }
+          }
+        },
+        "by_catchment_size": {
+          "small": {
+            "blend": {
+              "rmse": 586.5140631044538,
+              "extreme_rmse": 1689.5095933541847,
+              "mae": 193.35365348559532,
+              "median_basin_nse": 0.9268440836336018,
+              "mean_basin_nse": 0.9048855836309644,
+              "nse_iqr": [
+                0.8922827108678475,
+                0.9394469563967188
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 4
+            },
+            "persistence": {
+              "rmse": 677.9490102263162,
+              "extreme_rmse": 1953.3299848068311,
+              "mae": 222.62846997031284,
+              "median_basin_nse": 0.9090021150963563,
+              "mean_basin_nse": 0.879286262397767,
+              "nse_iqr": [
+                0.8562773894963487,
+                0.9320109879977746
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 4
+            }
+          },
+          "medium": {
+            "blend": {
+              "rmse": 2537.010614945503,
+              "extreme_rmse": 7102.865457288537,
+              "mae": 1014.5610169168536,
+              "median_basin_nse": 0.9885618258300154,
+              "mean_basin_nse": 0.9314712806095679,
+              "nse_iqr": [
+                0.902091281522506,
+                0.9893965523068536
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 3
+            },
+            "persistence": {
+              "rmse": 2875.089174645797,
+              "extreme_rmse": 8037.695188260994,
+              "mae": 1156.697688564477,
+              "median_basin_nse": 0.9846010523109109,
+              "mean_basin_nse": 0.9104645587204184,
+              "nse_iqr": [
+                0.8707796431178499,
+                0.9872177211182331
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 3
+            }
+          },
+          "large": {
+            "blend": {
+              "rmse": 17884.27231272341,
+              "extreme_rmse": 27544.721848292596,
+              "mae": 10050.88184614919,
+              "median_basin_nse": 0.9390319767653721,
+              "mean_basin_nse": 0.9369460139970998,
+              "nse_iqr": [
+                0.8850956720117493,
+                0.9908823187507226
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 4
+            },
+            "persistence": {
+              "rmse": 17483.224015868786,
+              "extreme_rmse": 27143.64107446733,
+              "mae": 9896.286496350365,
+              "median_basin_nse": 0.9363895648647815,
+              "mean_basin_nse": 0.9291721585976482,
+              "nse_iqr": [
+                0.8738409599988773,
+                0.9917207634635524
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 4
+            }
+          }
+        }
+      },
+      "3": {
+        "rows_scored": 12051,
+        "fallback_rows": 0,
+        "forecast": {
+          "basinshift_blend": {
+            "rmse": 28542.932137640586,
+            "extreme_rmse": 41471.74573134031,
+            "mae": 10307.916285093866,
+            "median_basin_nse": 0.6970550472981316,
+            "mean_basin_nse": 0.7148693708527732,
+            "nse_iqr": [
+              0.587387037727625,
+              0.9232257671485591
+            ],
+            "share_basins_nse_gt0": 1.0,
+            "basins": 11
+          },
+          "persistence": {
+            "rmse": 28707.442396788556,
+            "extreme_rmse": 42945.69298163533,
+            "mae": 10599.95929051531,
+            "median_basin_nse": 0.5627240144377514,
+            "mean_basin_nse": 0.5749229606643289,
+            "nse_iqr": [
+              0.4104086591510056,
+              0.9095462427043985
+            ],
+            "share_basins_nse_gt0": 0.9090909090909091,
+            "basins": 11
+          },
+          "weather_only_gbm": {
+            "rmse": 79270.0324857938,
+            "extreme_rmse": 127795.68966906867,
+            "mae": 31259.43617002468,
+            "median_basin_nse": 0.4885097342161381,
+            "mean_basin_nse": 0.24921364307928998,
+            "nse_iqr": [
+              0.27771805290656754,
+              0.49324697383769195
+            ],
+            "share_basins_nse_gt0": 0.8181818181818182,
+            "basins": 11
+          },
+          "seasonal_climatology": {
+            "rmse": 97986.60207185944,
+            "extreme_rmse": 74670.44459774418,
+            "mae": 38009.280692888555,
+            "median_basin_nse": 0.18486758727541452,
+            "mean_basin_nse": 0.1861236361238966,
+            "nse_iqr": [
+              0.09006498956657438,
+              0.25305573966569905
+            ],
+            "share_basins_nse_gt0": 0.9090909090909091,
+            "basins": 11
+          }
+        },
+        "bootstrap_vs_persistence": {
+          "rmse_ratio_model_over_persistence_ci95": [
+            0.8241183142683056,
+            1.0172993830772812
+          ],
+          "median_nse_gain_ci95": [
+            -0.0029058785950708543,
+            0.2602771114006701
+          ]
+        },
+        "interval_90": {
+          "coverage": 0.876856692390673,
+          "median_width_cfs": 5182.930952527249,
+          "rows": 12051,
+          "crps_approx_cfs": 3193.2574073201263,
+          "persistence_mae_for_reference": 10599.95929051531
+        },
+        "events": {
+          "high_flow_q90": {
+            "model": {
+              "events": 706,
+              "rows": 12051,
+              "event_rate": 0.05858434984648577,
+              "auprc": 0.7461164453954525,
+              "recall_at_5pct_alert_budget": 0.6260623229461756,
+              "precision_at_5pct_alert_budget": 0.7342192691029901,
+              "false_alarms_per_basin_year_at_5pct_budget": 53.34329101319392,
+              "brier": 0.025664874040157135,
+              "brier_skill_vs_base_rate": 0.5486897943150786,
+              "ece": 0.005695526911177987,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0060676580142396035,
+                  "obs_freq": 0.005774327906096176,
+                  "count": 10564
+                },
+                {
+                  "bin": 1,
+                  "mean_prob": 0.14291423386939295,
+                  "obs_freq": 0.11556603773584906,
+                  "count": 424
+                },
+                {
+                  "bin": 2,
+                  "mean_prob": 0.24416611486550127,
+                  "obs_freq": 0.2336448598130841,
+                  "count": 214
+                },
+                {
+                  "bin": 3,
+                  "mean_prob": 0.35655456691044923,
+                  "obs_freq": 0.3277310924369748,
+                  "count": 119
+                },
+                {
+                  "bin": 4,
+                  "mean_prob": 0.44543141867345115,
+                  "obs_freq": 0.5316455696202531,
+                  "count": 79
+                },
+                {
+                  "bin": 5,
+                  "mean_prob": 0.5309982571776183,
+                  "obs_freq": 0.5294117647058824,
+                  "count": 136
+                },
+                {
+                  "bin": 6,
+                  "mean_prob": 0.643679258290301,
+                  "obs_freq": 0.5679012345679012,
+                  "count": 81
+                },
+                {
+                  "bin": 7,
+                  "mean_prob": 0.7387586420685991,
+                  "obs_freq": 0.6666666666666666,
+                  "count": 102
+                },
+                {
+                  "bin": 8,
+                  "mean_prob": 0.8548835757606,
+                  "obs_freq": 0.7413793103448276,
+                  "count": 116
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 0.9610013946217633,
+                  "obs_freq": 0.8935185185185185,
+                  "count": 216
+                }
+              ]
+            },
+            "persistence_indicator": {
+              "events": 706,
+              "rows": 12051,
+              "event_rate": 0.05858434984648577,
+              "auprc": 0.45448565347352443,
+              "recall_at_5pct_alert_budget": 0.5580736543909348,
+              "precision_at_5pct_alert_budget": 0.654485049833887,
+              "false_alarms_per_basin_year_at_5pct_budget": 69.3462783171521,
+              "brier": 0.039830719442369926,
+              "brier_skill_vs_base_rate": 0.29958704819716653,
+              "ece": 0.039830719442369926,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0,
+                  "obs_freq": 0.021323464622433695,
+                  "count": 11349
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 1.0,
+                  "obs_freq": 0.6609686609686609,
+                  "count": 702
+                }
+              ]
+            }
+          },
+          "extreme_flow_q99": {
+            "model": {
+              "events": 59,
+              "rows": 12051,
+              "event_rate": 0.004895859264791303,
+              "auprc": 0.24730899028620676,
+              "recall_at_5pct_alert_budget": 0.8813559322033898,
+              "precision_at_5pct_alert_budget": 0.08637873754152824,
+              "false_alarms_per_basin_year_at_5pct_budget": 183.36756285785413,
+              "brier": 0.004179881698676814,
+              "brier_skill_vs_base_rate": 0.1466045063751812,
+              "ece": 0.001961996267011523,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.001394193333594756,
+                  "obs_freq": 0.0024369747899159666,
+                  "count": 11900
+                },
+                {
+                  "bin": 1,
+                  "mean_prob": 0.16201099201255786,
+                  "obs_freq": 0.1282051282051282,
+                  "count": 78
+                },
+                {
+                  "bin": 2,
+                  "mean_prob": 0.25092702718661164,
+                  "obs_freq": 0.14705882352941177,
+                  "count": 34
+                },
+                {
+                  "bin": 3,
+                  "mean_prob": 0.34858832335833106,
+                  "obs_freq": 0.26666666666666666,
+                  "count": 15
+                },
+                {
+                  "bin": 5,
+                  "mean_prob": 0.5253357753357754,
+                  "obs_freq": 0.42857142857142855,
+                  "count": 7
+                },
+                {
+                  "bin": 6,
+                  "mean_prob": 0.6564921237931619,
+                  "obs_freq": 0.47058823529411764,
+                  "count": 17
+                }
+              ]
+            },
+            "persistence_indicator": {
+              "events": 59,
+              "rows": 12051,
+              "event_rate": 0.004895859264791303,
+              "auprc": 0.09647890938280097,
+              "recall_at_5pct_alert_budget": 0.3050847457627119,
+              "precision_at_5pct_alert_budget": 0.029900332225913623,
+              "false_alarms_per_basin_year_at_5pct_budget": 194.7030121981578,
+              "brier": 0.006804414571404863,
+              "brier_skill_vs_base_rate": -0.3892394930292369,
+              "ece": 0.006804414571404863,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0,
+                  "obs_freq": 0.003418945963975984,
+                  "count": 11992
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 1.0,
+                  "obs_freq": 0.3050847457627119,
+                  "count": 59
+                }
+              ]
+            }
+          }
+        },
+        "by_catchment_size": {
+          "small": {
+            "blend": {
+              "rmse": 1204.3455738552632,
+              "extreme_rmse": 3326.4533100341796,
+              "mae": 425.42140515138675,
+              "median_basin_nse": 0.6670314175818982,
+              "mean_basin_nse": 0.6212542248481118,
+              "nse_iqr": [
+                0.5658869951658467,
+                0.7223986472641633
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 4
+            },
+            "persistence": {
+              "rmse": 1519.3357232872359,
+              "extreme_rmse": 4133.172256061923,
+              "mae": 535.6628020095912,
+              "median_basin_nse": 0.5178334623771452,
+              "mean_basin_nse": 0.4027477213895494,
+              "nse_iqr": [
+                0.34839128207856374,
+                0.5721899016881309
+              ],
+              "share_basins_nse_gt0": 0.75,
+              "basins": 4
+            }
+          },
+          "medium": {
+            "blend": {
+              "rmse": 4974.188735305749,
+              "extreme_rmse": 13168.897125040849,
+              "mae": 2429.6753511790803,
+              "median_basin_nse": 0.9262840775087666,
+              "mean_basin_nse": 0.7719348427900133,
+              "nse_iqr": [
+                0.6880889635471699,
+                0.9329553393922336
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 3
+            },
+            "persistence": {
+              "rmse": 6012.7375516957145,
+              "extreme_rmse": 15806.11503261451,
+              "mae": 2830.17700729927,
+              "median_basin_nse": 0.8960191500253747,
+              "mean_basin_nse": 0.6451472285962053,
+              "nse_iqr": [
+                0.4997970028943677,
+                0.9159334150126277
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 3
+            }
+          },
+          "large": {
+            "blend": {
+              "rmse": 47111.43490700893,
+              "extreme_rmse": 67313.50979288388,
+              "mae": 26087.820771859362,
+              "median_basin_nse": 0.777117880475217,
+              "mean_basin_nse": 0.7656854129045045,
+              "nse_iqr": [
+                0.6107276709448537,
+                0.932075622434868
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 4
+            },
+            "persistence": {
+              "rmse": 47285.959987638555,
+              "extreme_rmse": 69331.51733030901,
+              "mae": 26480.11405109489,
+              "median_basin_nse": 0.742898674910587,
+              "mean_basin_nse": 0.6944299989902012,
+              "nse_iqr": [
+                0.5028686931556408,
+                0.9344599807451474
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 4
+            }
+          }
+        }
+      },
+      "7": {
+        "rows_scored": 12051,
+        "fallback_rows": 0,
+        "forecast": {
+          "basinshift_blend": {
+            "rmse": 52147.153268110385,
+            "extreme_rmse": 72871.26259307703,
+            "mae": 18876.985388305537,
+            "median_basin_nse": 0.625348181287195,
+            "mean_basin_nse": 0.531663204596756,
+            "nse_iqr": [
+              0.3004934767100637,
+              0.7528926240392939
+            ],
+            "share_basins_nse_gt0": 1.0,
+            "basins": 11
+          },
+          "persistence": {
+            "rmse": 54695.43210429738,
+            "extreme_rmse": 80520.06922382629,
+            "mae": 20272.61950709485,
+            "median_basin_nse": 0.1776025888767423,
+            "mean_basin_nse": 0.23821943224604933,
+            "nse_iqr": [
+              -0.2366955487739557,
+              0.6993131178692275
+            ],
+            "share_basins_nse_gt0": 0.6363636363636364,
+            "basins": 11
+          },
+          "weather_only_gbm": {
+            "rmse": 79270.0324857938,
+            "extreme_rmse": 127795.68966906867,
+            "mae": 31259.43617002468,
+            "median_basin_nse": 0.4885097342161381,
+            "mean_basin_nse": 0.24921364307928998,
+            "nse_iqr": [
+              0.27771805290656754,
+              0.49324697383769195
+            ],
+            "share_basins_nse_gt0": 0.8181818181818182,
+            "basins": 11
+          },
+          "seasonal_climatology": {
+            "rmse": 97986.60207185944,
+            "extreme_rmse": 74670.44459774418,
+            "mae": 38009.280692888555,
+            "median_basin_nse": 0.18486758727541452,
+            "mean_basin_nse": 0.1861236361238966,
+            "nse_iqr": [
+              0.09006498956657438,
+              0.25305573966569905
+            ],
+            "share_basins_nse_gt0": 0.9090909090909091,
+            "basins": 11
+          }
+        },
+        "bootstrap_vs_persistence": {
+          "rmse_ratio_model_over_persistence_ci95": [
+            0.7608089220101979,
+            0.9712077843664879
+          ],
+          "median_nse_gain_ci95": [
+            0.015823524570248937,
+            0.5521623597326349
+          ]
+        },
+        "interval_90": {
+          "coverage": 0.8564434486764584,
+          "median_width_cfs": 5928.558459799916,
+          "rows": 12051,
+          "crps_approx_cfs": 5362.464225480699,
+          "persistence_mae_for_reference": 20272.61950709485
+        },
+        "events": {
+          "high_flow_q90": {
+            "model": {
+              "events": 706,
+              "rows": 12051,
+              "event_rate": 0.05858434984648577,
+              "auprc": 0.5648118091958931,
+              "recall_at_5pct_alert_budget": 0.48441926345609065,
+              "precision_at_5pct_alert_budget": 0.5681063122923588,
+              "false_alarms_per_basin_year_at_5pct_budget": 86.68284789644012,
+              "brier": 0.03629031117340676,
+              "brier_skill_vs_base_rate": 0.361844216557872,
+              "ece": 0.011442577058703914,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.008691692882719357,
+                  "obs_freq": 0.009844457570387872,
+                  "count": 10158
+                },
+                {
+                  "bin": 1,
+                  "mean_prob": 0.14193367288685702,
+                  "obs_freq": 0.11925042589437819,
+                  "count": 587
+                },
+                {
+                  "bin": 2,
+                  "mean_prob": 0.24768694297824007,
+                  "obs_freq": 0.19631901840490798,
+                  "count": 326
+                },
+                {
+                  "bin": 3,
+                  "mean_prob": 0.352858009335596,
+                  "obs_freq": 0.3159851301115242,
+                  "count": 269
+                },
+                {
+                  "bin": 4,
+                  "mean_prob": 0.46029418694257773,
+                  "obs_freq": 0.35374149659863946,
+                  "count": 147
+                },
+                {
+                  "bin": 5,
+                  "mean_prob": 0.5610431819464632,
+                  "obs_freq": 0.4540540540540541,
+                  "count": 185
+                },
+                {
+                  "bin": 6,
+                  "mean_prob": 0.6504578677616115,
+                  "obs_freq": 0.5092592592592593,
+                  "count": 108
+                },
+                {
+                  "bin": 7,
+                  "mean_prob": 0.745901768053554,
+                  "obs_freq": 0.65625,
+                  "count": 96
+                },
+                {
+                  "bin": 8,
+                  "mean_prob": 0.8577024240576431,
+                  "obs_freq": 0.6527777777777778,
+                  "count": 72
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 0.9527968000595854,
+                  "obs_freq": 0.8349514563106796,
+                  "count": 103
+                }
+              ]
+            },
+            "persistence_indicator": {
+              "events": 706,
+              "rows": 12051,
+              "event_rate": 0.05858434984648577,
+              "auprc": 0.20312387728295758,
+              "recall_at_5pct_alert_budget": 0.34702549575070823,
+              "precision_at_5pct_alert_budget": 0.4069767441860465,
+              "false_alarms_per_basin_year_at_5pct_budget": 119.02221807318894,
+              "brier": 0.068873952369098,
+              "brier_skill_vs_base_rate": -0.2111307291590665,
+              "ece": 0.068873952369098,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0,
+                  "obs_freq": 0.03674332540311922,
+                  "count": 11349
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 1.0,
+                  "obs_freq": 0.4116809116809117,
+                  "count": 702
+                }
+              ]
+            }
+          },
+          "extreme_flow_q99": {
+            "model": {
+              "events": 59,
+              "rows": 12051,
+              "event_rate": 0.004895859264791303,
+              "auprc": 0.18438899214684873,
+              "recall_at_5pct_alert_budget": 0.6779661016949152,
+              "precision_at_5pct_alert_budget": 0.0664451827242525,
+              "false_alarms_per_basin_year_at_5pct_budget": 187.36830968384365,
+              "brier": 0.004542977220499783,
+              "brier_skill_vs_base_rate": 0.07247224512549932,
+              "ece": 0.002137706888674539,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0017753956220849158,
+                  "obs_freq": 0.002939694271795733,
+                  "count": 11906
+                },
+                {
+                  "bin": 1,
+                  "mean_prob": 0.1478082592176383,
+                  "obs_freq": 0.14432989690721648,
+                  "count": 97
+                },
+                {
+                  "bin": 2,
+                  "mean_prob": 0.2525597670678524,
+                  "obs_freq": 0.07692307692307693,
+                  "count": 13
+                },
+                {
+                  "bin": 3,
+                  "mean_prob": 0.37257053961415837,
+                  "obs_freq": 0.14285714285714285,
+                  "count": 14
+                },
+                {
+                  "bin": 4,
+                  "mean_prob": 0.4400223001513268,
+                  "obs_freq": 0.125,
+                  "count": 8
+                },
+                {
+                  "bin": 5,
+                  "mean_prob": 0.515414478191368,
+                  "obs_freq": 0.25,
+                  "count": 4
+                },
+                {
+                  "bin": 6,
+                  "mean_prob": 0.6569767441860465,
+                  "obs_freq": 0.0,
+                  "count": 3
+                },
+                {
+                  "bin": 7,
+                  "mean_prob": 0.7483443708609272,
+                  "obs_freq": 0.8333333333333334,
+                  "count": 6
+                }
+              ]
+            },
+            "persistence_indicator": {
+              "events": 59,
+              "rows": 12051,
+              "event_rate": 0.004895859264791303,
+              "auprc": 0.009160316953245555,
+              "recall_at_5pct_alert_budget": 0.06779661016949153,
+              "precision_at_5pct_alert_budget": 0.006644518272425249,
+              "false_alarms_per_basin_year_at_5pct_budget": 199.3705501618123,
+              "brier": 0.009127873205543108,
+              "brier_skill_vs_base_rate": -0.8636139540636105,
+              "ece": 0.009127873205543108,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0,
+                  "obs_freq": 0.004586390927284857,
+                  "count": 11992
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 1.0,
+                  "obs_freq": 0.06779661016949153,
+                  "count": 59
+                }
+              ]
+            }
+          }
+        },
+        "by_catchment_size": {
+          "small": {
+            "blend": {
+              "rmse": 1537.1541753965323,
+              "extreme_rmse": 3960.68651650124,
+              "mae": 600.5405874361929,
+              "median_basin_nse": 0.3004934767100637,
+              "mean_basin_nse": 0.3437916526330608,
+              "nse_iqr": [
+                0.25328959358650893,
+                0.3909955357566155
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 4
+            },
+            "persistence": {
+              "rmse": 2043.9524874229862,
+              "extreme_rmse": 4696.028781688626,
+              "mae": 804.2237223110299,
+              "median_basin_nse": -0.1309120407850493,
+              "mean_basin_nse": -0.12725231903421888,
+              "nse_iqr": [
+                -0.35745437320437384,
+                0.09929001338510565
+              ],
+              "share_basins_nse_gt0": 0.5,
+              "basins": 4
+            }
+          },
+          "medium": {
+            "blend": {
+              "rmse": 7198.883571127545,
+              "extreme_rmse": 17948.508070345197,
+              "mae": 3930.9156834290193,
+              "median_basin_nse": 0.7756875370973844,
+              "mean_basin_nse": 0.6081780917311281,
+              "nse_iqr": [
+                0.5040017169966107,
+                0.7961091891487737
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 3
+            },
+            "persistence": {
+              "rmse": 8784.692902562718,
+              "extreme_rmse": 19880.173936803865,
+              "mae": 4753.577250608272,
+              "median_basin_nse": 0.6843520493275005,
+              "mean_basin_nse": 0.3596680244774011,
+              "nse_iqr": [
+                0.14743949745627172,
+                0.7342385639235801
+              ],
+              "share_basins_nse_gt0": 0.6666666666666666,
+              "basins": 3
+            }
+          },
+          "large": {
+            "blend": {
+              "rmse": 86219.57939577426,
+              "extreme_rmse": 119015.52222503311,
+              "mae": 48342.13798242981,
+              "median_basin_nse": 0.7104444543797857,
+              "mean_basin_nse": 0.6621485912096722,
+              "nse_iqr": [
+                0.6051717702232026,
+                0.7674212753662553
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 4
+            },
+            "persistence": {
+              "rmse": 90340.52393815141,
+              "extreme_rmse": 131491.67994375946,
+              "mae": 51358.09306569343,
+              "median_basin_nse": 0.6608397217500805,
+              "mean_basin_nse": 0.5126047393528037,
+              "nse_iqr": [
+                0.42095864421109175,
+                0.7524858168917925
+              ],
+              "share_basins_nse_gt0": 0.75,
+              "basins": 4
+            }
+          }
+        }
+      }
+    }
+  },
+  "heldout_caravan": {
+    "label": "heldout_caravan",
+    "test_rows": 97590,
+    "test_stations": 60,
+    "horizons": {
+      "1": {
+        "rows_scored": 97590,
+        "fallback_rows": 40,
+        "forecast": {
+          "basinshift_blend": {
+            "rmse": 357.36760305142195,
+            "extreme_rmse": 1092.3307353181026,
+            "mae": 68.65945809671656,
+            "median_basin_nse": 0.7091483770591935,
+            "mean_basin_nse": 0.6768705889491657,
+            "nse_iqr": [
+              0.4713211030563072,
+              0.92525233294221
+            ],
+            "share_basins_nse_gt0": 1.0,
+            "basins": 60
+          },
+          "persistence": {
+            "rmse": 431.5198659942381,
+            "extreme_rmse": 1311.9209507540586,
+            "mae": 85.97658061286518,
+            "median_basin_nse": 0.5307482471098995,
+            "mean_basin_nse": 0.5166776210461366,
+            "nse_iqr": [
+              0.2144354400196652,
+              0.9021976296589772
+            ],
+            "share_basins_nse_gt0": 0.9,
+            "basins": 60
+          },
+          "weather_only_gbm": {
+            "rmse": 522.9405970313694,
+            "extreme_rmse": 1546.7163198578057,
+            "mae": 163.55116693745038,
+            "median_basin_nse": 0.31762599866903063,
+            "mean_basin_nse": 0.1619557756508167,
+            "nse_iqr": [
+              0.14006580246705863,
+              0.40802462501794534
+            ],
+            "share_basins_nse_gt0": 0.9166666666666666,
+            "basins": 60
+          },
+          "seasonal_climatology": {
+            "rmse": 599.6247285493308,
+            "extreme_rmse": 1790.4038573151668,
+            "mae": 176.91046072032904,
+            "median_basin_nse": 0.031465730934805314,
+            "mean_basin_nse": 0.09670260658048466,
+            "nse_iqr": [
+              -0.018370133990718185,
+              0.11576539121985888
+            ],
+            "share_basins_nse_gt0": 0.7,
+            "basins": 60
+          }
+        },
+        "bootstrap_vs_persistence": {
+          "rmse_ratio_model_over_persistence_ci95": [
+            0.8040833774239744,
+            0.8433928994275594
+          ],
+          "median_nse_gain_ci95": [
+            0.0715216419979207,
+            0.2223189473253602
+          ]
+        },
+        "interval_90": {
+          "coverage": 0.8961353152229626,
+          "median_width_cfs": 31.689364272399402,
+          "rows": 97550,
+          "crps_approx_cfs": 21.185524866917394,
+          "persistence_mae_for_reference": 85.99282733650166
+        },
+        "events": {
+          "high_flow_q90": {
+            "model": {
+              "events": 8822,
+              "rows": 97590,
+              "event_rate": 0.09039860641459166,
+              "auprc": 0.9292241018100839,
+              "recall_at_5pct_alert_budget": 0.5454545454545454,
+              "precision_at_5pct_alert_budget": 0.9862676778028284,
+              "false_alarms_per_basin_year_at_5pct_budget": 15.045650169074701,
+              "brier": 0.019802189578576487,
+              "brier_skill_vs_base_rate": 0.7594453624231929,
+              "ece": 0.0014083182355518428,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.004522561139664136,
+                  "obs_freq": 0.004553614952026537,
+                  "count": 84109
+                },
+                {
+                  "bin": 1,
+                  "mean_prob": 0.1418311509466673,
+                  "obs_freq": 0.15077166600712308,
+                  "count": 2527
+                },
+                {
+                  "bin": 2,
+                  "mean_prob": 0.2546490442132584,
+                  "obs_freq": 0.22720364741641338,
+                  "count": 1316
+                },
+                {
+                  "bin": 3,
+                  "mean_prob": 0.3523335722457412,
+                  "obs_freq": 0.3607068607068607,
+                  "count": 962
+                },
+                {
+                  "bin": 4,
+                  "mean_prob": 0.45719241678409756,
+                  "obs_freq": 0.4565868263473054,
+                  "count": 668
+                },
+                {
+                  "bin": 5,
+                  "mean_prob": 0.5648637032015249,
+                  "obs_freq": 0.5612009237875288,
+                  "count": 866
+                },
+                {
+                  "bin": 6,
+                  "mean_prob": 0.6702195141852044,
+                  "obs_freq": 0.667447306791569,
+                  "count": 427
+                },
+                {
+                  "bin": 7,
+                  "mean_prob": 0.7511520231075515,
+                  "obs_freq": 0.7287735849056604,
+                  "count": 424
+                },
+                {
+                  "bin": 8,
+                  "mean_prob": 0.8341800306016984,
+                  "obs_freq": 0.845873786407767,
+                  "count": 824
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 0.9830209617227577,
+                  "obs_freq": 0.9749405524053412,
+                  "count": 5467
+                }
+              ]
+            },
+            "persistence_indicator": {
+              "events": 8822,
+              "rows": 97590,
+              "event_rate": 0.09039860641459166,
+              "auprc": 0.6230601759108332,
+              "recall_at_5pct_alert_budget": 0.40557696667422355,
+              "precision_at_5pct_alert_budget": 0.7333469973355196,
+              "false_alarms_per_basin_year_at_5pct_budget": 292.15508761143553,
+              "brier": 0.04043447074495338,
+              "brier_skill_vs_base_rate": 0.5088068712267381,
+              "ece": 0.04043447074495338,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0,
+                  "obs_freq": 0.02218341595313204,
+                  "count": 88760
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 1.0,
+                  "obs_freq": 0.7761041902604756,
+                  "count": 8830
+                }
+              ]
+            }
+          },
+          "extreme_flow_q99": {
+            "model": {
+              "events": 977,
+              "rows": 97590,
+              "event_rate": 0.01001127164668511,
+              "auprc": 0.5471360270532831,
+              "recall_at_5pct_alert_budget": 0.9508700102354145,
+              "precision_at_5pct_alert_budget": 0.19040787046525928,
+              "false_alarms_per_basin_year_at_5pct_budget": 887.0196741469413,
+              "brier": 0.0059235587774607145,
+              "brier_skill_vs_base_rate": 0.4023275999619619,
+              "ece": 0.0013567924343598305,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0014856818597643287,
+                  "obs_freq": 0.001739750146725916,
+                  "count": 95416
+                },
+                {
+                  "bin": 1,
+                  "mean_prob": 0.13918652935552506,
+                  "obs_freq": 0.17272727272727273,
+                  "count": 880
+                },
+                {
+                  "bin": 2,
+                  "mean_prob": 0.2411256123130677,
+                  "obs_freq": 0.30791788856304986,
+                  "count": 341
+                },
+                {
+                  "bin": 3,
+                  "mean_prob": 0.3510837334305122,
+                  "obs_freq": 0.38405797101449274,
+                  "count": 276
+                },
+                {
+                  "bin": 4,
+                  "mean_prob": 0.47981101840660384,
+                  "obs_freq": 0.5683060109289617,
+                  "count": 183
+                },
+                {
+                  "bin": 5,
+                  "mean_prob": 0.5593145314031883,
+                  "obs_freq": 0.6842105263157895,
+                  "count": 114
+                },
+                {
+                  "bin": 6,
+                  "mean_prob": 0.6569959026124722,
+                  "obs_freq": 0.7,
+                  "count": 380
+                }
+              ]
+            },
+            "persistence_indicator": {
+              "events": 977,
+              "rows": 97590,
+              "event_rate": 0.01001127164668511,
+              "auprc": 0.2804601952932268,
+              "recall_at_5pct_alert_budget": 0.5680655066530195,
+              "precision_at_5pct_alert_budget": 0.11375281820045091,
+              "false_alarms_per_basin_year_at_5pct_budget": 971.0058407623732,
+              "brier": 0.009509171021621068,
+              "brier_skill_vs_base_rate": 0.04054821090156413,
+              "ece": 0.009509171021621068,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0,
+                  "obs_freq": 0.00480266630784677,
+                  "count": 96613
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 1.0,
+                  "obs_freq": 0.5250767656090072,
+                  "count": 977
+                }
+              ]
+            }
+          }
+        },
+        "by_catchment_size": {
+          "small": {
+            "blend": {
+              "rmse": 183.68983818518953,
+              "extreme_rmse": 556.3729755896221,
+              "mae": 35.86647910023466,
+              "median_basin_nse": 0.5738935475160611,
+              "mean_basin_nse": 0.6054730900836227,
+              "nse_iqr": [
+                0.4514822107992785,
+                0.7931820566914864
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 20
+            },
+            "persistence": {
+              "rmse": 242.9846256726476,
+              "extreme_rmse": 734.8822000963527,
+              "mae": 47.4732629857544,
+              "median_basin_nse": 0.3546342470437521,
+              "mean_basin_nse": 0.3670142800455435,
+              "nse_iqr": [
+                0.09531355555889504,
+                0.728070939498856
+              ],
+              "share_basins_nse_gt0": 0.9,
+              "basins": 20
+            }
+          },
+          "medium": {
+            "blend": {
+              "rmse": 340.06888853838853,
+              "extreme_rmse": 1025.5661619245154,
+              "mae": 77.16311423876425,
+              "median_basin_nse": 0.7019829062885485,
+              "mean_basin_nse": 0.653400459207482,
+              "nse_iqr": [
+                0.4524122974376581,
+                0.8544315649264327
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 20
+            },
+            "persistence": {
+              "rmse": 420.43663114730975,
+              "extreme_rmse": 1258.1656353885166,
+              "mae": 99.03493910139566,
+              "median_basin_nse": 0.516381970761704,
+              "mean_basin_nse": 0.48515706979398654,
+              "nse_iqr": [
+                0.2144354400196652,
+                0.7614504648482596
+              ],
+              "share_basins_nse_gt0": 0.85,
+              "basins": 20
+            }
+          },
+          "large": {
+            "blend": {
+              "rmse": 477.6322985553188,
+              "extreme_rmse": 1469.5050694194633,
+              "mae": 91.7402989594227,
+              "median_basin_nse": 0.9031984125991586,
+              "mean_basin_nse": 0.7717382175563923,
+              "nse_iqr": [
+                0.6274734475822945,
+                0.9583934612157354
+              ],
+              "share_basins_nse_gt0": 1.0,
+              "basins": 20
+            },
+            "persistence": {
+              "rmse": 561.8091623127415,
+              "extreme_rmse": 1722.0527931747117,
+              "mae": 110.18406183915965,
+              "median_basin_nse": 0.8882189862652994,
+              "mean_basin_nse": 0.6978615132988797,
+              "nse_iqr": [
+                0.48427052565876477,
+                0.9521971018012513
+              ],
+              "share_basins_nse_gt0": 0.95,
+              "basins": 20
+            }
+          }
+        }
+      },
+      "3": {
+        "rows_scored": 97590,
+        "fallback_rows": 118,
+        "forecast": {
+          "basinshift_blend": {
+            "rmse": 486.51709938611754,
+            "extreme_rmse": 1394.7135007232973,
+            "mae": 118.27630167865946,
+            "median_basin_nse": 0.41091784535481224,
+            "mean_basin_nse": 0.43396430735744324,
+            "nse_iqr": [
+              0.17753244126646245,
+              0.6866205736160911
+            ],
+            "share_basins_nse_gt0": 0.9166666666666666,
+            "basins": 60
+          },
+          "persistence": {
+            "rmse": 636.780331407311,
+            "extreme_rmse": 1684.9154941626566,
+            "mae": 159.31562929959534,
+            "median_basin_nse": -0.07576965788084078,
+            "mean_basin_nse": 0.04078093051707623,
+            "nse_iqr": [
+              -0.4143209113138109,
+              0.533638575260565
+            ],
+            "share_basins_nse_gt0": 0.45,
+            "basins": 60
+          },
+          "weather_only_gbm": {
+            "rmse": 522.9405970313694,
+            "extreme_rmse": 1546.7163198578057,
+            "mae": 163.55116693745038,
+            "median_basin_nse": 0.31762599866903063,
+            "mean_basin_nse": 0.1619557756508167,
+            "nse_iqr": [
+              0.14006580246705863,
+              0.40802462501794534
+            ],
+            "share_basins_nse_gt0": 0.9166666666666666,
+            "basins": 60
+          },
+          "seasonal_climatology": {
+            "rmse": 599.6247285493308,
+            "extreme_rmse": 1790.4038573151668,
+            "mae": 176.91046072032904,
+            "median_basin_nse": 0.031465730934805314,
+            "mean_basin_nse": 0.09670260658048466,
+            "nse_iqr": [
+              -0.018370133990718185,
+              0.11576539121985888
+            ],
+            "share_basins_nse_gt0": 0.7,
+            "basins": 60
+          }
+        },
+        "bootstrap_vs_persistence": {
+          "rmse_ratio_model_over_persistence_ci95": [
+            0.7392302291729905,
+            0.7824893627607511
+          ],
+          "median_nse_gain_ci95": [
+            0.3391666534282199,
+            0.5719249290909104
+          ]
+        },
+        "interval_90": {
+          "coverage": 0.8943799244911359,
+          "median_width_cfs": 72.24722621867318,
+          "rows": 97472,
+          "crps_approx_cfs": 33.91666429222846,
+          "persistence_mae_for_reference": 159.35980860285525
+        },
+        "events": {
+          "high_flow_q90": {
+            "model": {
+              "events": 8822,
+              "rows": 97590,
+              "event_rate": 0.09039860641459166,
+              "auprc": 0.8010128992862656,
+              "recall_at_5pct_alert_budget": 0.4837905236907731,
+              "precision_at_5pct_alert_budget": 0.8747694199631072,
+              "false_alarms_per_basin_year_at_5pct_budget": 137.20734706424838,
+              "brier": 0.03538768276492403,
+              "brier_skill_vs_base_rate": 0.5701146497754483,
+              "ece": 0.002843060694794619,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.008296994963384308,
+                  "obs_freq": 0.009258916336431984,
+                  "count": 81003
+                },
+                {
+                  "bin": 1,
+                  "mean_prob": 0.14560353055885925,
+                  "obs_freq": 0.15808045165843332,
+                  "count": 4251
+                },
+                {
+                  "bin": 2,
+                  "mean_prob": 0.24907072666105526,
+                  "obs_freq": 0.28058455114822545,
+                  "count": 2395
+                },
+                {
+                  "bin": 3,
+                  "mean_prob": 0.3549914461444213,
+                  "obs_freq": 0.36357744653272844,
+                  "count": 1543
+                },
+                {
+                  "bin": 4,
+                  "mean_prob": 0.44375124068892824,
+                  "obs_freq": 0.44242424242424244,
+                  "count": 1155
+                },
+                {
+                  "bin": 5,
+                  "mean_prob": 0.5332836357225451,
+                  "obs_freq": 0.5344563552833078,
+                  "count": 1306
+                },
+                {
+                  "bin": 6,
+                  "mean_prob": 0.6461958647273398,
+                  "obs_freq": 0.648936170212766,
+                  "count": 1128
+                },
+                {
+                  "bin": 7,
+                  "mean_prob": 0.7396425807832397,
+                  "obs_freq": 0.7292051756007394,
+                  "count": 1082
+                },
+                {
+                  "bin": 8,
+                  "mean_prob": 0.8537331210451721,
+                  "obs_freq": 0.8506044905008635,
+                  "count": 1158
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 0.9687431025599076,
+                  "obs_freq": 0.9544569871545349,
+                  "count": 2569
+                }
+              ]
+            },
+            "persistence_indicator": {
+              "events": 8822,
+              "rows": 97590,
+              "event_rate": 0.09039860641459166,
+              "auprc": 0.34007036891372877,
+              "recall_at_5pct_alert_budget": 0.25266379505781,
+              "precision_at_5pct_alert_budget": 0.4568559130969461,
+              "false_alarms_per_basin_year_at_5pct_budget": 595.0891484783277,
+              "brier": 0.0820166000614817,
+              "brier_skill_vs_base_rate": 0.0036721229850004145,
+              "ece": 0.08201660006148172,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0,
+                  "obs_freq": 0.04496078608131254,
+                  "count": 88744
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 1.0,
+                  "obs_freq": 0.5462355867058557,
+                  "count": 8846
+                }
+              ]
+            }
+          },
+          "extreme_flow_q99": {
+            "model": {
+              "events": 977,
+              "rows": 97590,
+              "event_rate": 0.01001127164668511,
+              "auprc": 0.3238730618492415,
+              "recall_at_5pct_alert_budget": 0.8362333674513818,
+              "precision_at_5pct_alert_budget": 0.1674523467923755,
+              "false_alarms_per_basin_year_at_5pct_budget": 912.1706117430064,
+              "brier": 0.007728263048600373,
+              "brier_skill_vs_base_rate": 0.2202374116793504,
+              "ece": 0.0017554145379088902,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0027357553581379484,
+                  "obs_freq": 0.003597801460099018,
+                  "count": 95336
+                },
+                {
+                  "bin": 1,
+                  "mean_prob": 0.15566211980236558,
+                  "obs_freq": 0.17132867132867133,
+                  "count": 1144
+                },
+                {
+                  "bin": 2,
+                  "mean_prob": 0.24880213040220803,
+                  "obs_freq": 0.31263858093126384,
+                  "count": 451
+                },
+                {
+                  "bin": 3,
+                  "mean_prob": 0.36874551811038375,
+                  "obs_freq": 0.4046242774566474,
+                  "count": 346
+                },
+                {
+                  "bin": 4,
+                  "mean_prob": 0.4779494382022472,
+                  "obs_freq": 0.5,
+                  "count": 32
+                },
+                {
+                  "bin": 5,
+                  "mean_prob": 0.5277283990519284,
+                  "obs_freq": 0.5294117647058824,
+                  "count": 119
+                },
+                {
+                  "bin": 6,
+                  "mean_prob": 0.6610747791303349,
+                  "obs_freq": 0.48148148148148145,
+                  "count": 162
+                }
+              ]
+            },
+            "persistence_indicator": {
+              "events": 977,
+              "rows": 97590,
+              "event_rate": 0.01001127164668511,
+              "auprc": 0.061668906129733636,
+              "recall_at_5pct_alert_budget": 0.2937563971340839,
+              "precision_at_5pct_alert_budget": 0.058823529411764705,
+              "false_alarms_per_basin_year_at_5pct_budget": 1031.1884414386718,
+              "brier": 0.01537042729787888,
+              "brier_skill_vs_base_rate": -0.5508380211720407,
+              "ece": 0.01537042729787888,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0,
+                  "obs_freq": 0.007762930454493702,
+                  "count": 96613
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 1.0,
+                  "obs_freq": 0.2323439099283521,
+                  "count": 977
+                }
+              ]
+            }
+          }
+        },
+        "by_catchment_size": {
+          "small": {
+            "blend": {
+              "rmse": 240.8868695822572,
+              "extreme_rmse": 680.3017634083385,
+              "mae": 58.68836157493562,
+              "median_basin_nse": 0.31943291142272573,
+              "mean_basin_nse": 0.3585631909831738,
+              "nse_iqr": [
+                0.13598175213046834,
+                0.47790320494433647
+              ],
+              "share_basins_nse_gt0": 0.95,
+              "basins": 20
+            },
+            "persistence": {
+              "rmse": 346.4445599511176,
+              "extreme_rmse": 923.9089953300182,
+              "mae": 83.79677998035254,
+              "median_basin_nse": -0.16979383666211112,
+              "mean_basin_nse": -0.11985227001173007,
+              "nse_iqr": [
+                -0.42696258152790134,
+                0.12780724025053938
+              ],
+              "share_basins_nse_gt0": 0.3,
+              "basins": 20
+            }
+          },
+          "medium": {
+            "blend": {
+              "rmse": 447.62049615695594,
+              "extreme_rmse": 1250.5457244477143,
+              "mae": 130.30873542895876,
+              "median_basin_nse": 0.3856647374188086,
+              "mean_basin_nse": 0.4028525000647824,
+              "nse_iqr": [
+                0.17753244126646245,
+                0.6488104405936176
+              ],
+              "share_basins_nse_gt0": 0.9,
+              "basins": 20
+            },
+            "persistence": {
+              "rmse": 608.6606290026978,
+              "extreme_rmse": 1583.300592003925,
+              "mae": 179.78815956942915,
+              "median_basin_nse": -0.13837227349956038,
+              "mean_basin_nse": -0.033258215808667724,
+              "nse_iqr": [
+                -0.44753882602538814,
+                0.3056020344017145
+              ],
+              "share_basins_nse_gt0": 0.45,
+              "basins": 20
+            }
+          },
+          "large": {
+            "blend": {
+              "rmse": 663.5075020853113,
+              "extreme_rmse": 1923.549544278334,
+              "mae": 163.43404361420863,
+              "median_basin_nse": 0.6223546307172523,
+              "mean_basin_nse": 0.5404772310243734,
+              "nse_iqr": [
+                0.32631695277803563,
+                0.852939793277362
+              ],
+              "share_basins_nse_gt0": 0.9,
+              "basins": 20
+            },
+            "persistence": {
+              "rmse": 842.0329744594368,
+              "extreme_rmse": 2241.2670528631047,
+              "mae": 211.63144135881856,
+              "median_basin_nse": 0.5195081618730013,
+              "mean_basin_nse": 0.27545327737162645,
+              "nse_iqr": [
+                -0.1024844398990371,
+                0.8127933364065939
+              ],
+              "share_basins_nse_gt0": 0.6,
+              "basins": 20
+            }
+          }
+        }
+      },
+      "7": {
+        "rows_scored": 97590,
+        "fallback_rows": 265,
+        "forecast": {
+          "basinshift_blend": {
+            "rmse": 535.8366416770032,
+            "extreme_rmse": 1489.7113347515474,
+            "mae": 146.92036019734854,
+            "median_basin_nse": 0.2598781357128874,
+            "mean_basin_nse": 0.3035337522476166,
+            "nse_iqr": [
+              0.11655452224222718,
+              0.44901798891249617
+            ],
+            "share_basins_nse_gt0": 0.8666666666666667,
+            "basins": 60
+          },
+          "persistence": {
+            "rmse": 719.3391115858559,
+            "extreme_rmse": 1771.8143543780495,
+            "mae": 206.00826043434955,
+            "median_basin_nse": -0.4096517144107489,
+            "mean_basin_nse": -0.23568799376816102,
+            "nse_iqr": [
+              -0.6853191756886606,
+              0.057558668000539104
+            ],
+            "share_basins_nse_gt0": 0.2833333333333333,
+            "basins": 60
+          },
+          "weather_only_gbm": {
+            "rmse": 522.9405970313694,
+            "extreme_rmse": 1546.7163198578057,
+            "mae": 163.55116693745038,
+            "median_basin_nse": 0.31762599866903063,
+            "mean_basin_nse": 0.1619557756508167,
+            "nse_iqr": [
+              0.14006580246705863,
+              0.40802462501794534
+            ],
+            "share_basins_nse_gt0": 0.9166666666666666,
+            "basins": 60
+          },
+          "seasonal_climatology": {
+            "rmse": 599.6247285493308,
+            "extreme_rmse": 1790.4038573151668,
+            "mae": 176.91046072032904,
+            "median_basin_nse": 0.031465730934805314,
+            "mean_basin_nse": 0.09670260658048466,
+            "nse_iqr": [
+              -0.018370133990718185,
+              0.11576539121985888
+            ],
+            "share_basins_nse_gt0": 0.7,
+            "basins": 60
+          }
+        },
+        "bootstrap_vs_persistence": {
+          "rmse_ratio_model_over_persistence_ci95": [
+            0.7158997503622423,
+            0.7700029196598247
+          ],
+          "median_nse_gain_ci95": [
+            0.47005556225395395,
+            0.7720235317537875
+          ]
+        },
+        "interval_90": {
+          "coverage": 0.8921654251220139,
+          "median_width_cfs": 112.4079211006252,
+          "rows": 97325,
+          "crps_approx_cfs": 40.06143644415178,
+          "persistence_mae_for_reference": 206.35722677138534
+        },
+        "events": {
+          "high_flow_q90": {
+            "model": {
+              "events": 8822,
+              "rows": 97590,
+              "event_rate": 0.09039860641459166,
+              "auprc": 0.7259139815825717,
+              "recall_at_5pct_alert_budget": 0.44389027431421446,
+              "precision_at_5pct_alert_budget": 0.8026234884197582,
+              "false_alarms_per_basin_year_at_5pct_budget": 216.25315093759605,
+              "brier": 0.042444610361352574,
+              "brier_skill_vs_base_rate": 0.48438793487715226,
+              "ece": 0.00583396215515966,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.010231220407288912,
+                  "obs_freq": 0.013120958444032282,
+                  "count": 79796
+                },
+                {
+                  "bin": 1,
+                  "mean_prob": 0.1426654843764417,
+                  "obs_freq": 0.16932348367029548,
+                  "count": 5144
+                },
+                {
+                  "bin": 2,
+                  "mean_prob": 0.24894803759783962,
+                  "obs_freq": 0.26659925851027977,
+                  "count": 2967
+                },
+                {
+                  "bin": 3,
+                  "mean_prob": 0.3536228236777369,
+                  "obs_freq": 0.38003663003663,
+                  "count": 2184
+                },
+                {
+                  "bin": 4,
+                  "mean_prob": 0.4620018526020825,
+                  "obs_freq": 0.49001663893510816,
+                  "count": 1202
+                },
+                {
+                  "bin": 5,
+                  "mean_prob": 0.5592377541477184,
+                  "obs_freq": 0.5503669112741828,
+                  "count": 1499
+                },
+                {
+                  "bin": 6,
+                  "mean_prob": 0.6528877208171071,
+                  "obs_freq": 0.6294896030245747,
+                  "count": 1058
+                },
+                {
+                  "bin": 7,
+                  "mean_prob": 0.749430495440234,
+                  "obs_freq": 0.7530954115076475,
+                  "count": 1373
+                },
+                {
+                  "bin": 8,
+                  "mean_prob": 0.8592443846418291,
+                  "obs_freq": 0.854875283446712,
+                  "count": 882
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 0.960233874855598,
+                  "obs_freq": 0.9528619528619529,
+                  "count": 1485
+                }
+              ]
+            },
+            "persistence_indicator": {
+              "events": 8822,
+              "rows": 97590,
+              "event_rate": 0.09039860641459166,
+              "auprc": 0.21445891694930874,
+              "recall_at_5pct_alert_budget": 0.17377012015416005,
+              "precision_at_5pct_alert_budget": 0.31420373027259685,
+              "false_alarms_per_basin_year_at_5pct_budget": 751.3842606824469,
+              "brier": 0.108884106978174,
+              "brier_skill_vs_base_rate": -0.3227111470716375,
+              "ece": 0.108884106978174,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0,
+                  "obs_freq": 0.05944568477550008,
+                  "count": 88686
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 1.0,
+                  "obs_freq": 0.39869721473495057,
+                  "count": 8904
+                }
+              ]
+            }
+          },
+          "extreme_flow_q99": {
+            "model": {
+              "events": 977,
+              "rows": 97590,
+              "event_rate": 0.01001127164668511,
+              "auprc": 0.3021199742973772,
+              "recall_at_5pct_alert_budget": 0.77482088024565,
+              "precision_at_5pct_alert_budget": 0.15515474482475916,
+              "false_alarms_per_basin_year_at_5pct_budget": 925.644328312327,
+              "brier": 0.00800616205810162,
+              "brier_skill_vs_base_rate": 0.19219809034961355,
+              "ece": 0.0018770327633973486,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0030202459503424896,
+                  "obs_freq": 0.004311249108379138,
+                  "count": 95332
+                },
+                {
+                  "bin": 1,
+                  "mean_prob": 0.1522676346058787,
+                  "obs_freq": 0.17125171939477304,
+                  "count": 1454
+                },
+                {
+                  "bin": 2,
+                  "mean_prob": 0.25458818707568864,
+                  "obs_freq": 0.30971128608923887,
+                  "count": 381
+                },
+                {
+                  "bin": 3,
+                  "mean_prob": 0.3731962047432748,
+                  "obs_freq": 0.3737864077669903,
+                  "count": 206
+                },
+                {
+                  "bin": 4,
+                  "mean_prob": 0.4412964873429504,
+                  "obs_freq": 0.5,
+                  "count": 92
+                },
+                {
+                  "bin": 5,
+                  "mean_prob": 0.5142319227299568,
+                  "obs_freq": 0.575,
+                  "count": 80
+                },
+                {
+                  "bin": 6,
+                  "mean_prob": 0.6569767441860465,
+                  "obs_freq": 0.6428571428571429,
+                  "count": 28
+                },
+                {
+                  "bin": 7,
+                  "mean_prob": 0.7483443708609272,
+                  "obs_freq": 0.7058823529411765,
+                  "count": 17
+                }
+              ]
+            },
+            "persistence_indicator": {
+              "events": 977,
+              "rows": 97590,
+              "event_rate": 0.01001127164668511,
+              "auprc": 0.02325628065348811,
+              "recall_at_5pct_alert_budget": 0.18014329580348004,
+              "precision_at_5pct_alert_budget": 0.03607296577167452,
+              "false_alarms_per_basin_year_at_5pct_budget": 1056.114817091915,
+              "brier": 0.01769648529562455,
+              "brier_skill_vs_base_rate": -0.7855315083760761,
+              "ece": 0.01769648529562455,
+              "reliability": [
+                {
+                  "bin": 0,
+                  "mean_prob": 0.0,
+                  "obs_freq": 0.008891971346942156,
+                  "count": 96604
+                },
+                {
+                  "bin": 9,
+                  "mean_prob": 1.0,
+                  "obs_freq": 0.11967545638945233,
+                  "count": 986
+                }
+              ]
+            }
+          }
+        },
+        "by_catchment_size": {
+          "small": {
+            "blend": {
+              "rmse": 259.9510586801565,
+              "extreme_rmse": 694.6059123529651,
+              "mae": 70.10376129000791,
+              "median_basin_nse": 0.21583950326247725,
+              "mean_basin_nse": 0.25638754783145135,
+              "nse_iqr": [
+                0.09741184983032217,
+                0.3574731833957203
+              ],
+              "share_basins_nse_gt0": 0.85,
+              "basins": 20
+            },
+            "persistence": {
+              "rmse": 391.8593405158741,
+              "extreme_rmse": 945.0107055927404,
+              "mae": 103.82094857886615,
+              "median_basin_nse": -0.48415756110239316,
+              "mean_basin_nse": -0.35229102683631447,
+              "nse_iqr": [
+                -0.6941312551033826,
+                -0.19827411509585718
+              ],
+              "share_basins_nse_gt0": 0.15,
+              "basins": 20
+            }
+          },
+          "medium": {
+            "blend": {
+              "rmse": 488.8983345084915,
+              "extreme_rmse": 1323.1068801935514,
+              "mae": 157.7692418547785,
+              "median_basin_nse": 0.2775110324861072,
+              "mean_basin_nse": 0.2850890053858577,
+              "nse_iqr": [
+                0.1118755108882446,
+                0.4229035041164121
+              ],
+              "share_basins_nse_gt0": 0.9,
+              "basins": 20
+            },
+            "persistence": {
+              "rmse": 688.201982977953,
+              "extreme_rmse": 1666.1892302434496,
+              "mae": 227.56157900696405,
+              "median_basin_nse": -0.5093816870182413,
+              "mean_basin_nse": -0.31058533677632044,
+              "nse_iqr": [
+                -0.689930501137892,
+                -0.06466210112235071
+              ],
+              "share_basins_nse_gt0": 0.2,
+              "basins": 20
+            }
+          },
+          "large": {
+            "blend": {
+              "rmse": 735.1710067644191,
+              "extreme_rmse": 2072.536630633324,
+              "mae": 209.5218416634152,
+              "median_basin_nse": 0.311831886598477,
+              "mean_basin_nse": 0.3691247035255406,
+              "nse_iqr": [
+                0.17226188397095155,
+                0.7186789839731131
+              ],
+              "share_basins_nse_gt0": 0.85,
+              "basins": 20
+            },
+            "persistence": {
+              "rmse": 950.5806867519414,
+              "extreme_rmse": 2366.234250009486,
+              "mae": 282.58456837426746,
+              "median_basin_nse": -0.023100248074875818,
+              "mean_basin_nse": -0.044187617691848105,
+              "nse_iqr": [
+                -0.5438121077423776,
+                0.6007007392695065
+              ],
+              "share_basins_nse_gt0": 0.5,
+              "basins": 20
+            }
+          }
+        }
+      }
+    }
+  }
+}

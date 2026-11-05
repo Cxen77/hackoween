@@ -1,0 +1,8 @@
+caravan basins 479 rows 3456473
+[caravan] training heads on 293,057 rows / 55 stations
+  trained horizon 1: train rows 254,039, calibration rows 38,936, conformal k=0.008
+  trained horizon 3: train rows 253,882, calibration rows 38,934, conformal k=0.021
+  trained horizon 7: train rows 253,589, calibration rows 38,930, conformal k=0.046
+[caravan] h=1 rows=833,853 RMSE blend 477 persist 543 clim 754 wx 744 | median NSE blend 0.611 persist 0.475 | 90% cov 0.841 | q90 AUPRC 0.878
+[caravan] h=3 rows=833,853 RMSE blend 643 persist 813 clim 754 wx 744 | median NSE blend 0.220 persist -0.200 | 90% cov 0.814 | q90 AUPRC 0.697
+[caravan] h=7 rows=833,853 RMSE blend 708 persist 928 clim 754 wx 744 | median NSE blend 0.081 persist -0.507 | 90% cov 0.802 | q90 AUPRC 0.593
