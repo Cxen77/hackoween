@@ -214,7 +214,7 @@ function StationTest({ choice }: { choice: 'auto' | 'mixed' | 'gauge' }) {
         <div className="mp-stats small">
           <Stat label="RMSE (cfs)" value={fmt(m?.rmse)} hint={mp ? `persistence ${fmt(mp.rmse)}` : undefined} />
           <Stat label="MAE (cfs)" value={fmt(m?.mae)} hint={mp ? `persistence ${fmt(mp.mae)}` : undefined} />
-          <Stat label="Bias (cfs)" value={fmt(m?.bias)} hint="positive = over-predicts" />
+          <Stat label="Bias (cfs)" value={fmt(m?.bias)} hint={m == null ? "" : m.bias < 0 ? `negative: the forecast is too low by ${fmt(-m.bias)} cfs on average` : m.bias > 0 ? `positive: the forecast is too high by ${fmt(m.bias)} cfs on average` : "no average error"} />
           <Stat label="R² (this selection)" value={fmt(m?.r2, 3)} hint={`${fmt(m?.n)} days`} />
           {cover !== null && <Stat label="Interval coverage, all of 2024" value={`${fmt(cover * 100, 1)}%`} hint={cover > 0.97 ? "above 97%: this band is wider than needed" : "target 90%"} />}
         </div>
