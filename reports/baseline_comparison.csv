@@ -1,0 +1,25 @@
+test_set,horizon_days,method,rows,rmse_cfs,extreme_rmse_cfs,mae_cfs,median_basin_nse
+unseen_gauges,1,routed model (served),12051,10391.4,15992.1,3856.6,0.9382
+unseen_gauges,1,persistence,12051,10659.2,17036.6,3996.6,0.9265
+unseen_gauges,1,seasonal climatology,12051,97986.6,74670.4,38009.3,0.1849
+unseen_gauges,1,weather-only boosting,12051,81669.4,124491.5,31800.3,0.4231
+unseen_gauges,3,routed model (served),12051,27578.0,39519.9,10030.8,0.6971
+unseen_gauges,3,persistence,12051,28707.4,42945.7,10600.0,0.5627
+unseen_gauges,3,seasonal climatology,12051,97986.6,74670.4,38009.3,0.1849
+unseen_gauges,3,weather-only boosting,12051,81669.4,124491.5,31800.3,0.4231
+unseen_gauges,7,routed model (served),12051,51795.4,73139.7,18758.8,0.6253
+unseen_gauges,7,persistence,12051,54695.4,80520.1,20272.6,0.1776
+unseen_gauges,7,seasonal climatology,12051,97986.6,74670.4,38009.3,0.1849
+unseen_gauges,7,weather-only boosting,12051,81669.4,124491.5,31800.3,0.4231
+unseen_caravan,1,routed model (served),97590,357.4,1092.3,68.7,0.7091
+unseen_caravan,1,persistence,97590,431.5,1311.9,86.0,0.5307
+unseen_caravan,1,seasonal climatology,97590,599.6,1790.4,176.9,0.0315
+unseen_caravan,1,weather-only boosting,97590,522.9,1546.7,163.6,0.3176
+unseen_caravan,3,routed model (served),97590,486.5,1394.7,118.3,0.4109
+unseen_caravan,3,persistence,97590,636.8,1684.9,159.3,-0.0758
+unseen_caravan,3,seasonal climatology,97590,599.6,1790.4,176.9,0.0315
+unseen_caravan,3,weather-only boosting,97590,522.9,1546.7,163.6,0.3176
+unseen_caravan,7,routed model (served),97590,535.8,1489.7,146.9,0.2599
+unseen_caravan,7,persistence,97590,719.3,1771.8,206.0,-0.4097
+unseen_caravan,7,seasonal climatology,97590,599.6,1790.4,176.9,0.0315
+unseen_caravan,7,weather-only boosting,97590,522.9,1546.7,163.6,0.3176

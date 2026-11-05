@@ -1,4 +1,6 @@
+# Reports and figures: scripts/evaluate.py, scripts/eval_routed.py, scripts/basinshift_stress.py
 -r requirements.txt
 matplotlib>=3.9,<4
+psutil>=5.9
 reportlab>=4.2,<5
 pymupdf>=1.24,<2

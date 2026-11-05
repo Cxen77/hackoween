@@ -1,0 +1,19 @@
+test_set,horizon_days,variant,rows,rmse_cfs,rmse_ratio_vs_persistence
+unseen_gauges,1,routed (served),12051,10391.4,0.9749
+unseen_gauges,1,mixed model only,12051,10873.7,1.0201
+unseen_gauges,1,gauge model only,12051,10390.0,0.9747
+unseen_gauges,3,routed (served),12051,27578.0,0.9607
+unseen_gauges,3,mixed model only,12051,28542.9,0.9943
+unseen_gauges,3,gauge model only,12051,27578.7,0.9607
+unseen_gauges,7,routed (served),12051,51795.4,0.947
+unseen_gauges,7,mixed model only,12051,52147.2,0.9534
+unseen_gauges,7,gauge model only,12051,51798.6,0.947
+unseen_caravan,1,routed (served),97590,357.4,0.8282
+unseen_caravan,1,mixed model only,97590,357.4,0.8282
+unseen_caravan,1,gauge model only,97590,372.3,0.8627
+unseen_caravan,3,routed (served),97590,486.5,0.764
+unseen_caravan,3,mixed model only,97590,486.5,0.764
+unseen_caravan,3,gauge model only,97590,509.2,0.7996
+unseen_caravan,7,routed (served),97590,535.8,0.7449
+unseen_caravan,7,mixed model only,97590,535.8,0.7449
+unseen_caravan,7,gauge model only,97590,559.7,0.7781

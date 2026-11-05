@@ -8,6 +8,8 @@ __pycache__/
 .venv/
 # data/
 *.joblib
+!models/models_daily.joblib
+!models/models_large.joblib
 output/
 .presentation-build/
 .codex-finalizer/

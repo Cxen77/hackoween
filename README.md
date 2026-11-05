@@ -175,6 +175,23 @@ python scripts/create_evaluation_report.py
 
 Large raw downloads, local environment secrets, and serialized models are kept local and excluded from Git. Regenerate them with the commands above. Do not commit the Geoapify key.
 
+## Final submission: install, predict, evaluate, test
+
+Commands run from the repository root. Full steps and expected results: `docs/REPRODUCTION.md`.
+
+```bash
+pip install -r requirements.txt                 # core: models, prediction, server, tests
+pip install -r requirements-evaluation.txt      # also needed for reports and stress tests
+python -m scripts.write_manifest                # checksums for models/
+python -m scripts.predict --input test/example_history.csv --output test/example_forecasts.csv
+python test/score_check.py                      # FLOODCAST scores: RMSE 46,543 on the test files
+python -m scripts.evaluate                      # regenerates reports/ (needs data/augmented_v2, see REPRODUCTION)
+python -m unittest discover -s tests            # 29 Python tests
+npm test                                        # 42 JavaScript tests
+```
+
+Shipped model artifacts: `models/` (see `docs/MODEL_ARTIFACT_INVENTORY.md`). Documentation: `docs/TECHNICAL_REPORT.md`, `docs/MODEL_CARD.md`, `docs/VALIDATION_PROTOCOL.md`, `docs/DATA_DICTIONARY.md`, `docs/data_provenance.md`, `docs/API_INTEGRATION_STATUS.md`, `docs/DEMO_SCRIPT.md`, `docs/TEAM_CONTRIBUTIONS.md`. Results: `reports/validation_summary.md`, `reports/TEST_RESULTS.md`.
+
 ## Verification
 
 ```powershell
