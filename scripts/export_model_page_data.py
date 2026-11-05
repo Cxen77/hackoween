@@ -11,6 +11,7 @@ Usage: python -m scripts.export_model_page_data
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 import joblib
@@ -23,6 +24,7 @@ from scripts.clean_data import clean_frame
 from scripts.eval_routed import LARGE_SQMI, routed
 
 OUT = Path('public/reports/model')
+ROOT_REPORTS = Path('reports')
 EXP = Path('data/experiments/basinshift_model')
 
 
@@ -69,6 +71,8 @@ def main() -> None:
                      for h, vals in hs.items()} for sc, hs in s['scenarios'].items()}}
             if 'efficiency' in s:
                 summary.setdefault('efficiency', {})[label] = {k: r(v, 2) if isinstance(v, float) else v for k, v in s['efficiency'].items() if k != 'note'}
+    # Single-model comparison (scripts/evaluate.py): shown on the Results tab as the model choice table.
+    shutil.copyfile(ROOT_REPORTS / 'ablations.csv', OUT / 'ablations.csv')
     rp = EXP / 'route_by_size.json'
     if rp.exists():
         summary['routing'] = json.loads(rp.read_text(encoding='utf-8'))['summary']

@@ -31,6 +31,15 @@ class ApiIntegration(unittest.TestCase):
         self.assertEqual(name_big, 'models_large.joblib')
         self.assertEqual(name_small, 'models_daily.joblib')
 
+    def test_model_choice_overrides_routing(self):
+        big = self.example[self.example.station_id == '07010000']
+        small = self.example[self.example.station_id == '01491000']
+        self.assertEqual(self.api.pick_bundle(small, 'gauge')[1], 'models_large.joblib')   # forced to the gauge model
+        self.assertEqual(self.api.pick_bundle(big, 'mixed')[1], 'models_daily.joblib')     # forced to the mixed model
+        self.assertEqual(self.api.pick_bundle(big, 'auto')[1], 'models_large.joblib')      # routed (default)
+        with self.assertRaises(ValueError):
+            self.api.pick_bundle(big, 'nonsense')
+
     def test_routed_forecast_returns_every_horizon_with_finite_values(self):
         for sid, frame in self.example.groupby('station_id'):
             frame = frame.sort_values('date').reset_index(drop=True)

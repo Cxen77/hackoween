@@ -164,10 +164,10 @@ def rule_rise(q_cfs: float, ref_cfs: float) -> float:
     return round(float(min(22.0, max(0.0, f(q_cfs) - f(ref_cfs)))), 2)
 
 
-def live_forecast(sid: str) -> dict:
+def live_forecast(sid: str, choice: str = 'auto') -> dict:
     if sid not in STATE['stations']:
         raise KeyError(f'Station {sid} is not one of the {len(STATE["stations"])} gauges this model was trained on.')
-    hit = CACHE.get(sid)
+    hit = CACHE.get((sid, choice))
     if hit and time.time() - hit[0] < CACHE_SECONDS:
         return hit[1]
     meta = STATE['meta'].loc[sid]
@@ -207,7 +207,7 @@ def live_forecast(sid: str) -> dict:
     out['rain_forecast'] = [{'date': r.date, 'mm': None if pd.isna(r.precipitation_mm) else float(r.precipitation_mm)}
                             for r in frame[frame.date > last.strftime('%Y-%m-%d')].itertuples()]
     with LOCK:
-        bundle, used = pick_bundle(frame)
+        bundle, used = pick_bundle(frame, choice)
         out['model_used'] = used
         for h in STATE['horizons']:
             o = forecast(bundle, frame, '2000-01-01', h, thr_override=thr)
@@ -239,7 +239,7 @@ def live_forecast(sid: str) -> dict:
         out['live_rise_m'] = rule_rise(float(q.iloc[-1]), ref_flow)
         out['live_rise_basis'] = 'estimated from today\'s flow compared with its 30-day median (no stage gauge)'
     out = clean(out)
-    CACHE[sid] = (time.time(), out)
+    CACHE[(sid, choice)] = (time.time(), out)
     return out
 
 
@@ -272,10 +272,10 @@ def snap_to_river(lat: float, lon: float) -> dict:
     return out
 
 
-def live_forecast_new(lat: float, lon: float, name: str) -> dict:
+def live_forecast_new(lat: float, lon: float, name: str, choice: str = 'auto') -> dict:
     """Forecast for a river the model was NOT trained on. There is no gauge record here, so the flow history is GloFAS
     modelled discharge (Open-Meteo flood API). This is a transfer test, not a verified forecast."""
-    ck = ('new', round(lat, 3), round(lon, 3))
+    ck = ('new', round(lat, 3), round(lon, 3), choice)
     hit = CACHE.get(ck)
     if hit and time.time() - hit[0] < CACHE_SECONDS:
         return hit[1]
@@ -315,7 +315,7 @@ def live_forecast_new(lat: float, lon: float, name: str) -> dict:
     out['rain_forecast'] = [{'date': r.date, 'mm': None if pd.isna(r.precipitation_mm) else float(r.precipitation_mm)}
                             for r in frame[frame.date > last.strftime('%Y-%m-%d')].itertuples()]
     with LOCK:
-        bundle, used = pick_bundle(frame)
+        bundle, used = pick_bundle(frame, choice)
         out['model_used'] = used
         for h in STATE['horizons']:
             o = forecast(bundle, frame, '2000-01-01', h, thr_override=thr)
@@ -370,11 +370,11 @@ def nwic_recent_daily(station: dict) -> pd.Series:
     return s.sort_index()
 
 
-def live_forecast_india(key: str) -> dict:
+def live_forecast_india(key: str, choice: str = 'auto') -> dict:
     reg = india_registry()
     if key not in reg:
         raise KeyError(f'Station {key} is not in the Indian live-feed registry.')
-    hit = CACHE.get(('in', key))
+    hit = CACHE.get(('in', key, choice))
     if hit and time.time() - hit[0] < CACHE_SECONDS:
         return hit[1]
     st = reg[key]
@@ -405,7 +405,7 @@ def live_forecast_india(key: str) -> dict:
     out['rain_forecast'] = [{'date': r.date, 'mm': None if pd.isna(r.precipitation_mm) else float(r.precipitation_mm)}
                             for r in frame[frame.date > last.strftime('%Y-%m-%d')].itertuples()]
     with LOCK:
-        bundle, used = pick_bundle(frame)
+        bundle, used = pick_bundle(frame, choice)
         out['model_used'] = used
         for h in STATE['horizons']:
             o = forecast(bundle, frame, '2000-01-01', h, thr_override=thr)
@@ -435,7 +435,7 @@ def live_forecast_india(key: str) -> dict:
     out['live_rise_m'] = rule_rise(float(obs.iloc[-1]), ref_flow)
     out['live_rise_basis'] = 'estimated from today\'s flow compared with its 30-day median (no stage gauge)'
     out = clean(out)
-    CACHE[('in', key)] = (time.time(), out)
+    CACHE[('in', key, choice)] = (time.time(), out)
     return out
 
 
@@ -480,10 +480,25 @@ def caravan_test_available() -> bool:
 LARGE_SQMI = 10000.0  # catchments at least this large use the USGS-gauge model; smaller ones use the gauges + Caravan model
 
 
-def pick_bundle(frame: pd.DataFrame):
-    """(bundle, model file name) for a catchment, by drainage area."""
+MODEL_CHOICES = {
+    'auto': 'routed by river size (served default)',
+    'mixed': 'gauges + Caravan model for every river',
+    'gauge': 'USGS-gauge model for every river (falls back to the mixed model if it is not loaded)',
+}
+
+
+def pick_bundle(frame: pd.DataFrame, choice: str = 'auto'):
+    """(bundle, model file name) for a catchment. choice: 'auto' routes by drainage area; 'mixed' always uses the
+    gauges + Caravan model; 'gauge' always uses the USGS-gauge model when it is loaded."""
+    if choice not in MODEL_CHOICES:
+        raise ValueError(f"model must be one of {sorted(MODEL_CHOICES)}")
+    large_ok = STATE.get('bundle_large') is not None and set(STATE['bundle_large']['horizons']) >= set(STATE['horizons'])
+    if choice == 'mixed' or (choice == 'gauge' and not large_ok):
+        return STATE['bundle'], Path(STATE['model_path']).name
+    if choice == 'gauge':
+        return STATE['bundle_large'], STATE['large_model']
     area = float(frame.drainage_area_sqmi.iloc[0]) if 'drainage_area_sqmi' in frame and len(frame) else float('nan')
-    if STATE.get('bundle_large') is not None and area >= LARGE_SQMI and set(STATE['bundle_large']['horizons']) >= set(STATE['horizons']):
+    if large_ok and area >= LARGE_SQMI:
         return STATE['bundle_large'], STATE['large_model']
     return STATE['bundle'], Path(STATE['model_path']).name
 
@@ -536,16 +551,19 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if url.path == '/api/health':
                 self._send(200, {'ok': True, 'model': Path(STATE['model_path']).name, 'stations': STATE['stations'], 'train_rows': STATE['train_rows'],
-                                 'horizons': STATE['horizons'], 'large_model': STATE.get('large_model'), 'large_from_sqmi': LARGE_SQMI,
+                                 'horizons': STATE['horizons'], 'large_model': STATE.get('large_model'), 'large_from_sqmi': LARGE_SQMI, 'model_choices': MODEL_CHOICES,
                                  'capabilities': {'live_forecast': True, 'caravan_live_test': caravan_test_available()},
                                  'note': 'Research benchmark; not a certified flood warning.'})
             elif url.path == '/api/live_forecast':
-                if 'india' in q:
-                    self._send(200, with_model(live_forecast_india(q['india'][0])))
+                choice = q.get('model', ['auto'])[0]
+                if choice not in MODEL_CHOICES:
+                    self._send(400, {'error': f"model must be one of {sorted(MODEL_CHOICES)}"})
+                elif 'india' in q:
+                    self._send(200, with_model(live_forecast_india(q['india'][0], choice)))
                 elif 'lat' in q and 'lon' in q:
-                    self._send(200, with_model(live_forecast_new(float(q['lat'][0]), float(q['lon'][0]), q.get('name', ['New river'])[0][:80])))
+                    self._send(200, with_model(live_forecast_new(float(q['lat'][0]), float(q['lon'][0]), q.get('name', ['New river'])[0][:80], choice)))
                 else:
-                    self._send(200, with_model(live_forecast(q.get('station', [''])[0])))
+                    self._send(200, with_model(live_forecast(q.get('station', [''])[0], choice)))
             elif url.path == '/api/run_test':
                 if q.get('dataset', ['caravan'])[0] != 'caravan':
                     self._send(400, {'error': 'Only dataset=caravan runs live; other tests are precomputed.'})

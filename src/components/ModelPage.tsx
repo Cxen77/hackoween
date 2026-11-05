@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactElement } from 'react';
 import { Activity, AlertTriangle, CheckCircle2, Download, FileCheck2, FlaskConical, Gauge, LineChart, Play, ShieldCheck, Upload, XCircle } from 'lucide-react';
-import { scorePredictions, validateSubmission, validateBasinshiftOutput, toBasinshiftRecord } from '../modelMetrics.mjs';
+import { scorePredictions, validateSubmission, validateBasinshiftOutput, toBasinshiftRecord, parseCsv } from '../modelMetrics.mjs';
 import './model-page.css';
 
 type Tab = 'results' | 'judge' | 'station' | 'score' | 'robust';
@@ -96,6 +96,41 @@ const Stat = ({ label, value, hint }: { label: string; value: string; hint?: str
   <div className="mp-stat"><strong>{value}</strong><span>{label}</span>{hint && <small>{hint}</small>}</div>);
 const toCsv = (rows: (string | number | null)[][]) => rows.map(r => r.map(v => (v === null ? '' : String(v))).join(',')).join('\n') + '\n';
 
+/* ---------- model choice: one model or routed ---------- */
+function ModelChoice() {
+  const [text, setText] = useState<string | null>(null);
+  useEffect(() => {
+    fetch('/reports/model/ablations.csv').then(r => (r.ok ? r.text() : null)).then(setText).catch(() => {});
+  }, []);
+  if (!text) return null;
+  const { header, rows } = parseCsv(text);
+  const col = (n: string) => header.indexOf(n);
+  const value = (set: string, h: number, variant: string) => {
+    const r = rows.find((x: string[]) => x[col('test_set')] === set && x[col('horizon_days')] === String(h) && x[col('variant')] === variant);
+    return r ? Number(r[col('rmse_ratio_vs_persistence')]) : null;
+  };
+  const options: [string, string][] = [
+    ['routed (served)', 'Routed by size (default)'],
+    ['mixed model only', 'Gauges + Caravan only'],
+    ['gauge model only', 'USGS gauges only'],
+  ];
+  return (
+    <section className="mp-card">
+      <div className="mp-eyebrow"><Gauge size={14} /> Which model to use</div>
+      <h3>One model for every river, or routed by size</h3>
+      <p className="mp-muted">The forecast card has the same three choices. Each cell is RMSE divided by persistence RMSE on unseen catchments (below 1.00 beats repeating yesterday's flow).</p>
+      <table className="mp-table">
+        <thead><tr><th>Model choice</th><th>Unseen gauges +1</th><th>+3</th><th>+7</th><th>Unseen Caravan +1</th><th>+3</th><th>+7</th></tr></thead>
+        <tbody>{options.map(([key, label]) => (
+          <tr key={key} className={key === 'routed (served)' ? 'hl' : ''}>
+            <td>{label}</td>
+            {['unseen_gauges', 'unseen_caravan'].flatMap(set => [1, 3, 7].map(h => <td key={set + h}>{fmt(value(set, h, key), 3)}</td>))}
+          </tr>))}</tbody>
+      </table>
+    </section>
+  );
+}
+
 /* ---------- tab: results ---------- */
 function Results({ summary }: { summary: Json }) {
   const [set, setSet] = useState<'heldout' | 'caravan'>('heldout');
@@ -146,6 +181,7 @@ function Results({ summary }: { summary: Json }) {
           </div>
         </>) : <div className="mp-empty">Results for this dataset are not available.</div>}
       </section>
+      <ModelChoice />
       {summary.routing && (
         <section className="mp-card mp-span2">
           <div className="mp-eyebrow"><FlaskConical size={14} /> Which model for which river</div>

@@ -8,6 +8,7 @@ Last checked 2026-11-05 against `https://floodcast-api-ok9n.onrender.com` (Rende
 |---|---|---|---|
 | `GET /api/health` | model loaded, horizons, large-model cutoff | working (HTTP 200, loads `models_daily.joblib`, horizons 1, 3, 7) | `test_running_server_reports_the_shipped_models` (skipped when the server is down) |
 | `GET /api/live_forecast?station=ID` | live forecast for a USGS gauge | working when the weather service is available; returned HTTP 502 once with the upstream rate-limit message | offline routing and forecast tests in `tests/test_api_integration.py` |
+| `GET /api/live_forecast?...&model=auto\|mixed\|gauge` | choose the model: `auto` (default, routed by drainage area), `mixed` (gauges + Caravan model for every river), `gauge` (USGS-gauge model for every river). Any other value returns HTTP 400. | working; the forecast card's Model selector sends this | `test_model_choice_overrides_routing` |
 | `GET /api/live_forecast?india=KEY` | live forecast for an Indian NWIC gauge | working when the portal responds | `scripts/india_live_test.py` (results in `public/reports/model/india_live_test.json`) |
 | `GET /api/live_forecast?lat=&lon=` | forecast for any river from GloFAS | working; new-river transfer test only | not in automated tests |
 | `GET /api/run_test?dataset=caravan` | live test on random unseen Caravan basins | **disabled on the hosted site** (`caravan_live_test: false`), because the Caravan data is not deployed | `scripts/evaluate.py` runs the same test offline |

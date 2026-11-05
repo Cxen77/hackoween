@@ -183,6 +183,8 @@ export default function ModelForecastCard({
   });
   const [tick, setTick] = useState(0);
   const [activeHorizon, setActiveHorizon] = useState<number>(1);
+  // Which model answers: routed by river size (default), or one model for every river.
+  const [choice, setChoice] = useState<'auto' | 'mixed' | 'gauge'>('auto');
 
   useEffect(() => {
     const query = usgs ? `station=${encodeURIComponent(usgs)}` : nwic ? `india=${encodeURIComponent(nwic)}` : null;
@@ -193,7 +195,7 @@ export default function ModelForecastCard({
     }
     const ctl = new AbortController();
     setState((s) => ({ ...s, loading: true, error: null, offline: false }));
-    fetch(`/api/live_forecast?${query}`, { signal: ctl.signal })
+    fetch(`/api/live_forecast?${query}&model=${choice}`, { signal: ctl.signal })
       .then(async (r) => {
         const text = await r.text();
         let body: Json = null;
@@ -217,7 +219,7 @@ export default function ModelForecastCard({
           });
       });
     return () => ctl.abort();
-  }, [usgs, nwic, tick]);
+  }, [usgs, nwic, tick, choice]);
 
   const d = state.data;
   const activeH = d?.horizons?.find((h: Json) => h.horizon_days === activeHorizon) || d?.horizons?.[0];
@@ -239,6 +241,30 @@ export default function ModelForecastCard({
           </button>
         )}
       </div>
+
+      {(usgs || nwic) && (
+        <div className="mf-days-pills-row">
+          <span className="mf-days-label">Model:</span>
+          <div className="mf-days-pills" role="radiogroup" aria-label="Which forecast model to use">
+            {([
+              ['auto', 'Routed by size (default)', 'Small and medium rivers use the gauges + Caravan model; rivers of 10,000 sq mi or more use the USGS-gauge model.'],
+              ['mixed', 'Gauges + Caravan only', 'Every river uses the model trained on 534 catchments.'],
+              ['gauge', 'USGS gauges only', 'Every river uses the model trained on the 55 USGS gauges.'],
+            ] as const).map(([key, label, tip]) => (
+              <button
+                key={key}
+                role="radio"
+                aria-checked={choice === key}
+                title={tip}
+                className={`mf-day-pill ${choice === key ? 'active' : ''}`}
+                onClick={() => setChoice(key)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {!usgs && !nwic && (
         <div className="mf-empty-state">
