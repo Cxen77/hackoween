@@ -174,3 +174,6 @@
   color: #b45309;
 }
 .mp-grid2 > .mp-span2 { grid-column: 1 / -1; }
+
+.mp-model-used { margin: 10px 0 0; font-size: 13px; line-height: 1.55; color: var(--text-main, #0f172a); background: var(--bg-subtle, #f1f5f9); border-radius: 10px; padding: 10px 12px; }
+.mp-model-used code { font-size: 12px; }

@@ -534,6 +534,7 @@ export default function ModelPage() {
         <div className="mp-eyebrow"><FlaskConical size={14} /> Discharge ML Model</div>
         <h2>Test the river-discharge model</h2>
         <p className="mp-muted">Inspect results, replay forecasts against what actually happened, and score your own predictions file. All numbers come from saved evaluation runs; every dataset used for testing was kept out of training.</p>
+        <p className="mp-model-used"><b>Model used:</b> two models, chosen by river size. Rivers under 10,000 sq mi use <code>models_daily.joblib</code> (trained on the 55 USGS gauges plus 479 Caravan basins). Rivers of 10,000 sq mi or more use <code>models_large.joblib</code> (trained on the 55 USGS gauges). Forecasts are +1, +3 and +7 days.</p>
       </header>
       <nav className="mp-tabs" role="tablist" aria-label="Model page sections">
         {tabs.map(([k, label, icon]) => <button key={k} role="tab" aria-selected={tab === k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{icon}{label}</button>)}
