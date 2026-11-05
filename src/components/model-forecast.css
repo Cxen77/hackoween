@@ -262,3 +262,190 @@
 .live-level-note b { color: var(--text-main); }
 .live-level-note button { margin-left: 8px; font: inherit; font-size: 11.5px; font-weight: 600; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--primary); background: var(--bg-surface); color: var(--primary); cursor: pointer; }
 .live-level-note button:hover { background: var(--primary); color: #fff; }
+
+
+/* Telemetry Chips */
+.mf-telemetry-chips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 6px 0 10px;
+}
+
+.mf-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bg-surface);
+  border: 1px solid rgba(2, 132, 199, 0.16);
+  border-radius: var(--radius-md, 8px);
+  padding: 6px 9px;
+}
+
+.mf-chip-lbl {
+  font-size: 10px;
+  font-weight: 650;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mf-chip-val {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Model Tag Badge */
+.mf-model-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--primary);
+  background: rgba(2, 132, 199, 0.08);
+  border: 1px solid rgba(2, 132, 199, 0.2);
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* Horizon Insight Card */
+.mf-horizon-card {
+  margin-top: 8px;
+  background: var(--bg-surface);
+  border: 1px solid rgba(2, 132, 199, 0.24);
+  border-radius: var(--radius-lg, 10px);
+  padding: 10px 12px;
+  box-shadow: 0 2px 6px -1px rgba(2, 132, 199, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mf-horizon-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mf-horizon-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--primary);
+}
+
+.mf-horizon-flow {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+  margin-top: 1px;
+}
+
+.mf-horizon-flow strong {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.mf-horizon-flow span {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.mf-horizon-rise-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  margin-left: 6px;
+}
+
+.mf-simulate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 650;
+  padding: 5px 10px;
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.mf-simulate-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-0.5px);
+}
+
+.mf-horizon-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(2, 132, 199, 0.12);
+}
+
+.mf-submetric {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.mf-submetric .lbl {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.mf-submetric .val {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+.mf-submetric .val.risk-normal {
+  color: #16a34a;
+}
+
+.mf-submetric .val.risk-high {
+  color: #dc2626;
+}
+
+.mf-empty-state, .mf-loading-state {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  background: rgba(2, 132, 199, 0.04);
+  border: 1px dashed rgba(2, 132, 199, 0.2);
+  border-radius: var(--radius-md, 8px);
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.mf-empty-icon {
+  flex-shrink: 0;
+  color: var(--primary);
+}
