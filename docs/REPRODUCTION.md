@@ -31,6 +31,12 @@ Expected headline values (from the run recorded in `reports/validation_summary.m
 - 11 unseen gauges, RMSE ratio at +1/+3/+7: 0.975 / 0.961 / 0.947.
 - 60 unseen Caravan basins: 0.828 / 0.764 / 0.745.
 
+## 4b. Score each model on the FLOODCAST 2025 file
+```bash
+python -m scripts.eval_floodcast_file       # writes public/reports/model/floodcast_by_choice.json (about 3 minutes)
+```
+Scores the +1, +3 and +7 day forecasts of each model choice on the 19,306-row 2025 test file (later dates, not unseen catchments). Example at +1 day: auto RMSE 7,868, mixed 8,023, gauge-only 7,861, against persistence 8,530.
+
 ## 5. Score the FLOODCAST files
 ```bash
 python test/score_check.py

@@ -104,6 +104,7 @@ function Results({ summary, choice }: { summary: Json; choice: 'auto' | 'mixed' 
   const cur = (set: string): Json => summary.basinshift_by_choice?.[choice]?.[set] ?? summary.basinshift?.[set];
   const f = summary.floodcast;
   const bands = useJson('/reports/model/forecast_bands.json');
+  const file = useJson('/reports/model/floodcast_by_choice.json');
   const g = cur('heldout'), c = cur('caravan');
   // Detail for the selected model: the 11 unseen gauges pooled together over 2024, per horizon.
   const detail = (hz: string) => {
@@ -182,15 +183,31 @@ function Results({ summary, choice }: { summary: Json; choice: 'auto' | 'mixed' 
       </section>
 
       <section className="mp-card">
-        <div className="mp-eyebrow"><Gauge size={14} /> FLOODCAST submission file</div>
-        <h3>Same-day discharge estimate, 2025</h3>
-        <p className="mp-muted">The daily estimate for the FLOODCAST test file ({fmt(f.test_rows)} rows from 2025). It is a separate model from the forecast above, so it does not change with the model selector.</p>
-        <div className="mp-stats small">
-          <Stat label="RMSE (cfs)" value={fmt(f.overall.rmse)} hint={`median baseline ${fmt(f.median_baseline.rmse)}`} />
-          <Stat label="Extreme RMSE (cfs)" value={fmt(f.overall.extreme_rmse)} hint={`median baseline ${fmt(f.median_baseline.extreme_rmse)}`} />
-          <Stat label="MAE (cfs)" value={fmt(f.overall.mae)} hint={`median baseline ${fmt(f.median_baseline.mae)}`} />
-          <Stat label="R²" value={fmt(f.overall.r2, 3)} hint="not an accuracy percentage" />
-        </div>
+        <div className="mp-eyebrow"><Gauge size={14} /> FLOODCAST 2025 test file · {CHOICE_LABEL[choice]}</div>
+        <h3>The four FLOODCAST scores for the selected model</h3>
+        <p className="mp-muted">
+          The selected model's forecasts scored on the {fmt(f.test_rows)} rows of the 2025 test file. 2025 is later than all the training data, so this tests later dates at known rivers, not new rivers.
+          Each cell shows persistence (repeating the flow from that many days earlier) underneath.
+        </p>
+        {file.data?.choices?.[choice] ? (
+          <table className="mp-table">
+            <thead><tr><th>Forecast</th><th>RMSE (cfs)</th><th>Extreme RMSE (cfs)</th><th>MAE (cfs)</th><th>R²</th></tr></thead>
+            <tbody>{['1', '3', '7'].map(k => {
+              const m = file.data.choices[choice][k];
+              return (<tr key={k} className={k === '1' ? 'hl' : ''}>
+                <td>+{k} day{k === '1' ? '' : 's'}</td>
+                <td><b>{fmt(m.rmse)}</b><span className="mp-sub">persistence {fmt(m.persistence.rmse)}</span></td>
+                <td><b>{fmt(m.extreme_rmse)}</b><span className="mp-sub">persistence {fmt(m.persistence.extreme_rmse)}</span></td>
+                <td><b>{fmt(m.mae)}</b><span className="mp-sub">persistence {fmt(m.persistence.mae)}</span></td>
+                <td><b>{fmt(m.r2, 4)}</b><span className="mp-sub">persistence {fmt(m.persistence.r2, 4)}</span></td>
+              </tr>);
+            })}</tbody>
+          </table>
+        ) : <div className="mp-empty">{file.error ? 'These scores are not available.' : 'Loading…'}</div>}
+        <p className="mp-muted">
+          For reference, the earlier same-day estimator (no discharge input, a separate model) scored RMSE {fmt(f.overall.rmse)}, extreme RMSE {fmt(f.overall.extreme_rmse)}, MAE {fmt(f.overall.mae)} and R² {fmt(f.overall.r2, 3)} on the same file.
+          It cannot use yesterday's flow, which is why its error is much larger.
+        </p>
       </section>
     </div>
   );
