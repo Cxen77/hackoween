@@ -2,6 +2,16 @@
 
 Updated: 2026-11-05, Asia/Calcutta. Read this file first when continuing. Keep it current; do not create competing context logs.
 
+## ACTIVE — Render + Vercel deployment
+
+User explicitly authorized pulling latest GitHub source, deploying backend on Render/frontend on Vercel, and setting the supplied Geoapify map key. Original C:/Users/Dev/Desktop/hackoween has an uncommitted ModelForecastCard.tsx edit; preserved untouched. Clean deployment checkout C:/Users/Dev/Desktop/hackoween-deploy, branch deploy/render-vercel, based on latest42ddaf2. Do not overwrite the original local edit or use blanket git add.
+
+Render service created on FREE plan (0.1CPU/512MB), Singapore, project floodcast/Production: service ID srv-dbm08l59fdbs73bebqq0, public origin https://floodcast-api-ok9n.onrender.com. First deployment dep-dbm08lt9fdbs73bebtdg started from a27ea97; check dashboard/logs and /api/health before claiming healthy. Build pip install -r requirements-render.txt; start python -m server.model_api; health /api/health. PYTHON_VERSION3.11.11, OMP_NUM_THREADS/OPENBLAS_NUM_THREADS/MKL_NUM_THREADS/NUMEXPR_NUM_THREADS all1. Server honors Render PORT and binds0.0.0.0; fixed three Python3.11 f-string quote errors. Serving deps pinned numpy2.4.6/pandas3.1.0/scipy1.17.1/scikit-learn1.9.0/joblib1.6.0/lightgbm4.7.0. Model loaded locally at227MB RAM and /api/health returned55stations; real Potomac live forecast returned3horizons using models_large.joblib and origin2026-11-03.42 JS tests and production build passed before hosting config.
+
+Vercel signed-in account/team cxen77s-projects Hobby. Import form open in IAB tab4; project name floodcast-hackoween, Vite preset, repo Cxen77/hackoween main. VITE_GEOAPIFY_API_KEY entered from original ignored .env.local into sensitive Production+Preview variable; accordion collapsed to avoid exposing value. Do not print the key. Deployment not started yet: push vercel.json first, then Deploy. vercel.json proxies /api/* to the verified Render origin, then SPA fallback. Render dashboard is IAB tab3. GitHub tab5. No platform tokens harvested; all platform actions via signed-in UI.
+
+Optional Caravan raw data is absent from clean production checkout: health advertises capability and random-basin rerun endpoint returns503 with a clear notice; UI disables this optional action. All saved results, file checks and live forecasts remain available. This is intentional, not a claim that raw independent tests were rerun on Render.
+
 ## CURRENT — ROUTED FORECASTER, TEST FILES, UI FIXES (2026-11-05, later)
 
 - **Training bug fixed.** The 55 USGS gauges start in 2010, so thresholds from "before 2000" were empty and those gauges dropped out of the augmented run (it was ~2x worse than persistence on big rivers). `basinshift_model.thresholds` now falls back to a station's own first 5 years; each source gets its own train/calibration split (`scripts/train_augmented_v2.py`, modes `holdout` and `final`, flag `--tuned` = 5x weight on USGS rows + 127 leaves from `scripts/tune_aug.py`).

@@ -456,6 +456,16 @@ function IndiaLiveTest() {
 }
 
 function LiveCaravanTest() {
+  const [available, setAvailable] = useState<boolean | null>(null);
+  useEffect(() => {
+    const ctl = new AbortController();
+    fetch('/api/health', {signal: ctl.signal}).then(r => {
+      if (!r.ok) throw new Error('Unavailable');
+      return r.json();
+    }).then(d => setAvailable(d.capabilities?.caravan_live_test === true))
+      .catch(() => { if (!ctl.signal.aborted) setAvailable(false); });
+    return () => ctl.abort();
+  }, []);
   const [n, setN] = useState(12);
   const [seed, setSeed] = useState(7);
   const [st, setSt] = useState<{ loading: boolean; data: Json; error: string | null }>({ loading: false, data: null, error: null });
@@ -480,8 +490,9 @@ function LiveCaravanTest() {
       <div className="mp-controls">
         <label>Basins <input type="number" min={3} max={30} value={n} onChange={e => setN(Math.max(3, Math.min(30, +e.target.value || 3)))} className="mp-num" /></label>
         <label>Random seed <input type="number" value={seed} onChange={e => setSeed(+e.target.value || 0)} className="mp-num" /></label>
-        <button className="mp-btn primary" onClick={run} disabled={st.loading}><Play size={14} /> {st.loading ? 'Running… (about 30 s)' : 'Run test'}</button>
+        <button className="mp-btn primary" onClick={run} disabled={st.loading || available !== true}><Play size={14} /> {st.loading ? 'Running… (about 30 s)' : available === null ? 'Checking availability…' : 'Run test'}</button>
       </div>
+      {available === false && <p className="mp-muted">Random-basin reruns are unavailable on this deployment. You can still inspect the saved independent-test results in the Results tab.</p>}
       {st.error && <div className="mp-error"><XCircle size={14} /> {st.error}</div>}
       {d && (<>
         <p className="mp-muted">{d.basins} basins · cleaning removed {fmt(d.cleaning.rows_in - d.cleaning.rows_out)} rows.</p>

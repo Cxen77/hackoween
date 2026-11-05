@@ -471,6 +471,11 @@ def run_caravan_test(n: int, seed: int) -> dict:
     return clean(res)
 
 
+def caravan_test_available() -> bool:
+    root = ROOT / 'data/external/caravan/Caravan/timeseries/csv/camels'
+    return next(root.glob('camels_*.csv'), None) is not None
+
+
 # ------------------------------------------------------------------ HTTP
 LARGE_SQMI = 10000.0  # catchments at least this large use the USGS-gauge model; smaller ones use the gauges + Caravan model
 
@@ -532,6 +537,7 @@ class Handler(BaseHTTPRequestHandler):
             if url.path == '/api/health':
                 self._send(200, {'ok': True, 'model': Path(STATE['model_path']).name, 'stations': STATE['stations'], 'train_rows': STATE['train_rows'],
                                  'horizons': STATE['horizons'], 'large_model': STATE.get('large_model'), 'large_from_sqmi': LARGE_SQMI,
+                                 'capabilities': {'live_forecast': True, 'caravan_live_test': caravan_test_available()},
                                  'note': 'Research benchmark; not a certified flood warning.'})
             elif url.path == '/api/live_forecast':
                 if 'india' in q:
@@ -543,6 +549,8 @@ class Handler(BaseHTTPRequestHandler):
             elif url.path == '/api/run_test':
                 if q.get('dataset', ['caravan'])[0] != 'caravan':
                     self._send(400, {'error': 'Only dataset=caravan runs live; other tests are precomputed.'})
+                elif not caravan_test_available():
+                    self._send(503, {'error': 'Live benchmark reruns are unavailable on this deployment. Saved results remain available.'})
                 else:
                     self._send(200, run_caravan_test(int(q.get('n', ['12'])[0]), int(q.get('seed', ['7'])[0])))
             else:

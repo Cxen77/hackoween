@@ -2,6 +2,14 @@
 
 Predict river discharge from weather and catchment characteristics, then explore observations, model forecasts, and flood scenarios on an interactive 3D map.
 
+## Production hosting
+
+- Render runs the Python model API at `https://floodcast-api-ok9n.onrender.com`. Build with `pip install -r requirements-render.txt`, start with `python -m server.model_api`, and health-check `/api/health`. `PORT` selects the public bind address automatically. `.python-version` and the pinned serving dependencies reproduce the serialized model runtime without installing training/report packages. `render.yaml` records the free-plan configuration; numerical-library thread counts are limited to1.
+- Vercel builds the Vite frontend with `npm ci` and `npm run build`, publishing `dist/`. `vercel.json` forwards `/api/*` to Render on the same browser origin and keeps SPA routes working. Production project: `floodcast-hackoween`.
+- Set `VITE_GEOAPIFY_API_KEY` in Vercel's Production and Preview environment settings before building. The browser map uses this key; no actual key belongs in Git. Restrict its allowed domains in Geoapify as appropriate.
+- The served model and `model_meta.json` are committed, so live forecasts do not need the full training dataset. The optional raw Caravan dataset is excluded; the UI reports when random-basin reruns are unavailable, while saved benchmark reports, uploaded-file checks and live river forecasts remain available.
+- Render's free service can sleep when idle; the first model request may take longer while it starts. The map and static reports are served separately by Vercel.
+
 **Team name:** Straw_Hats  
 **Members:**
 - Harsh Srivastav (1BY25CB020)
