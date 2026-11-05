@@ -7,10 +7,9 @@
 .mp-tabs button:hover { color: var(--text-main); }
 .mp-tabs button.on { color: var(--primary); border-bottom-color: var(--primary); }
 .mp-tabs button:focus-visible, .mp-btn:focus-visible, .mp-seg button:focus-visible { outline: 2px solid var(--border-focus); outline-offset: 2px; }
-.mp-grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 16px; align-items: stretch; }
-.mp-grid2 > .mp-card:first-child { display: flex; flex-direction: column; }
-.mp-grid2 > .mp-card:first-child .mp-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 1fr; flex: 1; margin-bottom: 0; }
-.mp-grid2 > .mp-card:first-child .mp-stat { display: flex; flex-direction: column; justify-content: center; }
+.mp-grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 16px; align-items: start; }
+.mp-grid2 > .mp-card:first-child .mp-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 0; }
+.mp-grid2 > .mp-card:first-child .mp-stat { min-height: 0; }
 .mp-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-xs); min-width: 0; }
 .mp-card h3 { font-size: 17px; color: var(--text-main); margin: 6px 0 4px; }
 .mp-card h4 { font-size: 13.5px; color: var(--text-main); margin: 18px 0 8px; }

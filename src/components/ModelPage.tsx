@@ -120,7 +120,7 @@ function Results({ summary }: { summary: Json }) {
       <section className="mp-card">
         <div className="mp-eyebrow"><FlaskConical size={14} /> BASINSHIFT-style forecast system</div>
         <h3>Forecasts, intervals and exceedance probabilities</h3>
-        <p className="mp-muted"><b>Unseen US gauges, +1 day</b> (table below). The other horizons and the unseen Caravan basins are in the table underneath.</p>
+        <p className="mp-muted">Main table: unseen US gauges at +1 day. All horizons for both test sets are in the table at the bottom of this card.</p>
         {b ? (<>
           <p className="mp-muted">Routed forecaster, tested on {fmt(summary.basinshift.heldout.stations)} US gauges left out of training (2022–2024, {fmt(summary.basinshift.heldout.rows)} days).</p>
           <table className="mp-table">
