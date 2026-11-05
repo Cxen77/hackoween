@@ -343,6 +343,21 @@ function ScoreCsv() {
         <button className="mp-btn" onClick={loadSample} disabled={!prod.data}>Load the 2025 benchmark sample</button>
         {result && <button className="mp-btn" onClick={download}><Download size={15} /> Download report</button>}
       </div>
+      <div className="mp-downloads">
+        <h4>Download test data</h4>
+        <p className="mp-muted">Ready-made files in the format this page accepts: <code>station_id,date,discharge_cfs</code>, one row per test row. Use <b>test.csv</b> as the test file, <b>actuals.csv</b> as the actuals, and any predictions file below.</p>
+        <div className="mp-dl-row">
+          <a className="mp-btn" href="/test-data/test.csv" download><Download size={14} /> test.csv</a>
+          <a className="mp-btn" href="/test-data/actuals.csv" download><Download size={14} /> actuals.csv</a>
+          <a className="mp-btn" href="/test-data/predictions_same_day.csv" download><Download size={14} /> predictions (same-day estimate)</a>
+        </div>
+        <table className="mp-table mp-dl-table">
+          <thead><tr><th>Forecast model</th><th>+1 day</th><th>+3 days</th><th>+7 days</th></tr></thead>
+          <tbody>{([['auto', 'Auto (routed by river size)'], ['mixed', 'Gauges + Caravan model'], ['gauge', 'USGS-gauge model']] as const).map(([key, label]) => (
+            <tr key={key}><td>{label}</td>{[1, 3, 7].map(d => <td key={d}><a href={`/test-data/predictions_${key}_plus${d}d.csv`} download>predictions_{key}_plus{d}d.csv</a></td>)}</tr>))}</tbody>
+        </table>
+        <p className="mp-muted">The forecast files predict each 2025 day from the flow known that many days earlier. They are scored against the same actuals.csv. 2025 is later than the training data, but it is public USGS data, not the organisers' hidden test.</p>
+      </div>
       {err && <div className="mp-error"><XCircle size={14} /> {err}</div>}
       {v && (
         <div className="mp-result">

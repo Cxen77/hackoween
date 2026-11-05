@@ -70,6 +70,24 @@ def main() -> None:
             print(f'{choice:6s} +{h}d rows {m["rows"]:,} RMSE {m["rmse"]:,.0f} (persistence {m["persistence"]["rmse"]:,.0f}) MAE {m["mae"]:,.0f} R2 {m["r2"]:.4f}', flush=True)
     (ROOT / 'public/reports/model/floodcast_by_choice.json').write_text(json.dumps(out, indent=1), encoding='utf-8')
 
+    # Downloadable prediction files in the submission format (station_id,date,discharge_cfs), one per model choice and horizon,
+    # aligned to test/test.csv. Rows a forecast cannot cover (first days of a gauge's record) use the same-day estimate.
+    dest = ROOT / 'public' / 'test-data'
+    dest.mkdir(parents=True, exist_ok=True)
+    same_day = pd.read_csv(ROOT / 'test/predictions.csv', dtype={'station_id': str}).rename(columns={'discharge_cfs': 'fallback'})
+    keys = pd.read_csv(ROOT / 'test/test.csv', dtype={'station_id': str})[['station_id', 'date']]
+    for h in (1, 3, 7):
+        a = bm.forecast(daily, frame, '2000-01-01', h, thr_override=thr)
+        b = bm.forecast(large, frame, '2000-01-01', h, thr_override=thr)
+        for choice, p in {'auto': np.where(big, b['point'], a['point']), 'mixed': a['point'], 'gauge': b['point']}.items():
+            f = frame[['station_id', 'date']].assign(discharge_cfs=p)
+            f = keys.merge(f, on=['station_id', 'date'], how='left').merge(same_day, on=['station_id', 'date'], how='left')
+            f['discharge_cfs'] = f.discharge_cfs.fillna(f.fallback).clip(lower=0).round(3)
+            f[['station_id', 'date', 'discharge_cfs']].to_csv(dest / f'predictions_{choice}_plus{h}d.csv', index=False)
+    for name, src in (('test.csv', 'test/test.csv'), ('actuals.csv', 'test/actuals.csv'), ('predictions_same_day.csv', 'test/predictions.csv')):
+        (dest / name).write_bytes((ROOT / src).read_bytes())
+    print('wrote downloadable files to', dest)
+
 
 if __name__ == '__main__':
     main()
