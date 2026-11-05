@@ -2,6 +2,32 @@
 
 Updated: 2026-11-05, Asia/Calcutta. Read this file first when continuing. Keep it current; do not create competing context logs.
 
+## CURRENT — AUGMENTED DATASET & 1-3-7 MODEL DEPLOYED (2026-11-05)
+
+- **Augmented Dataset**: Combined original 55 USGS gauges (293,057 rows) with 479 Caravan US CAMELS basins (5,594,247 rows).
+  - Total: **5,887,304 rows**, **534 stations**.
+  - Documented QA & Cleaning (scripts/prepare_augmented.py):
+    - Removed 583 extreme discharge outliers (>99.99th percentile across catchments)
+    - Removed 228,761 long zero-discharge run rows (>90 consecutive days)
+    - Clipped ERA5 soil moisture to [0, 1]
+    - Excluded overlapping stations
+    - Quality report saved: data/augmented/data_quality_report.json
+- **Model Training**: Trained 1/3/7-day multi-horizon BASINSHIFT model (scripts/train_augmented.py):
+  - 5,174,429 training rows (< 2012)
+  - 516,853 calibration rows (2012-2014, both sources present)
+  - Horizons: **[1, 3, 7]** days (kept exactly to 1-3-7 as requested)
+  - Heads: Point (0.5 persistence + 0.5 residual LightGBM), 5%/95% quantiles with conformal 90% calibration, and Q90/Q99 isotonic classifiers.
+  - Runtime: 11.4 min; output size: 13.0 MB.
+- **Deployment**:
+  - Saved to data/experiments/basinshift_model/models_augmented.joblib and promoted to models_daily.joblib.
+  - Model API (server/model_api.py) restarted with the augmented model.
+  - Endpoints verified live:
+    - GET /api/health: reporting models_daily.joblib, horizons [1, 3, 7].
+    - GET /api/live_forecast?station=01646500: 1/3/7-day forecasts with conformal bands active.
+    - GET /api/run_test?dataset=caravan&n=3: Live test passes across 1/3/7 days with model beating persistence (e.g. h1 RMSE 124.2 vs 147.3).
+  - Test suites: 31/31 unit tests pass (
+pm test); Vite production build passes.
+
 ## CURRENT — water simulation repair, 2026-11-05
 
 User requested fixing unrealistic flood/water-level behavior. Work isolated in C:/Users/Dev/Desktop/hackoween-water-fix (branch fix/water-simulation, preview5180) after another editor rebased/stashed the shared C:/Users/Dev/Desktop/hackoween folder during this turn. Initial recovered implementation was also integrated by that editor in origin/main commit63d76e7; final refinements must be merged with latest origin/main, preserving newer forecast-chart changes. Do not reset the shared working folder or overwrite concurrent work.

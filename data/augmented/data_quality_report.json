@@ -1,0 +1,192 @@
+{
+  "timestamp": "2026-11-05T05:34:26",
+  "original": {
+    "cleaning": {
+      "rows_in": 293057,
+      "stations_in": 55,
+      "dropped_bad_discharge": 0,
+      "dropped_duplicates": 0,
+      "dropped_missing_weather": 0,
+      "clipped_soil_moisture": 15,
+      "dropped_impossible_weather": 0,
+      "dropped_short_stations": [],
+      "rows_out": 293057,
+      "rows_removed_total": 0,
+      "stations_out": 55,
+      "static_attribute_missing_rows": {
+        "mean_elevation_ft": 107219,
+        "slope_pct": 107219,
+        "forest_cover_pct": 107219,
+        "impervious_surface_pct": 107219
+      },
+      "note": "Static attribute gaps are real and left missing; imputed only inside the model with training-fit medians."
+    },
+    "summary": {
+      "label": "original",
+      "rows": 293057,
+      "stations": 55,
+      "date_range": [
+        "2010-01-01",
+        "2024-12-31"
+      ],
+      "discharge_cfs": {
+        "mean": 59470.60483967283,
+        "median": 4390.0,
+        "max": 2310000.0,
+        "min": 0.0,
+        "std": 170696.58427883146
+      },
+      "missing_attrs": {
+        "mean_elevation_ft": 107219,
+        "slope_pct": 107219,
+        "forest_cover_pct": 107219,
+        "impervious_surface_pct": 107219
+      },
+      "precipitation_mm_mean": 2.8586619667846183,
+      "soil_moisture_mean": 0.3129613601904522
+    }
+  },
+  "caravan": {
+    "standard_cleaning": {
+      "rows_in": 5823591,
+      "stations_in": 479,
+      "dropped_bad_discharge": 0,
+      "dropped_duplicates": 0,
+      "dropped_missing_weather": 0,
+      "clipped_soil_moisture": 0,
+      "dropped_impossible_weather": 0,
+      "dropped_short_stations": [],
+      "rows_out": 5823591,
+      "rows_removed_total": 0,
+      "stations_out": 479,
+      "static_attribute_missing_rows": {
+        "mean_elevation_ft": 0,
+        "slope_pct": 0,
+        "forest_cover_pct": 0,
+        "impervious_surface_pct": 5823591
+      },
+      "note": "Static attribute gaps are real and left missing; imputed only inside the model with training-fit medians."
+    },
+    "qa_cleaning": {
+      "rows_in": 5823591,
+      "basins_in": 479,
+      "basins_removed_short": 0,
+      "basins_removed_short_ids": [],
+      "extreme_discharge_threshold_cfs": 28982.90255651449,
+      "extreme_discharge_rows_removed": 583,
+      "long_zero_run_rows_removed": 228761,
+      "soil_moisture_clipped": 0,
+      "rows_out": 5594247,
+      "basins_out": 479,
+      "date_range": [
+        "1981-01-01",
+        "2014-12-31"
+      ]
+    },
+    "summary": {
+      "label": "caravan",
+      "rows": 5594247,
+      "stations": 479,
+      "date_range": [
+        "1981-01-01",
+        "2014-12-31"
+      ],
+      "discharge_cfs": {
+        "mean": 322.4983960841434,
+        "median": 79.78885262668621,
+        "max": 28961.16799134126,
+        "min": 0.0,
+        "std": 922.8490154922022
+      },
+      "missing_attrs": {
+        "mean_elevation_ft": 0,
+        "slope_pct": 0,
+        "forest_cover_pct": 0,
+        "impervious_surface_pct": 5594247
+      },
+      "precipitation_mm_mean": 3.1073316641185134,
+      "soil_moisture_mean": 0.3404626091768919
+    }
+  },
+  "combined": {
+    "label": "combined",
+    "rows": 5887304,
+    "stations": 534,
+    "date_range": [
+      "1981-01-01",
+      "2024-12-31"
+    ],
+    "discharge_cfs": {
+      "mean": 3266.7605965818193,
+      "median": 88.16581095250207,
+      "max": 2310000.0,
+      "min": 0.0,
+      "std": 40207.89865344905
+    },
+    "missing_attrs": {
+      "mean_elevation_ft": 107219,
+      "slope_pct": 107219,
+      "forest_cover_pct": 107219,
+      "impervious_surface_pct": 5701466
+    },
+    "precipitation_mm_mean": 3.0949534353924983,
+    "soil_moisture_mean": 0.3390936576968564
+  },
+  "overlap_stations_excluded": [
+    "01463500",
+    "01470500",
+    "01491000",
+    "01570500",
+    "01578310",
+    "01638500",
+    "01646500",
+    "01651000",
+    "02035000",
+    "02037500",
+    "02084000",
+    "02087500",
+    "02138500",
+    "02197000",
+    "02231000",
+    "02323500",
+    "02428400",
+    "02479000",
+    "03086000",
+    "03303280",
+    "03339000",
+    "03353000",
+    "03451500",
+    "03611500",
+    "04024000",
+    "04193500",
+    "04213500",
+    "05054000",
+    "05114000",
+    "05464500",
+    "05586100",
+    "06813500",
+    "06934500",
+    "07010000",
+    "07022000",
+    "07032000",
+    "07289000",
+    "07374000",
+    "08067000",
+    "08158000",
+    "08170500",
+    "08313000",
+    "09380000",
+    "09402500",
+    "10109000",
+    "10311000",
+    "11251000",
+    "11370500",
+    "11425500",
+    "12020000",
+    "12113000",
+    "12353000",
+    "12422500",
+    "14105700",
+    "14211720"
+  ]
+}
