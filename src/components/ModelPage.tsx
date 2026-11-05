@@ -115,6 +115,16 @@ function Results({ summary }: { summary: Json }) {
           <Stat label="MAE (cfs)" value={fmt(f.overall.mae)} hint={`median baseline ${fmt(f.median_baseline.mae)}`} />
           <Stat label="R²" value={fmt(f.overall.r2, 3)} hint="not an accuracy percentage" />
         </div>
+        <div className="mp-card-foot">
+          <b>How to read these</b>
+          <ul>
+            <li><b>RMSE:</b> the typical miss in cfs; large misses count more.</li>
+            <li><b>Extreme RMSE:</b> the same, on the highest 10% of flows at each station.</li>
+            <li><b>MAE:</b> the average miss in cfs, with every miss counted equally.</li>
+            <li><b>R²:</b> the share of the ups and downs the model explains. It is not a percentage.</li>
+          </ul>
+          <p>Benchmark: {f.benchmark}</p>
+        </div>
       </section>
 
       <section className="mp-card">
