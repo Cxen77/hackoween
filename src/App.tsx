@@ -156,6 +156,10 @@ export default function App() {
   const drawingRef = useRef(false);
   drawingRef.current = drawing;
   const [draft, setDraft] = useState<[number, number][]>([]);
+  const draftRef = useRef<[number, number][]>([]);
+  draftRef.current = draft;
+  const cursorRef = useRef<[number, number] | null>(null);
+  const finishRef = useRef<() => void>(() => {});
   const [pendingRing, setPendingRing] = useState<[number, number][] | null>(null);
   const [drawingError, setDrawingError] = useState('');
 
@@ -166,10 +170,18 @@ export default function App() {
   const [storageError, setStorageError] = useState('');
   const [floodStats, setFloodStats] = useState({ area: 0, maxDepth: 0, level: 0, flowDirection: '', gradient: 0, boundaryReached: false });
 
-  const profile = useMemo<RiverHydraulicProfile>(
-    () => riverProfiles[station.id] || defaultRiverProfile,
-    [station.id]
-  );
+  // Rivers without a hand-made profile get a slider range that follows their size: a small or ordinary river keeps the
+  // standard 0-12 m scale (same sensitivity as before); a deep, high-flow river gets a longer scale (up to 30 m) because
+  // its floods are measured in many metres. River size = its normal flow from the live model (rule of thumb depth).
+  const refFlowCfs = modelLive?.reference_flow_cfs;
+  const profile = useMemo<RiverHydraulicProfile>(() => {
+    const own = riverProfiles[station.id];
+    if (own) return own;
+    if (!(refFlowCfs > 0)) return defaultRiverProfile;
+    const normalDepth = ((refFlowCfs / 35.3147) / 300) ** 0.42;
+    const maxRise = Math.min(30, Math.max(defaultRiverProfile.maxRise, Math.round(3 * normalDepth)));
+    return maxRise === defaultRiverProfile.maxRise ? defaultRiverProfile : { ...defaultRiverProfile, maxRise };
+  }, [station.id, refFlowCfs]);
 
   const sliderTicks = useMemo(() => {
     const min = profile.minRise;
@@ -393,6 +405,13 @@ export default function App() {
         source: 'monitored-areas',
         paint: { 'line-color': '#fbbf24', 'line-width': 2.5, 'line-dasharray': [3, 2] }
       });
+      // The zone being drawn: its own source so saved zones are never touched while drawing.
+      m.addSource('draft-zone', { type: 'geojson', data: empty });
+      m.addLayer({ id: 'draft-fill', type: 'fill', source: 'draft-zone', filter: ['==', ['get', 'kind'], 'fill'], paint: { 'fill-color': '#38bdf8', 'fill-opacity': 0.16 } });
+      m.addLayer({ id: 'draft-line', type: 'line', source: 'draft-zone', filter: ['==', ['get', 'kind'], 'line'], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#38bdf8', 'line-width': 3 } });
+      m.addLayer({ id: 'draft-preview', type: 'line', source: 'draft-zone', filter: ['==', ['get', 'kind'], 'preview'], paint: { 'line-color': '#7dd3fc', 'line-width': 2, 'line-dasharray': [2, 2] } });
+      m.addLayer({ id: 'draft-points', type: 'circle', source: 'draft-zone', filter: ['==', ['get', 'kind'], 'point'],
+        paint: { 'circle-radius': ['case', ['get', 'first'], 8, 5.5], 'circle-color': ['case', ['get', 'first'], '#22c55e', '#ffffff'], 'circle-stroke-color': '#0369a1', 'circle-stroke-width': 2.5, 'circle-pitch-alignment': 'map' } });
       // Keep elevated water after all terrain-draped layers, which otherwise
       // repaint the opaque ground over a transparent custom surface.
       waterSurface.current = new WaterSurface();
@@ -400,10 +419,27 @@ export default function App() {
       m.addLayer(waterSurface.current);
       setReady(true);
       setRefresh(n => n + 1);
+      // Start with the credits collapsed behind the (i) button; they stay one click away, as the map data licences require.
+      const collapseCredits = () => {
+        const credits = m.getContainer().querySelector('.maplibregl-ctrl-attrib');
+        credits?.classList.remove('maplibregl-compact-show');
+        credits?.removeAttribute('open');
+      };
+      collapseCredits();
+      m.once('idle', collapseCredits); // the control re-opens itself while tiles load; close it once they have
     });
 
     m.on('click', e => {
       if (drawingRef.current) {
+        const pts = draftRef.current;
+        if (pts.length >= 3) {
+          const f = m.project(pts[0] as [number, number]);
+          if (Math.hypot(f.x - e.point.x, f.y - e.point.y) < 14) { finishRef.current(); return; }
+        }
+        if (pts.length) {
+          const l = m.project(pts[pts.length - 1] as [number, number]);
+          if (Math.hypot(l.x - e.point.x, l.y - e.point.y) < 6) return; // a double click, not a new corner
+        }
         setDraft(points => points.length < 100 ? [...points, [e.lngLat.lng, e.lngLat.lat]] : points);
         return;
       }
@@ -427,6 +463,8 @@ export default function App() {
     m.on('mousemove', e => {
       if (drawingRef.current) {
         m.getCanvas().style.cursor = 'crosshair';
+        cursorRef.current = [e.lngLat.lng, e.lngLat.lat];
+        if (!previewFrame.current) previewFrame.current = requestAnimationFrame(() => { previewFrame.current = 0; paintDraft(); });
         return;
       }
       const ids = m.getStyle()?.layers?.filter(l => /water|river/i.test(l.id) && l.type !== 'symbol').map(l => l.id) ?? [];
@@ -644,27 +682,32 @@ export default function App() {
       properties: { name: a.name },
       geometry: { type: 'Polygon', coordinates: [[...a.ring, a.ring[0]]] }
     }));
-    if (draft.length >= 3) {
-      features.push({
-        type: 'Feature',
-        properties: { draft: true },
-        geometry: { type: 'Polygon', coordinates: [[...draft, draft[0]]] }
-      });
-    } else if (draft.length >= 2) {
-      features.push({
-        type: 'Feature',
-        properties: { draft: true },
-        geometry: { type: 'LineString', coordinates: draft }
-      });
-    }
     source.setData({ type: 'FeatureCollection', features });
-  }, [areas, draft, ready, refresh]);
+  }, [areas, ready, refresh]);
+
+  // Paint the zone being drawn: filled shape, outline, corner markers (first one green) and a dashed segment to the cursor.
+  const previewFrame = useRef(0);
+  const paintDraft = () => {
+    const src = map.current?.getSource('draft-zone') as GeoJSONSource | undefined;
+    if (!src) return;
+    const pts = draftRef.current, cur = drawingRef.current ? cursorRef.current : null;
+    const feats: FeatureCollection['features'] = [];
+    if (pts.length >= 3) feats.push({ type: 'Feature', properties: { kind: 'fill' }, geometry: { type: 'Polygon', coordinates: [[...pts, pts[0]]] } });
+    if (pts.length >= 2) feats.push({ type: 'Feature', properties: { kind: 'line' }, geometry: { type: 'LineString', coordinates: pts.length >= 3 ? [...pts, pts[0]] : pts } });
+    if (cur && pts.length >= 1) feats.push({ type: 'Feature', properties: { kind: 'preview' }, geometry: { type: 'LineString', coordinates: [pts[pts.length - 1], cur] } });
+    pts.forEach((c, i) => feats.push({ type: 'Feature', properties: { kind: 'point', first: i === 0 }, geometry: { type: 'Point', coordinates: c } }));
+    src.setData({ type: 'FeatureCollection', features: feats });
+  };
+  useEffect(() => { if (ready) paintDraft(); }, [draft, drawing, ready]);
 
   const beginBoundary = () => {
     setDraft([]);
     setDrawingError('');
     setDrawing(true);
     setLayers(false);
+    cursorRef.current = null;
+    // A tilted 3D view makes clicks land away from where they appear; look straight down while drawing.
+    map.current?.easeTo({ pitch: 0, bearing: 0, duration: 450 });
     mapNode.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
   };
 
@@ -675,6 +718,12 @@ export default function App() {
     }
     setDrawing(false);
     setPendingRing(draft);
+    map.current?.easeTo({ pitch: is3d ? PITCH_3D : 0, duration: 500 });
+  };
+  finishRef.current = finishBoundary;
+  const cancelBoundary = () => {
+    setDrawing(false); setDraft([]); setDrawingError('');
+    map.current?.easeTo({ pitch: is3d ? PITCH_3D : 0, duration: 500 });
   };
 
   useEffect(() => {
@@ -898,7 +947,6 @@ export default function App() {
                           <span className="acet-river-sub">
                             <span>{s.name}</span>
                             <span className="acet-country-tag">{s.region.endsWith(', India') ? 'IN' : 'US'}</span>
-                            {s.usgs && <span className="acet-live-dot" title="USGS Water Gauge" />}
                           </span>
                         </span>
                         <ChevronRight size={15} className="acet-chevron" />
@@ -966,7 +1014,6 @@ export default function App() {
                         onClick={() => pick(s)}
                       >
                         <RiverIcon size={19} />
-                        {s.usgs && <span className="collapsed-live-dot" />}
                       </button>
                     );
                   })}
@@ -1069,13 +1116,17 @@ export default function App() {
                 <div className="drawing-hud" role="status">
                   <div className="drawing-hud-text">
                     <span className="pulse-beacon" />
-                    <span>Perimeter: <strong>{draft.length}</strong> points (min 3)</span>
-                    {drawingError && <span className="hud-err">· {drawingError}</span>}
+                    <div className="drawing-hud-copy">
+                      <strong>Draw alert zone</strong>
+                      <span>{draft.length < 3 ? 'Click the map to add corners (at least 3).' : 'Click the green first corner, or Finish Zone, to close it.'}</span>
+                      {drawingError && <span className="hud-err">{drawingError}</span>}
+                    </div>
+                    <span className="hud-count" aria-label={`${draft.length} corners`}>{draft.length}</span>
                   </div>
                   <div className="drawing-hud-actions">
                     <button className="hud-btn" disabled={draft.length === 0} onClick={() => setDraft(p => p.slice(0, -1))}>Undo</button>
                     <button className="hud-btn hud-primary" disabled={draft.length < 3} onClick={finishBoundary}>Finish Zone</button>
-                    <button className="hud-btn hud-cancel" onClick={() => { setDrawing(false); setDraft([]); setDrawingError(''); }}>Cancel</button>
+                    <button className="hud-btn hud-cancel" onClick={cancelBoundary}>Cancel</button>
                   </div>
                 </div>
               ) : (
@@ -1205,7 +1256,7 @@ export default function App() {
                 <div className="slider-group">
                   <div className="slider-label">
                     <span>Rise above reference river surface</span>
-                    <strong className="rise-numeric">+{animatedRise.toFixed(animatedRise < 1 || profile.step < 0.1 ? 2 : 1)} <span>m</span>{liveRise != null && Math.abs(rise - liveRise) < 0.015 && <span className="live-tag" title={modelLive?.live_rise_basis}>● LIVE</span>}</strong>
+                    <strong className="rise-numeric">+{animatedRise.toFixed(animatedRise < 1 || profile.step < 0.1 ? 2 : 1)} <span>m</span>{liveRise != null && Math.abs(rise - liveRise) < 0.015 && <span className="live-tag" title={modelLive?.live_rise_basis}><i className="live-dot" aria-hidden />LIVE</span>}</strong>
                   </div>
                   <div className="slider-track-wrap">
                     <input
@@ -1240,10 +1291,13 @@ export default function App() {
                   </div>
                   {liveRise != null && (
                     <div className="live-level-note">
-                      Live level: <b>+{liveRise.toFixed(2)} m</b> above this river's normal ({modelLive?.live_rise_basis}).
-                      {Math.abs(rise - liveRise) >= 0.015 && (
-                        <button type="button" onClick={() => { followLive.current = true; setPlaying(false); setRise(liveRise); }}>Use live level</button>
-                      )}
+                      {liveRise < 0.005 && modelLive?.live_flow_cfs != null && modelLive?.reference_flow_cfs > 0 ? (<>
+                        Live reading{modelLive.live_last_date ? ` (${modelLive.live_last_date})` : ''}: <b>{(modelLive.live_flow_cfs / 35.3147).toFixed(modelLive.live_flow_cfs < 3530 ? 1 : 0)} m³/s</b>,
+                        {' '}{Math.round(Math.abs(1 - modelLive.live_flow_cfs / modelLive.reference_flow_cfs) * 100)}% {modelLive.live_flow_cfs < modelLive.reference_flow_cfs ? 'below' : 'above'} this river's 30-day normal
+                        ({(modelLive.reference_flow_cfs / 35.3147).toFixed(modelLive.reference_flow_cfs < 3530 ? 1 : 0)} m³/s). The river is at or under its reference surface, so nothing floods and the simulation starts at <b>+0.00 m</b>.
+                      </>) : (<>
+                        Live level: <b>+{liveRise.toFixed(2)} m</b> above this river's normal ({modelLive?.live_rise_basis}){modelLive?.live_last_date ? `, reading of ${modelLive.live_last_date}` : ''}.
+                      </>)}
                     </div>
                   )}
                   <div className="river-context-note">
@@ -1252,8 +1306,14 @@ export default function App() {
                 </div>
 
                 <div className="simulation-playback-status">
-                  <span>{gridLoading ? 'Preparing river' : playing ? 'Rising' : Math.abs(animatedRise - rise) > .02 ? 'Paused / adjusting' : 'At target'} · target +{rise.toFixed(1)} m</span>
-                  <button type="button" onClick={() => { setPlaying(false); setRise(0); displayedRise.current = 0; setAnimatedRise(0); }}>Reset to river level</button>
+                  <span>
+                    {gridLoading ? 'Preparing river…' : playing ? 'Rising…' : Math.abs(animatedRise - rise) > .02 ? 'Adjusting…' : <>Showing <b>+{rise.toFixed(rise < 1 ? 2 : 1)} m</b></>}
+                    {liveRise != null && Math.abs(rise - liveRise) >= 0.015 && <span className="playback-live"> · live is +{liveRise.toFixed(2)} m</span>}
+                  </span>
+                  <button type="button" disabled={Math.abs(rise - (liveRise ?? 0)) < 0.015}
+                    onClick={() => { followLive.current = true; setPlaying(false); setRise(liveRise ?? 0); }}>
+                    {liveRise != null ? 'Back to live level' : 'Reset to river level'}
+                  </button>
                 </div>
 
                 <LongPressButton
@@ -1354,10 +1414,13 @@ export default function App() {
                 </button>
               </div>
 
-              <div className={`source-badge ${!gauge.data || stale ? 'neutral' : 'live'}`}>
-                <span className="status-dot" />
-                <span>{gauge.loading ? 'Connecting to gauge…' : gauge.data ? (stale ? 'Delayed observation' : 'Live USGS Observation') : 'GloFAS modeled station'}</span>
-              </div>
+              {/* The green "Live USGS Observation" badge is gone; only the neutral states (connecting, delayed, modeled) are shown. */}
+              {(gauge.loading || !gauge.data || stale) && (
+                <div className="source-badge neutral">
+                  <span className="status-dot" />
+                  <span>{gauge.loading ? 'Connecting to gauge…' : gauge.data ? 'Delayed observation' : 'GloFAS modeled station'}</span>
+                </div>
+              )}
 
               <div className="metric">
                 <span className="metric-label">Measured discharge</span>

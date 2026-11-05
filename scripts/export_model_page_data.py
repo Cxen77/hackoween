@@ -20,6 +20,7 @@ import pandas as pd
 from solution import read_input
 from scripts.basinshift_model import HORIZONS, forecast
 from scripts.clean_data import clean_frame
+from scripts.eval_routed import LARGE_SQMI, routed
 
 OUT = Path('public/reports/model')
 EXP = Path('data/experiments/basinshift_model')
@@ -52,14 +53,15 @@ def main() -> None:
                       'overall': demo['overall'], 'median_baseline': demo['training_station_median_baseline'],
                       'train_rows': 293057, 'test_rows': demo['overall']['rows'], 'stations_trained': 55},
         'basinshift': {}}
-    for label in ('heldout', 'caravan', 'heldout_daily'):
-        p = EXP / f'basinshift_{label}.json'
-        if p.exists():
-            res = json.loads(p.read_text(encoding='utf-8'))
-            summary['basinshift'][label] = {'stations': res['test_stations'], 'rows': res['test_rows'],
-                                            'horizons': {h: compact_horizon(v) for h, v in res['horizons'].items()}}
-    for label in ('heldout', 'caravan'):
-        p = EXP / f'basinshift_stress_{label}.json'
+    # The page shows the production model (augmented, +1/+3/+7), scored on the 55 gauges for 2015-2024
+    # (scripts/eval_augmented.py). 'heldout' and 'heldout_daily' both point at that run.
+    # The routed forecaster (scripts/eval_routed.py): large rivers use the 55-gauge model, the rest the 55-gauge + Caravan model.
+    res = json.loads((EXP / 'basinshift_routed.json').read_text(encoding='utf-8'))
+    block = lambda r: {'stations': r['test_stations'], 'rows': r['test_rows'], 'large_stations': r.get('large_stations'),
+                       'horizons': {h: compact_horizon(v) for h, v in r['horizons'].items()}}
+    summary['basinshift'] = {'heldout': block(res['heldout_gauges']), 'heldout_daily': block(res['heldout_gauges']), 'caravan': block(res['heldout_caravan'])}
+    for label, src in (('heldout', 'routed'),):
+        p = EXP / f'basinshift_stress_{src}.json'
         if p.exists():
             s = json.loads(p.read_text(encoding='utf-8'))
             summary.setdefault('stress', {})[label] = {'basins': s['basins'], 'scenarios': {
@@ -67,6 +69,9 @@ def main() -> None:
                      for h, vals in hs.items()} for sc, hs in s['scenarios'].items()}}
             if 'efficiency' in s:
                 summary.setdefault('efficiency', {})[label] = {k: r(v, 2) if isinstance(v, float) else v for k, v in s['efficiency'].items() if k != 'note'}
+    rp = EXP / 'route_by_size.json'
+    if rp.exists():
+        summary['routing'] = json.loads(rp.read_text(encoding='utf-8'))['summary']
     (OUT / 'summary.json').write_text(json.dumps(summary, separators=(',', ':')), encoding='utf-8')
 
     # 2025 per-station series (production V2).
@@ -81,15 +86,18 @@ def main() -> None:
     (OUT / 'stations_2025.json').write_text(json.dumps(stations, separators=(',', ':')), encoding='utf-8')
 
     # BASINSHIFT forecast bands on held-out stations for 2024 (model never trained on these stations).
-    saved = joblib.load(EXP / 'models_heldout.joblib')
+    # The same routed forecaster that is scored on the Results tab: large rivers use the USGS-gauge model, the rest the mixed model.
+    new = joblib.load(EXP / 'models_aug_holdout.joblib')
+    old = joblib.load(EXP / 'models_heldout.joblib')
     ours, _ = clean_frame(read_input('data/large/train/train.csv', True), target=True)
     ids = sorted(ours.station_id.unique())
     held = sorted(np.random.default_rng(42).choice(ids, size=max(2, len(ids) // 5), replace=False).tolist())
     names = pd.read_csv('data/large/metadata/station_metadata.csv', dtype=str).set_index('station_id').station_name
     test_df = ours[ours.station_id.isin(held)].sort_values(['station_id', 'date']).reset_index(drop=True)
     bands = {}
-    for h in HORIZONS:
-        o = forecast(saved['bundle'], test_df, saved['test_ref_cut'], h)
+    big = test_df.drainage_area_sqmi.to_numpy(float) >= LARGE_SQMI
+    for h in (1, 3, 7):
+        o = routed(new, old, test_df, h, '2022-01-01', big)
         in24 = (test_df.date >= '2024-01-01').to_numpy()
         for sid in held:
             m = in24 & (test_df.station_id == sid).to_numpy()

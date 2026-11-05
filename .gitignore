@@ -22,3 +22,4 @@ data/large/train/train_clean.csv
 # (models_heldout.joblib is only for judge-test exports; retrain it with: python -m scripts.basinshift_model --experiment heldout)
 !data/experiments/basinshift_model/models_caravan.joblib
 !data/experiments/basinshift_model/models_daily.joblib
+!data/experiments/basinshift_model/models_large.joblib

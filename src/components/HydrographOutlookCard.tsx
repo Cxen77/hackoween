@@ -114,22 +114,34 @@ export default function HydrographOutlookCard({
   //  3. Latest observed flow held flat (the persistence baseline). Nothing is interpolated or invented.
   const times = forecast.data?.daily.time ?? [];
   const toUnit = unit === 'cfs' ? 1 : 1 / 35.3146667; // model and observed values arrive in cfs
-  const glofasSeries = rawValues.map(v => (v == null ? 0 : v * scale));
-  const mlVal: (number | null)[] = times.map(() => null);
-  const mlLo: (number | null)[] = times.map(() => null);
-  const mlHi: (number | null)[] = times.map(() => null);
+  const fullGlofas = rawValues.map(v => (v == null ? 0 : v * scale));
+  const fullMl: (number | null)[] = times.map(() => null);
+  const fullLo: (number | null)[] = times.map(() => null);
+  const fullHi: (number | null)[] = times.map(() => null);
   (modelLive?.horizons ?? []).forEach((h: any) => {
     const i = times.indexOf(h.target_date);
     if (i >= 0) {
-      mlVal[i] = h.point_cfs * toUnit;
-      mlLo[i] = h.lo_cfs == null ? null : h.lo_cfs * toUnit;
-      mlHi[i] = h.hi_cfs == null ? null : h.hi_cfs * toUnit;
+      fullMl[i] = h.point_cfs * toUnit;
+      fullLo[i] = h.lo_cfs == null ? null : h.lo_cfs * toUnit;
+      fullHi[i] = h.hi_cfs == null ? null : h.hi_cfs * toUnit;
     }
   });
-  const hasModel = mlVal.some(v => v !== null);
+  const hasModel = fullMl.some(v => v !== null);
+  // The model only forecasts +1, +3 and +7 days, so the chart shows only those days (no days it cannot predict).
+  // `keep` holds the original day indices; the shared `day` state keeps using original indices.
+  const keep = hasModel ? fullMl.map((v, i) => (v === null ? -1 : i)).filter(i => i >= 0) : fullGlofas.map((_, i) => i);
+  const glofasSeries = keep.map(i => fullGlofas[i]);
+  const mlVal = keep.map(i => fullMl[i]);
+  const mlLo = keep.map(i => fullLo[i]);
+  const mlHi = keep.map(i => fullHi[i]);
+  const horizonOf = (i: number): number | null => (modelLive?.horizons ?? []).find((h: any) => h.target_date === times[i])?.horizon_days ?? null;
   const observedNow: number | null = modelLive?.latest_observed_cfs != null ? modelLive.latest_observed_cfs * toUnit : null;
   // Scale to the forecast lines, not the long upper tail of the 90% band (the band is clipped at the top of the chart).
-  const allVals = [...glofasSeries, ...mlVal, ...(observedNow !== null ? [observedNow] : [])].filter((v): v is number => v !== null && Number.isFinite(v));
+  // GloFAS reads a grid cell that is sometimes not the gauged channel (e.g. 20 cfs next to 130,000 cfs observed). A line
+  // that far off is not a forecast of this river, so it is hidden instead of drawn flat along the bottom.
+  const glofasMean = glofasSeries.reduce((a, b) => a + b, 0) / Math.max(1, glofasSeries.length);
+  const glofasOff = hasModel && observedNow !== null && observedNow > 0 && (glofasMean < observedNow / 5 || glofasMean > observedNow * 5);
+  const allVals = [...(glofasOff ? [] : glofasSeries), ...mlVal, ...(observedNow !== null ? [observedNow] : [])].filter((v): v is number => v !== null && Number.isFinite(v));
   const peakVal = Math.max(...allVals) * 1.15 || 1;
 
   // Chart Geometry (viewBox: 800 x 280)
@@ -142,7 +154,7 @@ export default function HydrographOutlookCard({
   const plotW = chartW - padLeft - padRight;
   const plotH = chartH - padTop - padBottom;
 
-  const count = rawValues.length;
+  const count = keep.length;
   const getX = (i: number) => padLeft + (i * plotW) / Math.max(1, count - 1);
   const getY = (val: number) => padTop + plotH - (val / peakVal) * plotH;
 
@@ -159,10 +171,11 @@ export default function HydrographOutlookCard({
   const pathBaseline = observedNow !== null ? `M${getX(0).toFixed(1)},${getY(observedNow).toFixed(1)} L${getX(count - 1).toFixed(1)},${getY(observedNow).toFixed(1)}` : '';
 
   // Active or hovered day
-  const activeIdx = hoverIndex !== null ? hoverIndex : day;
+  const dayPos = Math.max(0, keep.indexOf(day));
+  const activeIdx = hoverIndex !== null && hoverIndex < count ? hoverIndex : dayPos;
   const activeX = getX(activeIdx);
-  const activeDateStr = forecast.data?.daily.time[activeIdx] ?? '';
-  const activeRain = weather.data?.daily.precipitation_sum?.[activeIdx];
+  const activeDateStr = forecast.data?.daily.time[keep[activeIdx]] ?? '';
+  const activeRain = weather.data?.daily.precipitation_sum?.[keep[activeIdx]];
 
   // Grid levels (5 horizontal grid lines)
   const gridLevels = [1, 0.75, 0.5, 0.25, 0];
@@ -173,7 +186,7 @@ export default function HydrographOutlookCard({
       <div className="forecast-heading">
         <div>
           <h3>River Discharge & Hydrograph Outlook</h3>
-          <p>Seven-day multi-model streamflow projection & baseline comparison</p>
+          <p>{hasModel ? 'Forecast at +1, +3 and +7 days: FloodCast model vs GloFAS, with the latest observed flow' : 'Seven-day multi-model streamflow projection & baseline comparison'}</p>
         </div>
         <div className="forecast-header-actions" ref={menuRef}>
           <div className="unit-toggle" aria-label="Discharge units">
@@ -213,11 +226,11 @@ export default function HydrographOutlookCard({
       <div className="forecast-summary">
         <div className="summary-left">
           <strong className="forecast-metric-val">
-            {number(mlVal[day] !== null ? (mlVal[day] as number) : glofasSeries[day])}
+            {number(mlVal[dayPos] !== null ? (mlVal[dayPos] as number) : glofasSeries[dayPos])}
             <small> {unit}</small>
           </strong>
           <span className="forecast-date">
-            {activeDateStr ? fullDateLabel(activeDateStr) : 'Today'} · {mlVal[day] !== null ? 'FloodCast model' : 'GloFAS'}
+            {activeDateStr ? fullDateLabel(activeDateStr) : 'Today'} · {mlVal[dayPos] !== null ? 'FloodCast model' : 'GloFAS'}
           </span>
         </div>
         <div className="weather-summary">
@@ -276,7 +289,7 @@ export default function HydrographOutlookCard({
           ))}
 
           {/* 3. GloFAS Forecast (River Cyan / Primary Blue) */}
-          <path
+          {!glofasOff && <path
             d={pathGlofas}
             fill="none"
             stroke="#0284c7"
@@ -284,7 +297,7 @@ export default function HydrographOutlookCard({
             strokeLinecap="round"
             strokeLinejoin="round"
             className="curve-glofas"
-          />
+          />}
 
           {/* Vertical Dotted Guide Hairline at Hovered/Active Point */}
           <line
@@ -303,24 +316,25 @@ export default function HydrographOutlookCard({
             <circle cx={activeX} cy={getY(mlVal[activeIdx] as number)} r="7" fill="none" stroke="#f97316" strokeWidth="2.5" />
           )}
           {/* GloFAS Marker */}
-          <circle
+          {!glofasOff && <circle
             cx={activeX}
             cy={ptsGlofas[activeIdx][1]}
             r="6"
             fill="#ffffff"
             stroke="#0284c7"
             strokeWidth="3.5"
-          />
+          />}
 
           {/* X-Axis Ticks (Dates / Days beneath the chart) */}
-          {forecast.data?.daily.time.map((d, i) => {
+          {keep.map((orig, i) => {
+            const d = times[orig];
             const x = getX(i);
             const isChosen = activeIdx === i;
             return (
               <g
                 key={d}
                 className={`chart-x-tick ${isChosen ? 'selected' : ''}`}
-                onClick={() => setDay(i)}
+                onClick={() => setDay(orig)}
                 onMouseEnter={() => setHoverIndex(i)}
                 style={{ cursor: 'pointer' }}
               >
@@ -330,13 +344,14 @@ export default function HydrographOutlookCard({
                   textAnchor="middle"
                   className={`chart-date-label ${isChosen ? 'active-date' : ''}`}
                 >
-                  {i === 0 ? 'Today' : `${dayOfWeek(d)} ${dateLabel(d).split(' ')[1]}`}
+                  {orig === 0 ? 'Today' : `${dayOfWeek(d)} ${dateLabel(d).split(' ')[1]}`}
+                  {horizonOf(orig) != null && <tspan x={x} dy="13" className="chart-horizon">+{horizonOf(orig)} day{horizonOf(orig) === 1 ? '' : 's'}</tspan>}
                 </text>
                 {/* Transparent click target column */}
                 <rect
-                  x={x - (plotW / (count - 1)) / 2}
+                  x={x - (plotW / Math.max(1, count - 1)) / 2}
                   y={padTop}
-                  width={plotW / (count - 1)}
+                  width={plotW / Math.max(1, count - 1)}
                   height={plotH + 30}
                   fill="transparent"
                 />
@@ -359,7 +374,7 @@ export default function HydrographOutlookCard({
             <div className="tooltip-row">
               <span className="tooltip-ring ring-blue" />
               <span className="tooltip-name">GloFAS Forecast:</span>
-              <strong className="tooltip-val">{number(glofasSeries[activeIdx])} {unit}</strong>
+              <strong className="tooltip-val">{glofasOff ? 'off this river' : `${number(glofasSeries[activeIdx])} ${unit}`}</strong>
             </div>
             {hasModel && (
               <div className="tooltip-row">
@@ -392,26 +407,21 @@ export default function HydrographOutlookCard({
           {modelLive ? 'The FloodCast model predicts +1, +3 and +7 days after its latest reading; none of those days falls inside this chart.' : 'No FloodCast model data for this river yet (the model server may not be running, or the river has no live flow feed), so only GloFAS is shown.'}
         </p>
       )}
-      {observedNow !== null && glofasSeries.length > 0 && (glofasSeries[0] < observedNow / 3 || glofasSeries[0] > observedNow * 3) && (
-        <p className="hydro-note">
-          GloFAS differs a lot from this gauge's observed flow here (its grid cell may not sit on the main channel). The FloodCast model uses the gauge's own readings.
-        </p>
-      )}
 
       {/* Centered Bottom Legend Matching the Reference Image */}
       <div className="hydrograph-legend-row">
-        <div className="legend-item" onClick={() => setDay(activeIdx)}>
+        <div className="legend-item" onClick={() => setDay(keep[activeIdx])}>
           <span className="legend-ring ring-blue" />
           <span className="legend-label">GloFAS Forecast</span>
         </div>
         {hasModel && (
-          <div className="legend-item" onClick={() => setDay(activeIdx)}>
+          <div className="legend-item" onClick={() => setDay(keep[activeIdx])}>
             <span className="legend-ring ring-orange" />
             <span className="legend-label">FloodCast Model</span>
           </div>
         )}
         {observedNow !== null && (
-          <div className="legend-item" onClick={() => setDay(activeIdx)}>
+          <div className="legend-item" onClick={() => setDay(keep[activeIdx])}>
             <span className="legend-ring ring-slate" />
             <span className="legend-label">Latest Observed Flow</span>
           </div>

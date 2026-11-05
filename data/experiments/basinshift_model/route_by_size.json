@@ -1,0 +1,291 @@
+{
+  "rows": [
+    {
+      "set": "gauges",
+      "h": 1,
+      "band": "0-500",
+      "n_basins": 1,
+      "rows": 1096,
+      "sse_persist": 121162170.0,
+      "sse_mixed": 94416249.19349039,
+      "sse_gauges": 88212269.1488455
+    },
+    {
+      "set": "gauges",
+      "h": 1,
+      "band": "500-2000",
+      "n_basins": 1,
+      "rows": 1096,
+      "sse_persist": 1372484950.46,
+      "sse_mixed": 975342640.6795046,
+      "sse_gauges": 1035908426.2137868
+    },
+    {
+      "set": "gauges",
+      "h": 1,
+      "band": "2000-10000",
+      "n_basins": 3,
+      "rows": 3283,
+      "sse_persist": 21192000115.5243,
+      "sse_mixed": 16119806368.402029,
+      "sse_gauges": 15715295696.1784
+    },
+    {
+      "set": "gauges",
+      "h": 1,
+      "band": "10000-50000",
+      "n_basins": 3,
+      "rows": 3288,
+      "sse_persist": 259701761800.0,
+      "sse_mixed": 215195082027.76785,
+      "sse_gauges": 196837271125.91125
+    },
+    {
+      "set": "gauges",
+      "h": 1,
+      "band": "50000-1e+09",
+      "n_basins": 3,
+      "rows": 3288,
+      "sse_persist": 1086831432200.0,
+      "sse_mixed": 1192494789534.818,
+      "sse_gauges": 1087259307297.5845
+    },
+    {
+      "set": "gauges",
+      "h": 3,
+      "band": "0-500",
+      "n_basins": 1,
+      "rows": 1096,
+      "sse_persist": 515866750.0,
+      "sse_mixed": 225146848.2785948,
+      "sse_gauges": 244740130.59683377
+    },
+    {
+      "set": "gauges",
+      "h": 3,
+      "band": "500-2000",
+      "n_basins": 1,
+      "rows": 1096,
+      "sse_persist": 6046229424.32,
+      "sse_mixed": 3562202734.509624,
+      "sse_gauges": 3975795390.2703853
+    },
+    {
+      "set": "gauges",
+      "h": 3,
+      "band": "2000-10000",
+      "n_basins": 3,
+      "rows": 3283,
+      "sse_persist": 79795715002.0885,
+      "sse_mixed": 49355878207.913284,
+      "sse_gauges": 49439396497.46474
+    },
+    {
+      "set": "gauges",
+      "h": 3,
+      "band": "10000-50000",
+      "n_basins": 3,
+      "rows": 3288,
+      "sse_persist": 1167959672300.0,
+      "sse_mixed": 798361598317.3555,
+      "sse_gauges": 770094734973.8573
+    },
+    {
+      "set": "gauges",
+      "h": 3,
+      "band": "50000-1e+09",
+      "n_basins": 3,
+      "rows": 3288,
+      "sse_persist": 8677119483800.0,
+      "sse_mixed": 8966432521785.125,
+      "sse_gauges": 8342073396594.007
+    },
+    {
+      "set": "gauges",
+      "h": 7,
+      "band": "0-500",
+      "n_basins": 1,
+      "rows": 1096,
+      "sse_persist": 1035217140.0,
+      "sse_mixed": 418472217.2833056,
+      "sse_gauges": 410967951.22304434
+    },
+    {
+      "set": "gauges",
+      "h": 7,
+      "band": "500-2000",
+      "n_basins": 1,
+      "rows": 1096,
+      "sse_persist": 7838727266.02,
+      "sse_mixed": 3916597069.4965305,
+      "sse_gauges": 4706953755.2887535
+    },
+    {
+      "set": "gauges",
+      "h": 7,
+      "band": "2000-10000",
+      "n_basins": 3,
+      "rows": 3283,
+      "sse_persist": 127608170950.4998,
+      "sse_mixed": 71310591229.05542,
+      "sse_gauges": 74437219767.62952
+    },
+    {
+      "set": "gauges",
+      "h": 7,
+      "band": "10000-50000",
+      "n_basins": 3,
+      "rows": 3288,
+      "sse_persist": 2028661705500.0,
+      "sse_mixed": 1188843732997.0422,
+      "sse_gauges": 1143094143368.3418
+    },
+    {
+      "set": "gauges",
+      "h": 7,
+      "band": "50000-1e+09",
+      "n_basins": 3,
+      "rows": 3288,
+      "sse_persist": 33886510801000.0,
+      "sse_mixed": 31506103339393.035,
+      "sse_gauges": 31111272714021.39
+    },
+    {
+      "set": "caravan",
+      "h": 1,
+      "band": "0-500",
+      "n_basins": 56,
+      "rows": 91950,
+      "sse_persist": 12260682752.985367,
+      "sse_mixed": 8197720788.309792,
+      "sse_gauges": 8963377544.004942
+    },
+    {
+      "set": "caravan",
+      "h": 1,
+      "band": "500-2000",
+      "n_basins": 4,
+      "rows": 5600,
+      "sse_persist": 5911081231.284491,
+      "sse_mixed": 4265243768.6624975,
+      "sse_gauges": 4559259206.084593
+    },
+    {
+      "set": "caravan",
+      "h": 3,
+      "band": "0-500",
+      "n_basins": 56,
+      "rows": 91878,
+      "sse_persist": 27399516907.96284,
+      "sse_mixed": 15604421665.92857,
+      "sse_gauges": 17128588420.430199
+    },
+    {
+      "set": "caravan",
+      "h": 3,
+      "band": "500-2000",
+      "n_basins": 4,
+      "rows": 5594,
+      "sse_persist": 12143631251.328712,
+      "sse_mixed": 7466480875.10845,
+      "sse_gauges": 8150232060.657446
+    },
+    {
+      "set": "caravan",
+      "h": 7,
+      "band": "0-500",
+      "n_basins": 56,
+      "rows": 91743,
+      "sse_persist": 36020903298.66371,
+      "sse_mixed": 19386503079.62845,
+      "sse_gauges": 21110099169.996883
+    },
+    {
+      "set": "caravan",
+      "h": 7,
+      "band": "500-2000",
+      "n_basins": 4,
+      "rows": 5582,
+      "sse_persist": 14444024489.03101,
+      "sse_mixed": 8600729739.375519,
+      "sse_gauges": 9431087741.44868
+    }
+  ],
+  "summary": [
+    {
+      "band_sqmi": "0-500",
+      "basins": 57,
+      "mixed_ratio_by_h": {
+        "1": 0.818,
+        "3": 0.753,
+        "7": 0.731
+      },
+      "gauges_ratio_by_h": {
+        "1": 0.855,
+        "3": 0.789,
+        "7": 0.762
+      },
+      "best": "mixed"
+    },
+    {
+      "band_sqmi": "500-2000",
+      "basins": 5,
+      "mixed_ratio_by_h": {
+        "1": 0.848,
+        "3": 0.779,
+        "7": 0.749
+      },
+      "gauges_ratio_by_h": {
+        "1": 0.876,
+        "3": 0.816,
+        "7": 0.797
+      },
+      "best": "mixed"
+    },
+    {
+      "band_sqmi": "2000-10000",
+      "basins": 3,
+      "mixed_ratio_by_h": {
+        "1": 0.872,
+        "3": 0.786,
+        "7": 0.748
+      },
+      "gauges_ratio_by_h": {
+        "1": 0.861,
+        "3": 0.787,
+        "7": 0.764
+      },
+      "best": "mixed"
+    },
+    {
+      "band_sqmi": "10000-50000",
+      "basins": 3,
+      "mixed_ratio_by_h": {
+        "1": 0.91,
+        "3": 0.827,
+        "7": 0.766
+      },
+      "gauges_ratio_by_h": {
+        "1": 0.871,
+        "3": 0.812,
+        "7": 0.751
+      },
+      "best": "gauges"
+    },
+    {
+      "band_sqmi": "50000-1e+09",
+      "basins": 3,
+      "mixed_ratio_by_h": {
+        "1": 1.047,
+        "3": 1.017,
+        "7": 0.964
+      },
+      "gauges_ratio_by_h": {
+        "1": 1.0,
+        "3": 0.981,
+        "7": 0.958
+      },
+      "best": "gauges"
+    }
+  ]
+}

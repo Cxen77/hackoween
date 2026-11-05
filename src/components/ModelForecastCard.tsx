@@ -278,12 +278,6 @@ export default function ModelForecastCard({
 
       {d && (
         <>
-          {d.new_river && (
-            <p className="mf-newriver">
-              <b>New river</b>: Not in training data. Live observed flow from India's NWIC portal.
-            </p>
-          )}
-
           {/* Quick Telemetry Chips */}
           <div className="mf-telemetry-chips">
             <div className="mf-chip">

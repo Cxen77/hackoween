@@ -83,6 +83,10 @@ def load_state(model_path: Path, train_path: Path, metadata_path: Path) -> None:
         static_cols = ['drainage_area_sqmi', 'mean_elevation_ft', 'slope_pct', 'forest_cover_pct', 'impervious_surface_pct']
         static = ours.sort_values('date').groupby('station_id')[static_cols].last()
         train_rows, stations, source = len(ours), sorted(ours.station_id.unique()), 'training CSV'
+    # Large rivers use a model trained on the USGS gauges only (best for them in the held-out comparison, scripts/route_by_size.py).
+    large_path = next((model_path.with_name(n) for n in ('models_large.joblib', 'models_caravan.joblib') if model_path.with_name(n).exists() and model_path.with_name(n) != model_path), None)
+    large = joblib.load(large_path)['bundle'] if large_path else None
+    STATE.update(bundle_large=large, large_model=large_path.name if large_path else None)
     STATE.update(horizons=sorted(saved['bundle']['horizons']), bundle=saved['bundle'], thr=thr, static=static, meta=meta, train_rows=train_rows, quality=quality,
                  stations=stations, model_path=str(model_path))
     print(f"loaded model {model_path.name} (gauge facts from {source}); {len(stations)} stations, {train_rows:,} training rows", flush=True)
@@ -202,8 +206,10 @@ def live_forecast(sid: str) -> dict:
     out['rain_forecast'] = [{'date': r.date, 'mm': None if pd.isna(r.precipitation_mm) else float(r.precipitation_mm)}
                             for r in frame[frame.date > last.strftime('%Y-%m-%d')].itertuples()]
     with LOCK:
+        bundle, used = pick_bundle(frame)
+        out['model_used'] = used
         for h in STATE['horizons']:
-            o = forecast(STATE['bundle'], frame, '2000-01-01', h, thr_override=thr)
+            o = forecast(bundle, frame, '2000-01-01', h, thr_override=thr)
             i = int(np.flatnonzero(frame.date.to_numpy() == (last + pd.Timedelta(days=h)).strftime('%Y-%m-%d'))[0])
             entry = {'horizon_days': h, 'target_date': frame.date.iloc[i], 'point_cfs': float(o['point'][i]),
                      'lo_cfs': float(o['lo'][i]) if not o['fallback'][i] else None, 'hi_cfs': float(o['hi'][i]) if not o['fallback'][i] else None,
@@ -223,6 +229,8 @@ def live_forecast(sid: str) -> dict:
                 entry['rise_is_rule_of_thumb'] = True
             out['horizons'].append(entry)
     out['reference_flow_cfs'] = ref_flow
+    out['live_flow_cfs'] = float(q.iloc[-1])
+    out['live_last_date'] = q.index.max().strftime('%Y-%m-%d')
     if rating:
         out['live_rise_m'] = round(max(0.0, (rating['current_stage_ft'] - rating['median_stage_ft']) / FT_PER_M), 2)
         out['live_rise_basis'] = 'live gauge height above its 30-day median'
@@ -306,8 +314,10 @@ def live_forecast_new(lat: float, lon: float, name: str) -> dict:
     out['rain_forecast'] = [{'date': r.date, 'mm': None if pd.isna(r.precipitation_mm) else float(r.precipitation_mm)}
                             for r in frame[frame.date > last.strftime('%Y-%m-%d')].itertuples()]
     with LOCK:
+        bundle, used = pick_bundle(frame)
+        out['model_used'] = used
         for h in STATE['horizons']:
-            o = forecast(STATE['bundle'], frame, '2000-01-01', h, thr_override=thr)
+            o = forecast(bundle, frame, '2000-01-01', h, thr_override=thr)
             tgt = last + pd.Timedelta(days=h)
             i = int(np.flatnonzero(frame.date.to_numpy() == tgt.strftime('%Y-%m-%d'))[0])
             q_m3s = float(o['point'][i]) / CFS_PER_M3S
@@ -319,6 +329,8 @@ def live_forecast_new(lat: float, lon: float, name: str) -> dict:
                      'rise_point_m': rule_rise(float(o['point'][i]), ref_flow), 'rise_is_rule_of_thumb': True, 'extrapolated': False}
             out['horizons'].append(entry)
     out['reference_flow_cfs'] = ref_flow
+    out['live_flow_cfs'] = float(obs.iloc[-1])
+    out['live_last_date'] = obs.index.max().strftime('%Y-%m-%d')
     out['live_rise_m'] = rule_rise(float(obs.iloc[-1]), ref_flow)
     out['live_rise_basis'] = 'estimated from today\'s flow compared with its 30-day median (no stage gauge)'
     out = clean(out)
@@ -392,8 +404,10 @@ def live_forecast_india(key: str) -> dict:
     out['rain_forecast'] = [{'date': r.date, 'mm': None if pd.isna(r.precipitation_mm) else float(r.precipitation_mm)}
                             for r in frame[frame.date > last.strftime('%Y-%m-%d')].itertuples()]
     with LOCK:
+        bundle, used = pick_bundle(frame)
+        out['model_used'] = used
         for h in STATE['horizons']:
-            o = forecast(STATE['bundle'], frame, '2000-01-01', h, thr_override=thr)
+            o = forecast(bundle, frame, '2000-01-01', h, thr_override=thr)
             tgt = last + pd.Timedelta(days=h)
             i = int(np.flatnonzero(frame.date.to_numpy() == tgt.strftime('%Y-%m-%d'))[0])
             q_m3s = float(o['point'][i]) / CFS_PER_M3S
@@ -415,6 +429,8 @@ def live_forecast_india(key: str) -> dict:
                                                        'rmse_ratio': rm(m) / max(rm(p), 1e-9)}
                 out['hindcast']['series'][str(h)] = {'dates': frame.date[ok].tolist(), 'observed': a.tolist(), 'model': m.tolist(), 'persistence': p.tolist()}
     out['reference_flow_cfs'] = ref_flow
+    out['live_flow_cfs'] = float(obs.iloc[-1])
+    out['live_last_date'] = obs.index.max().strftime('%Y-%m-%d')
     out['live_rise_m'] = rule_rise(float(obs.iloc[-1]), ref_flow)
     out['live_rise_basis'] = 'estimated from today\'s flow compared with its 30-day median (no stage gauge)'
     out = clean(out)
@@ -429,6 +445,10 @@ def run_caravan_test(n: int, seed: int) -> dict:
     if not files:
         raise FileNotFoundError('Caravan data not found under data/external/caravan; see HANDOFF.md to download it.')
     ids = [f.stem.split('_', 1)[1] for f in files if f.stem.split('_', 1)[1] not in set(STATE['stations'])]
+    held_file = Path(STATE['model_path']).with_name('holdout_ids.json')
+    if held_file.exists():  # only basins the served models never trained on, so the test stays honest
+        held = set(json.loads(held_file.read_text(encoding='utf-8'))['caravan_basins'])
+        ids = [i for i in ids if i in held]
     pick = sorted(np.random.default_rng(seed).choice(ids, size=min(n, 30, len(ids)), replace=False).tolist())
     frame, report = clean_frame(load_basins(root, set(STATE['stations']), only=set(pick)), target=True)
     frame = frame[frame.date >= '1995-01-01'].sort_values(['station_id', 'date']).reset_index(drop=True)
@@ -438,7 +458,7 @@ def run_caravan_test(n: int, seed: int) -> dict:
     res = {'dataset': 'caravan_random_subset', 'basins': len(pick), 'seed': seed, 'cleaning': {k: v for k, v in report.items() if k.startswith(('rows', 'dropped', 'clipped'))}, 'horizons': {}}
     with LOCK:
         for h in STATE['horizons']:
-            o = forecast(STATE['bundle'], frame, '2010-01-01', h)
+            o = routed_forecast(frame, '2010-01-01', h)
             mask = in_test & ~np.isnan(o['thr'].T90.to_numpy()) & ~np.isnan(clim)
             rep = evaluate(o, frame, y, mask, STATE['bundle']['horizons'][h], area, True, clim)
             f = rep['forecast']
@@ -451,10 +471,42 @@ def run_caravan_test(n: int, seed: int) -> dict:
 
 
 # ------------------------------------------------------------------ HTTP
+LARGE_SQMI = 10000.0  # catchments at least this large use the USGS-gauge model; smaller ones use the gauges + Caravan model
+
+
+def pick_bundle(frame: pd.DataFrame):
+    """(bundle, model file name) for a catchment, by drainage area."""
+    area = float(frame.drainage_area_sqmi.iloc[0]) if 'drainage_area_sqmi' in frame and len(frame) else float('nan')
+    if STATE.get('bundle_large') is not None and area >= LARGE_SQMI and set(STATE['bundle_large']['horizons']) >= set(STATE['horizons']):
+        return STATE['bundle_large'], STATE['large_model']
+    return STATE['bundle'], Path(STATE['model_path']).name
+
+
+def routed_forecast(frame: pd.DataFrame, ref_cut: str, h: int) -> dict:
+    """forecast() with each row sent to the model its catchment size selects (same rule as pick_bundle)."""
+    a = forecast(STATE['bundle'], frame, ref_cut, h)
+    large = STATE.get('bundle_large')
+    big = frame.drainage_area_sqmi.to_numpy(float) >= LARGE_SQMI
+    if large is None or h not in large['horizons'] or not big.any():
+        return a
+    b = forecast(large, frame, ref_cut, h)
+    o = {}
+    for k, v in a.items():
+        if k == 'thr':
+            o[k] = v.where(~pd.Series(big), b[k])
+        elif v.ndim == 1:
+            o[k] = np.where(big, b[k], v)
+        else:
+            bq = b[k][:, [0, -1]] if b[k].shape[1] != v.shape[1] else b[k]  # keep the outer two quantiles
+            o[k] = np.where(big[:, None], bq, v)
+    return o
+
+
 def with_model(result: dict) -> dict:
     """Label a live forecast with the model file that produced it (so a stale server is obvious in the UI)."""
     out = dict(result)
-    out['model'] = Path(STATE['model_path']).name
+    out['model'] = out.pop('model_used', None) or Path(STATE['model_path']).name
+    out['model_routing'] = f"catchments of {LARGE_SQMI:,.0f} sq mi or more use {STATE['large_model']}" if STATE.get('bundle_large') is not None else None
     out['model_horizons'] = STATE['horizons']
     return out
 
@@ -478,7 +530,8 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if url.path == '/api/health':
                 self._send(200, {'ok': True, 'model': Path(STATE['model_path']).name, 'stations': STATE['stations'], 'train_rows': STATE['train_rows'],
-                                 'horizons': STATE['horizons'], 'note': 'Research benchmark; not a certified flood warning.'})
+                                 'horizons': STATE['horizons'], 'large_model': STATE.get('large_model'), 'large_from_sqmi': LARGE_SQMI,
+                                 'note': 'Research benchmark; not a certified flood warning.'})
             elif url.path == '/api/live_forecast':
                 if 'india' in q:
                     self._send(200, with_model(live_forecast_india(q['india'][0])))

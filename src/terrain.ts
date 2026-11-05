@@ -1,4 +1,4 @@
-import { channelMaskFromWays, prepareRiverFlood, riverFloodAtStage, waterSurfaceMesh } from './river-flood.mjs';
+import { channelMaskFromWays, prepareRiverFlood, riverFloodAtStage, waterSurfaceMesh, channelWaterMesh } from './river-flood.mjs';
 import { mappedRiverWays } from './riverGeometry';
 import type { FeatureCollection, Polygon, LineString } from 'geojson';
 
@@ -239,7 +239,11 @@ export function floodFeatures(
   surface: Float32Array;
 } {
   const { depths, level, floodedCells, maxDepth, boundaryReached } = riverFloodAtStage(grid.riverModel, rise);
-  const surface = waterSurfaceMesh(grid.riverModel, rise);
+  // Flood water (true stage) plus the river channel itself, so the river is never drawn dry. The channel is drawn as shallow
+  // water in the mapped channel only; flooded area, depths and alert checks use the true rise.
+  const flood = waterSurfaceMesh(grid.riverModel, rise), channelMesh = channelWaterMesh(grid.riverModel);
+  const surface = new Float32Array(channelMesh.length + flood.length);
+  surface.set(channelMesh, 0); surface.set(flood, channelMesh.length);
   const features: (FeatureCollection<Polygon>['features'][0] | FeatureCollection<LineString>['features'][0])[] = [];
   let wetCount = 0;
   const size = grid.size;

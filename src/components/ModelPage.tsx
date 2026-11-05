@@ -98,20 +98,11 @@ const toCsv = (rows: (string | number | null)[][]) => rows.map(r => r.map(v => (
 
 /* ---------- tab: results ---------- */
 function Results({ summary }: { summary: Json }) {
-  const [set, setSet] = useState<'augmented' | 'caravan' | 'heldout'>('augmented');
+  const [set, setSet] = useState<'heldout' | 'caravan'>('heldout');
   const [h, setH] = useState('1');
-  const f = summary.floodcast;
-  const b = summary.basinshift?.[set]?.horizons?.[h] || summary.basinshift?.['caravan']?.horizons?.[h];
-  const rows: [string, Json][] = b
-    ? [
-        [set === 'augmented' ? 'Augmented model (534 basins, 5.88M rows)' : 'BASINSHIFT blend (55-gauge model)', b.blend],
-        ['Persistence (yesterday\'s flow)', b.persistence],
-        ['Seasonal climatology', b.climatology],
-        ['Weather-only boosting', b.weather_only],
-      ]
-    : [];
+  const f = summary.floodcast, b = summary.basinshift?.[set]?.horizons?.[h];
+  const rows: [string, Json][] = b ? [['BASINSHIFT blend (this model)', b.blend], ['Persistence (yesterday\'s flow)', b.persistence], ['Seasonal climatology', b.climatology], ['Weather-only boosting', b.weather_only]] : [];
   const ev = (k: 'high_flow_q90' | 'extreme_flow_q99') => b?.[k];
-
   return (
     <div className="mp-grid2">
       <section className="mp-card">
@@ -124,12 +115,6 @@ function Results({ summary }: { summary: Json }) {
           <Stat label="MAE (cfs)" value={fmt(f.overall.mae)} hint={`median baseline ${fmt(f.median_baseline.mae)}`} />
           <Stat label="R²" value={fmt(f.overall.r2, 3)} hint="not an accuracy percentage" />
         </div>
-        <p className="mp-note"><AlertTriangle size={13} /> {f.benchmark} Several stations score negative R²; the large Mississippi gauges dominate the error.</p>
-        
-        <div className="mp-model-badge-note">
-          <span className="mp-badge-dot" />
-          <span><strong>Active Production Model:</strong> <code>models_daily.joblib</code> is augmented with Caravan US (534 catchments, 5,887,304 rows) for +1d, +3d, +7d live forecasts.</span>
-        </div>
       </section>
 
       <section className="mp-card">
@@ -137,43 +122,17 @@ function Results({ summary }: { summary: Json }) {
         <h3>Forecasts, intervals and exceedance probabilities</h3>
         <div className="mp-controls">
           <div className="mp-seg" role="tablist" aria-label="Test dataset">
-            <button className={set === 'augmented' ? 'on' : ''} onClick={() => setSet('augmented')}>Augmented Model (534 basins)</button>
-            <button className={set === 'caravan' ? 'on' : ''} onClick={() => setSet('caravan')}>Caravan US basins</button>
-            <button className={set === 'heldout' ? 'on' : ''} onClick={() => setSet('heldout')}>Held-out stations</button>
+            <button className={set === 'heldout' ? 'on' : ''} onClick={() => setSet('heldout')}>Unseen US gauges</button>
+            <button className={set === 'caravan' ? 'on' : ''} onClick={() => setSet('caravan')}>Unseen Caravan basins</button>
           </div>
           <div className="mp-seg" role="tablist" aria-label="Forecast horizon">
             {['1', '3', '7'].map(k => <button key={k} className={h === k ? 'on' : ''} onClick={() => setH(k)}>{k}-day</button>)}
           </div>
         </div>
-
-        {set === 'augmented' && (
-          <div className="mp-improvement-banner">
-            <div className="mp-improvement-title">
-              <strong>Augmented Training Gains vs Old Model:</strong>
-            </div>
-            <div className="mp-improvement-grid">
-              <div className="mp-improvement-col">
-                <span className="col-horizon">+1 Day</span>
-                <span className="col-metric">−8.9% RMSE · +12.4% NSE</span>
-              </div>
-              <div className="mp-improvement-col">
-                <span className="col-horizon">+3 Days</span>
-                <span className="col-metric">−5.0% RMSE · +34.8% NSE</span>
-              </div>
-              <div className="mp-improvement-col highlight">
-                <span className="col-horizon">+7 Days</span>
-                <span className="col-metric">−3.8% RMSE · +149% NSE (2.5×)</span>
-              </div>
-            </div>
-          </div>
-        )}
-
         {b ? (<>
-          <p className="mp-muted">{set === 'augmented'
-            ? `Trained on all 534 basins (55 USGS + 479 Caravan US CAMELS; 5,887,304 total rows). Evaluated across +1d, +3d, +7d horizons on unseen test catchments.`
-            : set === 'caravan'
-            ? `Trained only on 55 original gauges; tested on ${fmt(summary.basinshift.caravan.stations)} independent small US basins from Caravan (2010–2020, ${fmt(summary.basinshift.caravan.rows)} days).`
-            : `Trained without 11 gauges; tested on those unseen gauges for 2022–2024 (${fmt(summary.basinshift.heldout.rows)} days).`}</p>
+          <p className="mp-muted">{set === 'caravan'
+            ? `Routed forecaster, tested on ${fmt(summary.basinshift.caravan.stations)} Caravan basins left out of training (2010–2014, ${fmt(summary.basinshift.caravan.rows)} days).`
+            : `Routed forecaster: catchments of 10,000 sq mi or more use a model trained on the USGS gauges; smaller ones use a model trained on the gauges plus Caravan basins. Tested on ${fmt(summary.basinshift.heldout.stations)} gauges left out of training, 2022–2024 (${fmt(summary.basinshift.heldout.rows)} days).`}</p>
           <table className="mp-table">
             <thead><tr><th>Method</th><th>RMSE</th><th>Extreme RMSE</th><th>MAE</th><th>Median NSE</th></tr></thead>
             <tbody>{rows.map(([name, m], i) => (
@@ -185,9 +144,25 @@ function Results({ summary }: { summary: Json }) {
             <Stat label="Extreme (Q99) AUPRC" value={fmt(ev('extreme_flow_q99').auprc, 3)} hint={`persistence ${fmt(ev('extreme_flow_q99').persistence_auprc, 3)}`} />
             <Stat label="RMSE vs persistence" value={`${fmt(b.bootstrap.rmse_ratio_model_over_persistence_ci95[0], 3)}–${fmt(b.bootstrap.rmse_ratio_model_over_persistence_ci95[1], 3)}`} hint="95% CI by basin; below 1 is better" />
           </div>
-          <p className="mp-note"><AlertTriangle size={13} /> {set === 'augmented' ? 'At +7 days, the augmented model achieves 0.234 median NSE (2.5× higher than the old 0.094 baseline) and beats persistence by 16.3%.' : 'NSE is computed per basin and the median is reported. Coverage below 90% means intervals are too narrow on new catchments.'}</p>
         </>) : <div className="mp-empty">Results for this dataset are not available.</div>}
       </section>
+      {summary.routing && (
+        <section className="mp-card mp-span2">
+          <div className="mp-eyebrow"><FlaskConical size={14} /> Which model for which river</div>
+          <h3>Each size band goes to the model that did better on catchments left out of training</h3>
+          <table className="mp-table">
+            <thead><tr><th>Catchment size (sq mi)</th><th>Basins tested</th><th>Gauges + Caravan model</th><th>USGS-gauge model</th><th>Used</th></tr></thead>
+            <tbody>{summary.routing.map((r: Json) => {
+              const fmtR = (m: Json) => ['1', '3', '7'].map(h => fmt(m[h], 3)).join(' / ');
+              return (<tr key={r.band_sqmi}>
+                <td>{r.band_sqmi.replace('-1e+09', '+').replace('-', ' to ')}</td><td>{r.basins}</td>
+                <td>{fmtR(r.mixed_ratio_by_h)}</td><td>{fmtR(r.gauges_ratio_by_h)}</td>
+                <td><b>{r.best === 'mixed' ? 'Gauges + Caravan' : 'USGS gauges'}</b></td></tr>);
+            })}</tbody>
+          </table>
+          <p className="mp-muted">Each cell is RMSE ÷ persistence RMSE at 1 / 3 / 7 days (below 1.00 beats repeating the latest flow). Both models were trained without these test catchments. The three bands above 2,000 sq mi rest on only 3 basins each, so treat their winners as indicative.</p>
+        </section>
+      )}
     </div>
   );
 }
@@ -199,14 +174,16 @@ function StationTest() {
   const [mode, setMode] = useState<'prod' | 'forecast'>('forecast');
   const [id, setId] = useState('');
   const [h, setH] = useState('3');
-  const [month, setMonth] = useState('all');
+  const [month, setMonth] = useState('last90');
   const [logScale, setLogScale] = useState(false);
   const list: Json[] = (mode === 'prod' ? prod.data : bands.data) ?? [];
   useEffect(() => { if (list.length && !list.find(s => s.id === id)) setId(list[0].id); }, [mode, list.length]); // eslint-disable-line react-hooks/exhaustive-deps
   const st = list.find(s => s.id === id);
   const sel = useMemo(() => {
     if (!st) return null;
-    const keep = st.dates.map((d: string, i: number) => (month === 'all' || d.slice(5, 7) === month ? i : -1)).filter((i: number) => i >= 0);
+    const lastDay = st.dates[st.dates.length - 1] as string;
+    const cutoff = new Date(new Date(lastDay).getTime() - 89 * 86400000).toISOString().slice(0, 10);
+    const keep = st.dates.map((d: string, i: number) => (month === 'all' || (month === 'last90' ? d >= cutoff : d.slice(5, 7) === month) ? i : -1)).filter((i: number) => i >= 0);
     const pick = (a: Json[]) => keep.map((i: number) => a[i]);
     const hz = mode === 'forecast' ? st.horizons[h] : null;
     return { dates: pick(st.dates), actual: pick(st.actual), pred: pick(mode === 'prod' ? st.pred : hz.point), lo: hz && pick(hz.lo), hi: hz && pick(hz.hi),
@@ -227,12 +204,12 @@ function StationTest() {
     <section className="mp-card">
       <div className="mp-controls wrap">
         <div className="mp-seg" role="tablist" aria-label="Test mode">
-          <button className={mode === 'forecast' ? 'on' : ''} onClick={() => setMode('forecast')}>Forecast + 90% band (unseen gauges, 2024)</button>
-          <button className={mode === 'prod' ? 'on' : ''} onClick={() => setMode('prod')}>Production estimate (2025 benchmark)</button>
+          <button className={mode === 'forecast' ? 'on' : ''} onClick={() => setMode('forecast')}>1 / 3 / 7-day forecast + 90% band (unseen gauges)</button>
+          <button className={mode === 'prod' ? 'on' : ''} onClick={() => setMode('prod')}>Same-day estimate (FLOODCAST 2025 file)</button>
         </div>
         <label>Station <select value={id} onChange={e => setId(e.target.value)}>{list.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
         {mode === 'forecast' && <label>Horizon <select value={h} onChange={e => setH(e.target.value)}>{['1', '3', '7'].map(k => <option key={k} value={k}>{k} day{k === '1' ? '' : 's'} ahead</option>)}</select></label>}
-        <label>Month <select value={month} onChange={e => setMonth(e.target.value)}><option value="all">Whole year</option>
+        <label>Period <select value={month} onChange={e => setMonth(e.target.value)}><option value="last90">Last 90 days</option><option value="all">Whole test year</option>
           {Array.from({ length: 12 }, (_, k) => String(k + 1).padStart(2, '0')).map(mm => <option key={mm} value={mm}>{new Date(2025, +mm - 1, 1).toLocaleString('en-US', { month: 'long' })}</option>)}</select></label>
         <label className="mp-check"><input type="checkbox" checked={logScale} onChange={e => setLogScale(e.target.checked)} /> Log scale</label>
       </div>
@@ -322,7 +299,7 @@ function ScoreCsv() {
         <div className="mp-result">
           <div className={`mp-verdict ${v.ok ? 'ok' : 'bad'}`}>{v.ok ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
             {v.ok ? `Valid submission format — ${fmt(v.rows)} rows` : `Rejected — ${v.errors.length} problem${v.errors.length === 1 ? '' : 's'}`}</div>
-          <ul className="mp-list">{v.errors.map((e: string) => <li key={e} className="bad">{e}</li>)}{v.warnings.map((w: string) => <li key={w} className="warn">{w}</li>)}</ul>
+          <ul className="mp-list">{v.errors.map((e: string) => <li key={e} className="bad">{e}</li>)}</ul>
         </div>)}
       {s && !s.ok && <div className="mp-error"><XCircle size={14} /> {s.error}</div>}
       {s?.ok && (<>
@@ -353,14 +330,12 @@ function Robust({ summary }: { summary: Json }) {
       <div className="mp-eyebrow"><Activity size={14} /> Test C style stress tests</div>
       <h3>How much do forecasts degrade when inputs are bad?</h3>
       <div className="mp-controls"><div className="mp-seg">
-        <button className={set === 'heldout' ? 'on' : ''} onClick={() => setSet('heldout')}>Held-out stations</button>
-        <button className={set === 'caravan' ? 'on' : ''} onClick={() => setSet('caravan')} disabled={!summary.stress?.caravan}>Caravan basins</button></div></div>
+        <button className="on">Unseen US gauges</button></div></div>
       {stress ? (<>
         <p className="mp-muted">Table shows RMSE as a multiple of the clean run ({fmt(stress.basins)} catchments; 1.00× = no change). Only inputs are damaged; targets stay true.</p>
         <table className="mp-table"><thead><tr><th>Scenario</th><th>1-day</th><th>3-day</th><th>7-day</th><th>90% coverage (1-day)</th></tr></thead>
           <tbody>{Object.entries(stress.scenarios).map(([k, v]: [string, Json]) => (
             <tr key={k}><td>{label[k] ?? k}</td>{['1', '3', '7'].map(hh => <td key={hh} style={shade(v[hh].rmse_ratio_vs_clean)}>{fmt(v[hh].rmse_ratio_vs_clean, 2)}×</td>)}<td>{fmt(v['1'].interval_coverage * 100, 1)}%</td></tr>))}</tbody></table>
-        <p className="mp-note"><AlertTriangle size={13} /> The model leans on the latest observed discharge, so errors in that input pass straight through at 1 day. Longer horizons depend more on weather and hold up better. Intervals become overconfident under stress.</p>
       </>) : <div className="mp-empty">Stress results are not available for this dataset.</div>}
       {eff && (<><h4>Efficiency (CPU only)</h4><div className="mp-stats small">
         <Stat label="ms per 1,000 forecasts" value={fmt(eff.ms_per_1000_forecasts_all_heads_all_horizons, 0)} hint="3 horizons, all heads" />
@@ -374,11 +349,11 @@ function Robust({ summary }: { summary: Json }) {
 function JudgeTests({ summary }: { summary: Json }) {
   const judge = useJson('/reports/model/judge_tests.json');
   const jt = judge.data;
-  const held = summary.basinshift?.heldout, car = summary.basinshift?.caravan;
+  const held = summary.basinshift?.heldout;
   const skill = (m: Json) => (m ? m.blend.rmse / m.persistence.rmse : null);
   const status: [string, string, string, 'done' | 'partial' | 'no'][] = [
-    ['Test A: temporal', '§7.1, 7.4', 'Later dates, catchments seen in training', jt ? 'done' : 'partial'],
-    ['Test B: geographic', '§7.1, 7.3', 'Catchments completely excluded from training', held && car ? 'done' : 'partial'],
+    ['Test A: temporal', '§7.1, 7.4', 'Later dates, catchments seen in training (not re-run for the latest model)', 'partial'],
+    ['Test B: geographic', '§7.1, 7.3', 'Catchments completely excluded from training (not re-run for the latest model)', 'partial'],
     ['Test C: stress', '§7.5', 'Missing data, gaps, noise, delayed inputs', summary.stress?.heldout ? 'done' : 'partial'],
     ['Output contract', '§8.3–8.4', 'Record layout, probabilities, interval order, no NaN or duplicates', 'done'],
     ['Live new-river test (India)', 'NWIC', 'Model vs live NWIC observations at gauges outside the training data', 'done'],
@@ -397,27 +372,26 @@ function JudgeTests({ summary }: { summary: Json }) {
         <div className="mp-eyebrow"><ShieldCheck size={14} /> What the BASINSHIFT document says will be tested</div>
         <h3>Test checklist and where the evidence is</h3>
         <table className="mp-table mp-left"><thead><tr><th>Item</th><th>PDF</th><th>What it checks</th><th>Status</th></tr></thead>
-          <tbody>{status.map(([a, b, c, st]) => <tr key={a}><td>{a}</td><td>{b}</td><td>{c}</td><td><span className={`mp-badge ${st}`}>{badge[st]}</span></td></tr>)}</tbody></table>
-        <p className="mp-note"><AlertTriangle size={13} /> The document says the exact horizons, thresholds, scoring formula and hidden stress seeds are not frozen. We use 1, 3 and 7 days, Q90 and Q99 thresholds from each catchment's own earlier reference period, and our own fixed seeds.</p>
+          <tbody>{status.map(([a, b, c, st]) => <tr key={a}><td>{a}</td><td>{b}</td><td>{c}</td><td>{badge[st]}</td></tr>)}</tbody></table>
       </section>
 
       <section className="mp-card">
         <div className="mp-eyebrow"><Gauge size={14} /> Test A and B side by side</div>
-        <h3>Does the model keep its edge on catchments it never saw?</h3>
-        <p className="mp-muted">Skill ratio = model RMSE divided by persistence RMSE (below 1.00 beats repeating the latest flow). Test A uses stations the model trained on, but only later dates. Test B uses stations it never saw.</p>
-        {jt && held && car ? (
-          <table className="mp-table"><thead><tr><th>Horizon</th><th>A: seen stations, later dates</th><th>B1: unseen gauges (2022–24)</th><th>B2: Caravan basins (2010–20)</th></tr></thead>
+        <h3>Does the latest model keep its edge on later dates?</h3>
+        <p className="mp-muted">Skill ratio = model RMSE divided by persistence RMSE (below 1.00 beats repeating the latest flow). Here the gauges were left out of training entirely, so this is the unseen-catchment test (B1); the Caravan tab holds the second one (B2).</p>
+        {held ? (
+          <table className="mp-table"><thead><tr><th>Horizon</th><th>Unseen gauges (2022–24)</th></tr></thead>
             <tbody>{['1', '3', '7'].map(h => {
-              const a = jt.test_a_temporal.horizons[h], b = held.horizons[h], c = car.horizons[h];
+              const a = held.horizons[h];
               const cell = (m: Json) => `${fmt(skill(m), 3)}× · NSE ${fmt(m.blend.median_basin_nse, 2)} vs ${fmt(m.persistence.median_basin_nse, 2)}`;
-              return <tr key={h}><td>{h}-day</td><td>{cell(a)}</td><td>{cell(b)}</td><td>{cell(c)}</td></tr>; })}</tbody></table>
+              return <tr key={h}><td>{h}-day</td><td>{cell(a)}</td></tr>; })}</tbody></table>
         ) : <div className="mp-empty">{judge.error ? 'Test A results are not available yet.' : 'Loading…'}</div>}
         <p className="mp-muted">Each cell: skill ratio, then per-basin median NSE for the model vs persistence.</p>
       </section>
 
       <section className="mp-card">
         <div className="mp-eyebrow"><FlaskConical size={14} /> Hypothesis H1</div>
-        <h3>Do static catchment attributes help on unseen catchments?</h3>
+        <h3>Do static catchment attributes help on unseen catchments? (earlier 55-gauge model)</h3>
         {jt?.h1_static_attributes ? (<>
           <table className="mp-table"><thead><tr><th>Horizon</th><th>RMSE with</th><th>RMSE without</th><th>Median NSE with</th><th>Median NSE without</th></tr></thead>
             <tbody>{Object.entries(jt.h1_static_attributes.horizons).map(([h, v]: [string, Json]) => (
@@ -437,12 +411,12 @@ function JudgeTests({ summary }: { summary: Json }) {
 function DailyHorizons({ summary }: { summary: Json }) {
   const d = summary.basinshift?.heldout_daily;
   if (!d) return null;
-  const rows = Object.entries(d.horizons) as [string, Json][];
+  const rows = (Object.entries(d.horizons) as [string, Json][]).filter(([h]) => ['1', '3', '7'].includes(h));
   return (
     <section className="mp-card">
-      <div className="mp-eyebrow"><LineChart size={14} /> Every forecast day</div>
-      <h3>Daily forecasts, +1 to +7 days, on gauges the model never saw</h3>
-      <p className="mp-muted">The live model is trained for every day from +1 to +7, so the hydrograph is a predicted daily curve and not a drawing between three points. Held-out gauges, 2022–2024 ({fmt(d.stations)} gauges, {fmt(d.rows)} days). Ratio = model error ÷ persistence error (below 1.00 is better).</p>
+      <div className="mp-eyebrow"><LineChart size={14} /> Forecast days</div>
+      <h3>Forecasts at +1, +3 and +7 days, on gauges the model never saw</h3>
+      <p className="mp-muted">The live model forecasts +1, +3 and +7 days ahead. Gauges left out of training, 2022–2024 ({fmt(d.stations)} gauges, {fmt(d.rows)} days). Ratio = model error ÷ persistence error (below 1.00 is better).</p>
       <table className="mp-table">
         <thead><tr><th>Day</th><th>Model RMSE</th><th>Persistence RMSE</th><th>Ratio</th><th>Median NSE (model / persist.)</th><th>90% coverage</th><th>High-flow AUPRC</th></tr></thead>
         <tbody>{rows.map(([h, v]) => (

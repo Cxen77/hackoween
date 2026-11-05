@@ -42,8 +42,20 @@ P = dict(n_estimators=300, learning_rate=0.06, num_leaves=63, min_child_samples=
 
 
 def thresholds(frame: pd.DataFrame, ref_mask: np.ndarray) -> pd.DataFrame:
-    t = frame[ref_mask].groupby('station_id').discharge_cfs.quantile([0.9, 0.99]).unstack()
+    t = frame[ref_mask].groupby('station_id').discharge_cfs.quantile([0.9, 0.99]).unstack() if ref_mask.any() else pd.DataFrame(columns=[0.9, 0.99], dtype=float)
     t.columns = ['T90', 'T99']
+    # Stations whose record starts after the reference cut (e.g. the 2010+ USGS gauges next to 1981+ Caravan basins) would get
+    # no thresholds and silently drop out of training. They use their own first five years instead, which is still earlier
+    # than any later test period.
+    missing = sorted(set(frame.station_id.unique()) - set(t.index))
+    if missing:
+        sub = frame[frame.station_id.isin(missing)]
+        dt = pd.to_datetime(sub.date)
+        first = dt.groupby(sub.station_id).transform('min')
+        early = sub[(dt < first + pd.DateOffset(years=5)).to_numpy()]
+        e = early.groupby('station_id').discharge_cfs.quantile([0.9, 0.99]).unstack()
+        e.columns = ['T90', 'T99']
+        t = pd.concat([t, e])
     return frame[['station_id']].join(t, on='station_id')[['T90', 'T99']]
 
 
@@ -73,27 +85,33 @@ def build(frame, ref_cut, h, hist_frame=None, weather_frame=None, delay=0, thr_o
     return X, thr, lag
 
 
-def fit_bundle(fit_df, fit_ref_cut, cal_start, fit_end):
-    """Train every head. Returns a dict bundle (also what gets saved)."""
+def fit_bundle(fit_df, fit_ref_cut, cal_start, fit_end, in_train=None, in_cal=None, params=None, weights=None):
+    """Train every head. Returns a dict bundle (also what gets saved). in_train/in_cal override the date split
+    (used when data sources end at different dates). params override P (tuned settings); weights are per-row sample
+    weights for the training rows."""
+    Pm = dict(P, **(params or {}))
+    w_all = None if weights is None else np.asarray(weights, float)
     y = fit_df.discharge_cfs.to_numpy(float)
-    in_train = (fit_df.date < cal_start).to_numpy()
-    in_cal = ((fit_df.date >= cal_start) & (fit_df.date < fit_end)).to_numpy()
+    if in_train is None:
+        in_train = (fit_df.date < cal_start).to_numpy()
+        in_cal = ((fit_df.date >= cal_start) & (fit_df.date < fit_end)).to_numpy()
     X0, _, _ = build(fit_df, fit_ref_cut, None)
-    bundle = {'weather_only': lgb.LGBMRegressor(**P).fit(X0[in_train], np.log1p(y[in_train])),
+    bundle = {'weather_only': lgb.LGBMRegressor(**Pm).fit(X0[in_train], np.log1p(y[in_train]), sample_weight=None if w_all is None else w_all[in_train]),
               'weather_cols': list(X0.columns), 'horizons': {}}
     for h in HORIZONS:
         X, thr, lag = build(fit_df, fit_ref_cut, h)
         ok = ~np.isnan(lag) & ~np.isnan(thr.T90.to_numpy())
         r = np.log1p(y) - np.log1p(lag)
         tr, ca = in_train & ok, in_cal & ok
-        b = {'cols': list(X.columns), 'mean': lgb.LGBMRegressor(**P).fit(X[tr], r[tr])}
-        b['q'] = {q: lgb.LGBMRegressor(objective='quantile', alpha=q, **P).fit(X[tr], r[tr]) for q in QUANTILES}
+        wt = None if w_all is None else w_all[tr]
+        b = {'cols': list(X.columns), 'mean': lgb.LGBMRegressor(**Pm).fit(X[tr], r[tr], sample_weight=wt)}
+        b['q'] = {q: lgb.LGBMRegressor(objective='quantile', alpha=q, **Pm).fit(X[tr], r[tr], sample_weight=wt) for q in QUANTILES}
         lo_c, hi_c = b['q'][0.05].predict(X[ca]), b['q'][0.95].predict(X[ca])
         score = np.maximum(lo_c - r[ca], r[ca] - hi_c)
         b['conformal_k'] = float(np.quantile(score, min(1.0, 0.9 * (1 + 1 / len(score)))))
         for name, col in [('90', 'T90'), ('99', 'T99')]:
             lab = (y > thr[col].to_numpy()).astype(int)
-            clf = lgb.LGBMClassifier(**P).fit(X[tr], lab[tr])
+            clf = lgb.LGBMClassifier(**Pm).fit(X[tr], lab[tr], sample_weight=wt)
             b[f'clf{name}'] = clf
             b[f'iso{name}'] = IsotonicRegression(out_of_bounds='clip', y_min=0, y_max=1).fit(clf.predict_proba(X[ca])[:, 1], lab[ca])
             b[f'base{name}'] = float(lab[tr].mean())

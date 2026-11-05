@@ -2,6 +2,17 @@
 
 Updated: 2026-11-05, Asia/Calcutta. Read this file first when continuing. Keep it current; do not create competing context logs.
 
+## CURRENT — ROUTED FORECASTER, TEST FILES, UI FIXES (2026-11-05, later)
+
+- **Training bug fixed.** The 55 USGS gauges start in 2010, so thresholds from "before 2000" were empty and those gauges dropped out of the augmented run (it was ~2x worse than persistence on big rivers). `basinshift_model.thresholds` now falls back to a station's own first 5 years; each source gets its own train/calibration split (`scripts/train_augmented_v2.py`, modes `holdout` and `final`, flag `--tuned` = 5x weight on USGS rows + 127 leaves from `scripts/tune_aug.py`).
+- **Routing by catchment size** (`server/model_api.py`: `pick_bundle`, `routed_forecast`, `LARGE_SQMI = 10000`): rivers >= 10,000 sq mi use `models_large.joblib` (USGS-gauge model); smaller ones use `models_daily.joblib` (gauges + 479 Caravan basins, tuned). Chosen from `scripts/route_by_size.py` (best model per size band on held-out catchments). New-river forecasts (India, lat/lon) have no area, so they use the mixed model.
+- **Both served models are the HOLD-OUT versions**: trained without the 11 gauges (seed 42) and 60 Caravan basins (seed 7) listed in `holdout_ids.json`. That keeps every number on the Model page and the live Caravan test honest. An all-data retrain is `python -m scripts.train_augmented_v2 --mode final --tuned` (needs `python -m scripts.prepare_augmented --out data/augmented_v2`, ~13 min each).
+- **Results (unseen catchments, RMSE / persistence, +1/+3/+7)**: 11 US gauges 0.975 / 0.961 / 0.947; 60 Caravan basins 0.828 / 0.764 / 0.745; 90% intervals cover 87-90%. Scored by `python -m scripts.eval_routed`; page data by `python -m scripts.export_model_page_data`.
+- **Test files**: `test/` holds a ready FLOODCAST set (`test.csv`, `predictions.csv`, `actuals.csv`; expect RMSE 46,543, MAE 14,003, R2 0.9149), `small/`, `bad_examples/` (must be rejected) and `basinshift/` records. `tests/test_data_files.test.mjs` checks them in `npm test`. See `test/README.md`.
+- **UI**: river channel always drawn as shallow water (terrain.ts/river-flood.mjs `channelWaterMesh`); slider range grows for very large rivers; one "Back to live level" control; draw-alert zone has corner markers and a bottom bar; Test a station defaults to the 1/3/7-day forecast over the last 90 days; hydrograph shows only +1/+3/+7 and hides GloFAS when its cell is not on the gauged river; several orange notes removed on request; map credits collapsed behind the (i) button.
+- **Not done**: Test A (same gauges, later dates) and H1 were not re-run for the latest model; Q99 detection is weak; boundary-alert flow was only browser-tested for drawing three corners.
+- **After pulling**: restart the model server (`npm run dev:all` does it). If the dev page shows old styles, restart the Vite server and hard-refresh.
+
 ## CURRENT — AUGMENTED DATASET & 1-3-7 MODEL DEPLOYED (2026-11-05)
 
 - **Augmented Dataset**: Combined original 55 USGS gauges (293,057 rows) with 479 Caravan US CAMELS basins (5,594,247 rows).

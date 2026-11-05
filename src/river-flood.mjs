@@ -189,3 +189,17 @@ export function waterSurfaceMesh(model,rise) {
   }
   return new Float32Array(vertices);
 }
+
+/** The river itself: the mapped channel drawn as shallow water at the reference level, whatever the stage. Flooding beyond the
+ * channel comes only from waterSurfaceMesh. Each channel cell becomes a slightly oversized quad (so a one-cell-wide river is
+ * visible) sitting just above the ground, because a 30 m terrain model cannot resolve the real channel bed. */
+export function channelWaterMesh(model,depth=1.2,lift=.3,half=.9){
+  const {size:n,channel,base,heights}=model,vertices=[];
+  for(let i=0;i<channel.length;i++){
+    if(!channel[i]||!Number.isFinite(heights[i]))continue;
+    const c=i%n,r=Math.floor(i/n),z=Math.max(base[i],heights[i])+lift;
+    const a=[c-half,r-half,z,depth],b=[c+half,r-half,z,depth],d=[c-half,r+half,z,depth],e=[c+half,r+half,z,depth];
+    for(const v of [a,b,d,b,e,d])vertices.push(...v);
+  }
+  return new Float32Array(vertices);
+}
