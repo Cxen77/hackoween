@@ -175,7 +175,14 @@ function StationTest({ choice }: { choice: 'auto' | 'mixed' | 'gauge' }) {
   }, [st, mode, h, month]);
   const m = sel && seriesMetrics(sel.actual, sel.pred);
   const mp = sel && sel.persistence ? seriesMetrics(sel.actual, sel.persistence) : null;
-  const cover = sel?.lo ? (() => { const v = sel.actual.map((a: number, i: number) => (sel.lo[i] === null ? null : a >= sel.lo[i] && a <= sel.hi[i])).filter((x: boolean | null) => x !== null); return v.length ? v.filter(Boolean).length / v.length : null; })() : null;
+  // Coverage over the whole 2024 test year for this gauge and horizon (not just the period shown above).
+  const cover = (() => {
+    if (!st || mode !== 'forecast') return null;
+    const hz = st.horizons[h];
+    if (!hz) return null;
+    const pairs = st.actual.map((a: number | null, k: number) => [a, hz.lo[k], hz.hi[k]]).filter((x: (number | null)[]) => x[0] !== null && x[1] !== null && x[2] !== null);
+    return pairs.length ? pairs.filter((x: number[]) => x[0] >= x[1] && x[0] <= x[2]).length / pairs.length : null;
+  })();
   const alerts = sel?.p90 ? (() => {
     let tp = 0, fp = 0, fn = 0, tn = 0;
     sel.actual.forEach((a: number, i: number) => { const e = a > st.threshold_q90, al = sel.p90[i] >= 0.5; if (e && al) tp++; else if (!e && al) fp++; else if (e && !al) fn++; else tn++; });
@@ -209,7 +216,7 @@ function StationTest({ choice }: { choice: 'auto' | 'mixed' | 'gauge' }) {
           <Stat label="MAE (cfs)" value={fmt(m?.mae)} hint={mp ? `persistence ${fmt(mp.mae)}` : undefined} />
           <Stat label="Bias (cfs)" value={fmt(m?.bias)} hint="positive = over-predicts" />
           <Stat label="R² (this selection)" value={fmt(m?.r2, 3)} hint={`${fmt(m?.n)} days`} />
-          {cover !== null && <Stat label="Interval coverage" value={`${fmt(cover * 100, 1)}%`} hint="target 90%" />}
+          {cover !== null && <Stat label="Interval coverage, all of 2024" value={`${fmt(cover * 100, 1)}%`} hint={cover > 0.97 ? "above 97%: this band is wider than needed" : "target 90%"} />}
         </div>
         {alerts && (
           <div className="mp-alerts">
