@@ -22,8 +22,10 @@ Commit author is a record of who pushed, not of who did what. Pair-programmed an
 | Documentation | `docs/`, `reports/`, `README.md`, `HANDOFF.md` | |
 | Presentation | `presentation/` | |
 
-## Individual roles
-- [Team member 1 name]: [role and areas of work]
-- [Team member 2 name]: [role and areas of work]
-- [Team member 3 name]: [role and areas of work]
-- [Team member 4 name]: [role and areas of work]
+## Individual roles (as assigned by the team)
+- **Dev:** flood simulation and model training (the simulation on the map and the forecasting models).
+- **okaharsh:** frontend and the other work (website pages, the Model page, documentation and the submission package).
+- **Two other team members:** names and roles to be added by the team. They do not appear in the git history.
+
+## Check before the panel
+The git history does not match this split exactly. Commits by okaharsh include most of the training scripts (`scripts/train_augmented_v2.py`, `scripts/tune_aug.py`) and the model core (`scripts/basinshift_model.py`), while Dev committed most of the simulation and terrain code (`src/terrain.ts`, `src/river-flood.mjs`) and the Render configuration. Work done outside git (for example on a shared computer) can't be seen here. Decide which description is accurate before presenting.
