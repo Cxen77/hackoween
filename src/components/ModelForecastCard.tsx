@@ -1,4 +1,9 @@
 import { useEffect, useState } from 'react';
+
+const MODEL_NAMES: Record<string, string> = {
+  'models_daily.joblib': 'Gauges + Caravan model',
+  'models_large.joblib': 'USGS-gauge model',
+};
 import { AlertTriangle, Bot, Play, RefreshCw, ShieldAlert, Waves } from 'lucide-react';
 import './model-forecast.css';
 
@@ -243,20 +248,20 @@ export default function ModelForecastCard({
       </div>
 
       {(usgs || nwic) && (
-        <div className="mf-days-pills-row">
-          <span className="mf-days-label">Model:</span>
-          <div className="mf-days-pills" role="radiogroup" aria-label="Which forecast model to use">
+        <div className="mf-model-row">
+          <span className="mf-model-label">Model</span>
+          <div className="mf-model-seg" role="radiogroup" aria-label="Which forecast model to use">
             {([
-              ['auto', 'Routed by size (default)', 'Small and medium rivers use the gauges + Caravan model; rivers of 10,000 sq mi or more use the USGS-gauge model.'],
-              ['mixed', 'Gauges + Caravan only', 'Every river uses the model trained on 534 catchments.'],
-              ['gauge', 'USGS gauges only', 'Every river uses the model trained on the 55 USGS gauges.'],
+              ['auto', 'Routed', 'Small and medium rivers use the gauges + Caravan model; rivers of 10,000 sq mi or more use the USGS-gauge model. (default)'],
+              ['mixed', 'Gauges + Caravan', 'Every river uses the model trained on 534 catchments.'],
+              ['gauge', 'USGS only', 'Every river uses the model trained on the 55 USGS gauges.'],
             ] as const).map(([key, label, tip]) => (
               <button
                 key={key}
                 role="radio"
                 aria-checked={choice === key}
                 title={tip}
-                className={`mf-day-pill ${choice === key ? 'active' : ''}`}
+                className={choice === key ? 'active' : ''}
                 onClick={() => setChoice(key)}
               >
                 {label}
@@ -357,8 +362,8 @@ export default function ModelForecastCard({
             </div>
 
             {d.model && (
-              <span className="mf-model-badge">
-                {d.model}
+              <span className="mf-model-badge" title={d.model}>
+                {MODEL_NAMES[d.model] ?? d.model}
               </span>
             )}
           </div>
