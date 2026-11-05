@@ -47,9 +47,32 @@ CACHE_SECONDS = 600
 FT_PER_M = 3.28084
 
 
+UPSTREAM = {}          # url -> (time, parsed body): raw upstream responses, shared by every model choice
+UPSTREAM_TTL = 900     # seconds a response is reused without asking the provider again
+
+
 def http_json(url: str, timeout: int = 60):
-    with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=timeout) as r:
-        return json.loads(r.read().decode('utf-8'))
+    """GET a JSON document, reusing recent answers. A 429 (rate limit) is retried with backoff, and if it keeps
+    failing the last good copy is returned instead of an error, so the forecast still works."""
+    hit = UPSTREAM.get(url)
+    if hit and time.time() - hit[0] < UPSTREAM_TTL:
+        return hit[1]
+    last = None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=timeout) as r:
+                body = json.loads(r.read().decode('utf-8'))
+            UPSTREAM[url] = (time.time(), body)
+            return body
+        except urllib.error.HTTPError as e:
+            last = e
+            if e.code != 429:
+                raise
+            retry_after = float(e.headers.get('Retry-After') or 0) if e.headers else 0
+            time.sleep(min(max(retry_after, 2 ** attempt), 8))
+    if hit:  # rate-limited: use the last good answer, however old
+        return hit[1]
+    raise last
 
 
 def clean(v):
