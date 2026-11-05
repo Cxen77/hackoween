@@ -326,7 +326,7 @@ function Robust({ summary }: { summary: Json }) {
 }
 
 /* ---------- tab: judge tests ---------- */
-function JudgeTests({ summary }: { summary: Json }) {
+function JudgeTests({ summary, choice }: { summary: Json; choice: 'auto' | 'mixed' | 'gauge' }) {
   const judge = useJson('/reports/model/judge_tests.json');
   const jt = judge.data;
   const held = summary.basinshift?.heldout;
@@ -382,7 +382,7 @@ function JudgeTests({ summary }: { summary: Json }) {
 
       <DailyHorizons summary={summary} />
       <IndiaLiveTest />
-      <LiveCaravanTest />
+      <LiveCaravanTest choice={choice} />
       <ContractCheck />
     </div>
   );
@@ -435,7 +435,7 @@ function IndiaLiveTest() {
   );
 }
 
-function LiveCaravanTest() {
+function LiveCaravanTest({ choice }: { choice: 'auto' | 'mixed' | 'gauge' }) {
   const [available, setAvailable] = useState<boolean | null>(null);
   useEffect(() => {
     const ctl = new AbortController();
@@ -452,7 +452,7 @@ function LiveCaravanTest() {
   const run = async () => {
     setSt({ loading: true, data: null, error: null });
     try {
-      const r = await fetch(`/api/run_test?dataset=caravan&n=${n}&seed=${seed}`);
+      const r = await fetch(`/api/run_test?dataset=caravan&n=${n}&seed=${seed}&model=${choice}`);
       const text = await r.text();
       let body: Json = null;
       try { body = JSON.parse(text); } catch { /* proxy target down */ }
@@ -522,6 +522,7 @@ function ContractCheck() {
 
 /* ---------- page ---------- */
 export default function ModelPage() {
+  const [choice, setChoice] = useState<'auto' | 'mixed' | 'gauge'>('auto');
   const { data: summary, error } = useJson('/reports/model/summary.json');
   const [tab, setTab] = useState<Tab>('results');
   const top = useRef<HTMLElement>(null);
@@ -534,7 +535,23 @@ export default function ModelPage() {
         <div className="mp-eyebrow"><FlaskConical size={14} /> Discharge ML Model</div>
         <h2>Test the river-discharge model</h2>
         <p className="mp-muted">Inspect results, replay forecasts against what actually happened, and score your own predictions file. All numbers come from saved evaluation runs; every dataset used for testing was kept out of training.</p>
-        <p className="mp-model-used"><b>Model used:</b> two models, chosen by river size. Rivers under 10,000 sq mi use <code>models_daily.joblib</code> (trained on the 55 USGS gauges plus 479 Caravan basins). Rivers of 10,000 sq mi or more use <code>models_large.joblib</code> (trained on the 55 USGS gauges). Forecasts are +1, +3 and +7 days.</p>
+        <div className="mp-model-row">
+          <span className="mp-model-label">Model</span>
+          <div className="mp-model-seg" role="radiogroup" aria-label="Which model to use">
+            {([
+              ['auto', 'Auto (by river size)'],
+              ['mixed', 'Gauges + Caravan only'],
+              ['gauge', 'USGS gauges only'],
+            ] as const).map(([key, label]) => (
+              <button key={key} role="radio" aria-checked={choice === key} className={choice === key ? 'on' : ''} onClick={() => setChoice(key)}>{label}</button>
+            ))}
+          </div>
+        </div>
+        <p className="mp-model-used"><b>Model used:</b> {choice === 'auto'
+          ? 'Auto: two models, chosen by river size. Rivers under 10,000 sq mi use models_daily.joblib (trained on the 55 USGS gauges plus 479 Caravan basins). Rivers of 10,000 sq mi or more use models_large.joblib (trained on the 55 USGS gauges).'
+          : choice === 'mixed'
+          ? 'Gauges + Caravan only: every river uses models_daily.joblib (trained on the 55 USGS gauges plus 479 Caravan basins).'
+          : 'USGS gauges only: every river uses models_large.joblib (trained on the 55 USGS gauges).'} Forecasts are +1, +3 and +7 days. The saved tables below are the Auto results.</p>
       </header>
       <nav className="mp-tabs" role="tablist" aria-label="Model page sections">
         {tabs.map(([k, label, icon]) => <button key={k} role="tab" aria-selected={tab === k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{icon}{label}</button>)}
@@ -543,7 +560,7 @@ export default function ModelPage() {
       {tab === 'station' && <StationTest />}
       {tab === 'score' && <ScoreCsv />}
       {summary && tab === 'results' && <Results summary={summary} />}
-      {summary && tab === 'judge' && <JudgeTests summary={summary} />}
+      {summary && tab === 'judge' && <JudgeTests summary={summary} choice={choice} />}
       {summary && tab === 'robust' && <Robust summary={summary} />}
       {!summary && !error && tab !== 'station' && tab !== 'score' && <div className="mp-empty">Loading results…</div>}
       <p className="mp-foot">Research benchmark only. Not a certified flood warning; do not use for evacuation or emergency decisions.</p>

@@ -463,7 +463,7 @@ def live_forecast_india(key: str, choice: str = 'auto') -> dict:
 
 
 # ------------------------------------------------------------------ live dataset test
-def run_caravan_test(n: int, seed: int) -> dict:
+def run_caravan_test(n: int, seed: int, choice: str = 'auto') -> dict:
     root = ROOT / 'data' / 'external' / 'caravan' / 'Caravan'
     files = sorted((root / 'timeseries' / 'csv' / 'camels').glob('camels_*.csv'))
     if not files:
@@ -482,7 +482,12 @@ def run_caravan_test(n: int, seed: int) -> dict:
     res = {'dataset': 'caravan_random_subset', 'basins': len(pick), 'seed': seed, 'cleaning': {k: v for k, v in report.items() if k.startswith(('rows', 'dropped', 'clipped'))}, 'horizons': {}}
     with LOCK:
         for h in STATE['horizons']:
-            o = routed_forecast(frame, '2010-01-01', h)
+            if choice == 'auto':
+                o = routed_forecast(frame, '2010-01-01', h)
+            elif choice == 'mixed':
+                o = forecast(STATE['bundle'], frame, '2010-01-01', h)
+            else:  # 'gauge': USGS-gauge model for every basin, when it is loaded
+                o = forecast(STATE['bundle_large'] or STATE['bundle'], frame, '2010-01-01', h)
             mask = in_test & ~np.isnan(o['thr'].T90.to_numpy()) & ~np.isnan(clim)
             rep = evaluate(o, frame, y, mask, STATE['bundle']['horizons'][h], area, True, clim)
             f = rep['forecast']
@@ -491,6 +496,7 @@ def run_caravan_test(n: int, seed: int) -> dict:
                                        'interval_coverage': rep.get('interval_90', {}).get('coverage'),
                                        'high_flow_auprc': rep['events']['high_flow_q90']['model'].get('auprc'),
                                        'persistence_high_flow_auprc': rep['events']['high_flow_q90']['persistence_indicator'].get('auprc')}
+    res['model'] = choice
     return clean(res)
 
 
@@ -593,7 +599,11 @@ class Handler(BaseHTTPRequestHandler):
                 elif not caravan_test_available():
                     self._send(503, {'error': 'Live benchmark reruns are unavailable on this deployment. Saved results remain available.'})
                 else:
-                    self._send(200, run_caravan_test(int(q.get('n', ['12'])[0]), int(q.get('seed', ['7'])[0])))
+                    choice = q.get('model', ['auto'])[0]
+                    if choice not in MODEL_CHOICES:
+                        self._send(400, {'error': f"model must be one of {sorted(MODEL_CHOICES)}"})
+                    else:
+                        self._send(200, run_caravan_test(int(q.get('n', ['12'])[0]), int(q.get('seed', ['7'])[0]), choice))
             else:
                 self._send(404, {'error': 'Unknown endpoint'})
         except KeyError as e:
