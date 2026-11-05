@@ -153,14 +153,14 @@ function Results({ summary }: { summary: Json }) {
 
 /* ---------- tab: test a station ---------- */
 function StationTest() {
-  const prod = useJson('/reports/model/stations_2025.json');
+  // Forecast only: the same-day estimate is not offered on this tab.
   const bands = useJson('/reports/model/forecast_bands.json');
-  const [mode, setMode] = useState<'prod' | 'forecast'>('forecast');
+  const mode = 'forecast' as const;
   const [id, setId] = useState('');
   const [h, setH] = useState('3');
   const [month, setMonth] = useState('last90');
   const [logScale, setLogScale] = useState(false);
-  const list: Json[] = (mode === 'prod' ? prod.data : bands.data) ?? [];
+  const list: Json[] = bands.data ?? [];
   useEffect(() => { if (list.length && !list.find(s => s.id === id)) setId(list[0].id); }, [mode, list.length]); // eslint-disable-line react-hooks/exhaustive-deps
   const st = list.find(s => s.id === id);
   const sel = useMemo(() => {
@@ -170,7 +170,7 @@ function StationTest() {
     const keep = st.dates.map((d: string, i: number) => (month === 'all' || (month === 'last90' ? d >= cutoff : d.slice(5, 7) === month) ? i : -1)).filter((i: number) => i >= 0);
     const pick = (a: Json[]) => keep.map((i: number) => a[i]);
     const hz = mode === 'forecast' ? st.horizons[h] : null;
-    return { dates: pick(st.dates), actual: pick(st.actual), pred: pick(mode === 'prod' ? st.pred : hz.point), lo: hz && pick(hz.lo), hi: hz && pick(hz.hi),
+    return { dates: pick(st.dates), actual: pick(st.actual), pred: pick(hz.point), lo: hz && pick(hz.lo), hi: hz && pick(hz.hi),
              p90: hz && pick(hz.p90), p99: hz && pick(hz.p99), persistence: hz && pick(hz.persistence) };
   }, [st, mode, h, month]);
   const m = sel && seriesMetrics(sel.actual, sel.pred);
@@ -182,15 +182,11 @@ function StationTest() {
     return { tp, fp, fn, tn };
   })() : null;
   const worst = sel ? sel.dates.map((d: string, i: number) => ({ d, a: sel.actual[i], p: sel.pred[i], e: Math.abs(sel.actual[i] - sel.pred[i]) })).sort((x: Json, z: Json) => z.e - x.e).slice(0, 5) : [];
-  const loading = mode === 'prod' ? prod.data === null && !prod.error : bands.data === null && !bands.error;
-  const err = mode === 'prod' ? prod.error : bands.error;
+  const loading = bands.data === null && !bands.error;
+  const err = bands.error;
   return (
     <section className="mp-card">
       <div className="mp-controls wrap">
-        <div className="mp-seg" role="tablist" aria-label="Test mode">
-          <button className={mode === 'forecast' ? 'on' : ''} onClick={() => setMode('forecast')}>1 / 3 / 7-day forecast + 90% band (unseen gauges)</button>
-          <button className={mode === 'prod' ? 'on' : ''} onClick={() => setMode('prod')}>Same-day estimate (FLOODCAST 2025 file)</button>
-        </div>
         <label>Station <select value={id} onChange={e => setId(e.target.value)}>{list.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
         {mode === 'forecast' && <label>Horizon <select value={h} onChange={e => setH(e.target.value)}>{['1', '3', '7'].map(k => <option key={k} value={k}>{k} day{k === '1' ? '' : 's'} ahead</option>)}</select></label>}
         <label>Period <select value={month} onChange={e => setMonth(e.target.value)}><option value="last90">Last 90 days</option><option value="all">Whole test year</option>
