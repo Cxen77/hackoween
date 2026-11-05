@@ -98,8 +98,8 @@ const toCsv = (rows: (string | number | null)[][]) => rows.map(r => r.map(v => (
 
 /* ---------- tab: results ---------- */
 function Results({ summary }: { summary: Json }) {
-  const [set, setSet] = useState<'heldout' | 'caravan'>('heldout');
-  const [h, setH] = useState('1');
+  // One model, fixed views: unseen US gauges at 1 day in the main table, and every horizon for both test sets below.
+  const set = 'heldout' as const, h = '1';
   const f = summary.floodcast, b = summary.basinshift?.[set]?.horizons?.[h];
   const rows: [string, Json][] = b ? [['BASINSHIFT blend (this model)', b.blend], ['Persistence (yesterday\'s flow)', b.persistence], ['Seasonal climatology', b.climatology], ['Weather-only boosting', b.weather_only]] : [];
   const ev = (k: 'high_flow_q90' | 'extreme_flow_q99') => b?.[k];
@@ -120,19 +120,9 @@ function Results({ summary }: { summary: Json }) {
       <section className="mp-card">
         <div className="mp-eyebrow"><FlaskConical size={14} /> BASINSHIFT-style forecast system</div>
         <h3>Forecasts, intervals and exceedance probabilities</h3>
-        <div className="mp-controls">
-          <div className="mp-seg" role="tablist" aria-label="Test dataset">
-            <button className={set === 'heldout' ? 'on' : ''} onClick={() => setSet('heldout')}>Unseen US gauges</button>
-            <button className={set === 'caravan' ? 'on' : ''} onClick={() => setSet('caravan')}>Unseen Caravan basins</button>
-          </div>
-          <div className="mp-seg" role="tablist" aria-label="Forecast horizon">
-            {['1', '3', '7'].map(k => <button key={k} className={h === k ? 'on' : ''} onClick={() => setH(k)}>{k}-day</button>)}
-          </div>
-        </div>
+        <p className="mp-muted"><b>Unseen US gauges, +1 day</b> (table below). The other horizons and the unseen Caravan basins are in the table underneath.</p>
         {b ? (<>
-          <p className="mp-muted">{set === 'caravan'
-            ? `Routed forecaster, tested on ${fmt(summary.basinshift.caravan.stations)} Caravan basins left out of training (2010–2014, ${fmt(summary.basinshift.caravan.rows)} days).`
-            : `Routed forecaster: catchments of 10,000 sq mi or more use a model trained on the USGS gauges; smaller ones use a model trained on the gauges plus Caravan basins. Tested on ${fmt(summary.basinshift.heldout.stations)} gauges left out of training, 2022–2024 (${fmt(summary.basinshift.heldout.rows)} days).`}</p>
+          <p className="mp-muted">Routed forecaster, tested on {fmt(summary.basinshift.heldout.stations)} US gauges left out of training (2022–2024, {fmt(summary.basinshift.heldout.rows)} days).</p>
           <table className="mp-table">
             <thead><tr><th>Method</th><th>RMSE</th><th>Extreme RMSE</th><th>MAE</th><th>Median NSE</th></tr></thead>
             <tbody>{rows.map(([name, m], i) => (
@@ -145,6 +135,17 @@ function Results({ summary }: { summary: Json }) {
             <Stat label="RMSE vs persistence" value={`${fmt(b.bootstrap.rmse_ratio_model_over_persistence_ci95[0], 3)}–${fmt(b.bootstrap.rmse_ratio_model_over_persistence_ci95[1], 3)}`} hint="95% CI by basin; below 1 is better" />
           </div>
         </>) : <div className="mp-empty">Results for this dataset are not available.</div>}
+        <h4>All horizons, both unseen test sets</h4>
+        <table className="mp-table">
+          <thead><tr><th>Forecast</th><th>Unseen US gauges: error ratio</th><th>Median NSE (model / persistence)</th><th>Unseen Caravan basins: error ratio</th><th>Median NSE (model / persistence)</th></tr></thead>
+          <tbody>{['1', '3', '7'].map(k => {
+            const g = summary.basinshift?.heldout?.horizons?.[k], c = summary.basinshift?.caravan?.horizons?.[k];
+            const ratio = (m: Json) => (m ? m.blend.rmse / m.persistence.rmse : null);
+            const nse = (m: Json) => (m ? `${fmt(m.blend.median_basin_nse, 2)} / ${fmt(m.persistence.median_basin_nse, 2)}` : '—');
+            return (<tr key={k}><td>+{k} day{k === '1' ? '' : 's'}</td><td><b>{fmt(ratio(g), 3)}</b></td><td>{nse(g)}</td><td><b>{fmt(ratio(c), 3)}</b></td><td>{nse(c)}</td></tr>);
+          })}</tbody>
+        </table>
+        <p className="mp-muted">Error ratio = model RMSE ÷ persistence RMSE (below 1.00 beats repeating yesterday's flow).</p>
       </section>
     </div>
   );
